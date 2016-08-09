@@ -3,7 +3,8 @@
 # 周波数偏差（変調）、占有帯域測定
 #
 
-    $sock.puts("INST SPECT")                             #SAモードでは下記のコマンドを使用  INST SIGANA
+
+    $sock.puts("INST SPECT")                                #SAモードでは下記のコマンドを使用  INST SIGANA
     $sock.puts("*OPC?")
     $sock.gets
     
@@ -14,44 +15,44 @@
     $sock.puts("DISP:WIND:TRAC:Y:RLEV:OFFS:STAT ON")
     $sock.puts("*OPC?")
     $sock.gets
-
+    
     $sock.puts("DISP:WIND:TRAC:Y:RLEV:OFFS 0")
     $sock.puts("*OPC?")
     $sock.gets
-
+    
     $sock.puts("INIT:CONT ON")                              #連続掃引設定
     $sock.puts("*OPC?")
     $sock.gets
-
-    $sock.puts("FREQ:CENT 920MHZ")                          #中心周波数設定  この例では中心周波数を920MHzに設定
+    
+    $sock.puts("FREQ:CENT 920MHZ")                          #中心周波数設定 この例では中心周波数を920MHzに設定
     $sock.puts("*OPC?")
     $sock.gets
     
-    $sock.puts("FREQ:SPAN 500KHZ")                          #SPAN設定  この例ではSpan=500kHzに設定
+    $sock.puts("FREQ:SPAN 500KHZ")                          #SPAN設定   この例ではSpan=500kHzに設定
     $sock.puts("*OPC?")
     $sock.gets
     
-    $sock.puts("CALC:MARK:MODE OFF")                            #マーカーOFF設定
+    $sock.puts("CALC:MARK:MODE OFF")                        #マーカーOFF設定
     $sock.puts("*OPC?")
     $sock.gets
     
-    $sock.puts("BAND 1KHZ")                             #RBW設定  この例ではRBW=1kHzに設定
+    $sock.puts("BAND 1KHZ")                                 #RBW設定    この例ではRBW=1kHzに設定
     $sock.puts("*OPC?")
     $sock.gets
     
-    $sock.puts("BAND:VID 1KHZ")                             #VBW設定  SAモードでは使用しない  この例ではVBW=1kHzに設定
+    $sock.puts("BAND:VID 1KHZ")                             #VBW設定    SAモードでは使用しない  この例ではVBW=1kHzに設定
     $sock.puts("*OPC?")
     $sock.gets
     
-    $sock.puts("SWE:POIN 1001")                             #トレースポイント設定  SAモードでは使用しない  この例では1001ポイントに設定
+    $sock.puts("SWE:POIN 1001")                             #トレースポイント設定   SAモードでは使用しない  この例では1001ポイントに設定
     $sock.puts("*OPC?")
     $sock.gets
     
-    $sock.puts("DET POS")                               #検波モードを設定  この例ではポジティブピークに設定
+    $sock.puts("DET POS")                                   #検波モードを設定   この例ではポジティブピークに設定
     $sock.puts("*OPC?")
     $sock.gets
     
-    $sock.puts(""TRAC1:STOR:MODE MAXH"")                        #表示モードをマックスホールド設定   SAモードでは下記コマンドを使用する  TRAC:STOR:MODE MAXH"
+    $sock.puts("TRAC1:STOR:MODE MAXH")                      #表示モードをマックスホールド設定   SAモードでは下記コマンドを使用する  TRAC:STOR:MODE MAXH"
     $sock.puts("*OPC?")
     $sock.gets
     
@@ -63,19 +64,19 @@
     $sock.puts("*OPC?")
     $sock.gets
     
-    $sock.puts("AVER:COUN 5")                               #Average回数設定  この例ではアベレージ回数を５回に設定
+    $sock.puts("AVER:COUN 5")                               #Average回数設定    この例ではアベレージ回数を５回に設定
     $sock.puts("*OPC?")
     $sock.gets
     
-    $sock.puts("SWE:TIME:AUTO:MODE FAST")                       #掃引モード設定SAモードでは使用しない  この例では掃引モードをfastに設定
+    $sock.puts("SWE:TIME:AUTO:MODE FAST")                   #掃引モード設定 SAモードでは使用しない  この例では掃引モードをfastに設定
     $sock.puts("*OPC?")
     $sock.gets
     
-    $sock.puts(""SWE:TIME 5.46s"")                          #掃引時間の設定  SAモードでは下記コマンドを使用する CALC:ATIM:LENG 2MS   この例では5.46sに設定"
+    $sock.puts("SWE:TIME 5.46s")                            #掃引時間の設定 SAモードでは下記コマンドを使用する  CALC:ATIM:LENG 2MS  この例では5.46sに設定"
     $sock.puts("*OPC?")
     $sock.gets
     
-    $sock.puts("DISP:WIND:TRAC:Y:RLEV -10")                     #Reference Level  この例ではリファレンスレベルを-10dBmに設定
+    $sock.puts("DISP:WIND:TRAC:Y:RLEV -10")                 #Reference Level    この例ではリファレンスレベルを-10dBmに設定
     $sock.puts("*OPC?")
     $sock.gets
     

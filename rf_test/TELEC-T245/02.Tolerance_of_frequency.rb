@@ -3,7 +3,7 @@
 # 周波数偏差（CW)
 #
 
-    $sock.puts(""INST SPECT"")                              #SAモードでは下記のコマンドを使用  INST SIGANA"
+    $sock.puts("INST SPECT")
     $sock.puts("*OPC?")
     $sock.gets
     
@@ -35,23 +35,23 @@
     $sock.puts("*OPC?")
     $sock.gets
 
-    $sock.puts("BAND:VID 1KHZ")                             #VBW設定SAモードでは使用しない
+    $sock.puts("BAND:VID 1KHZ")                             #VBW設定    SAモードでは使用しない
     $sock.puts("*OPC?")
     $sock.gets
     
-    $sock.puts("SWE:POIN 1001")                             #トレースポイント設定SAモードでは使用しない
+    $sock.puts("SWE:POIN 1001")                             #トレースポイント設定   SAモードでは使用しない
     $sock.puts("*OPC?")
     $sock.gets
     
-    $sock.puts("DET POS")                                   #検波モードを設定ポジティブピーク
+    $sock.puts("DET POS")                                   #検波モードを設定   ポジティブピーク
     $sock.puts("*OPC?")
     $sock.gets
     
-    $sock.puts("TRAC1:STOR:MODE MAXH")                      #表示モードをマックスホールド設定TRAC:STOR:MODE MAXH
+    $sock.puts("TRAC1:STOR:MODE MAXH")                      #表示モードをマックスホールド設定   TRAC:STOR:MODE MAXH
     $sock.puts("*OPC?")
     $sock.gets
     
-    $sock.puts(""CALC:MARK:FCO ON"")                        #周波数カウンタをON設定SAモードでは下記のコマンドを使用する  CALC:MARK1:STAT"
+    $sock.puts("CALC:MARK:FCO ON")                          #周波数カウンタをON     設定SAモードでは下記のコマンドを使用する  CALC:MARK1:STAT"
     $sock.puts("*OPC?")
     $sock.gets
     
@@ -63,11 +63,11 @@
     $sock.puts("*OPC?")
     $sock.gets
     
-    $sock.puts("SWE:TIME:AUTO:MODE FAST")                   #掃引モード設定SAモードでは使用しない
+    $sock.puts("SWE:TIME:AUTO:MODE FAST")                   #掃引モード設定 SAモードでは使用しない
     $sock.puts("*OPC?")
     $sock.gets
     
-    $sock.puts(""SWE:TIME 1s"")                             #掃引時間の設定SAモード時は下記のコマンドを使用する  CALC:ATIM:LENG 2MS"
+    $sock.puts("SWE:TIME 1s")                               #掃引時間の設定 SAモード時は下記のコマンドを使用する    CALC:ATIM:LENG 2MS"
     $sock.puts("*OPC?")
     $sock.gets
     
@@ -79,6 +79,6 @@
     $sock.puts("*OPC?")
     $sock.gets
     
-    $sock.puts(""CALC:MARK:FCO:X?"")                        #周波数カウンタの値を読み取るSAモードでは下記のコマンドを使用する  CALC:MARK:Y?"
+    $sock.puts("CALC:MARK:FCO:X?")                          #周波数カウンタの値を読み取る   SAモードでは下記のコマンドを使用する    CALC:MARK:Y?"
     $sock.puts("*OPC")
     $sock.gets
