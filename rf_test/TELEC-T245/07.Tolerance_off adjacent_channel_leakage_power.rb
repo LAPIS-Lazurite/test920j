@@ -7,7 +7,7 @@
     $sock.puts("*OPC?")
     $sock.gets
     
-    $sock.puts("SYST:PRES") 
+    $sock.puts("SYST:PRES")
     $sock.puts("*OPC?")
     $sock.gets
     

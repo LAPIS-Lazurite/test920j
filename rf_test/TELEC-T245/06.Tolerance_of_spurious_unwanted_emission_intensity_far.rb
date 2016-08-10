@@ -1,9 +1,8 @@
 
     #
-    # ｽﾌﾟﾘｱｽ発射又は不要発射の強度（近傍）
+    # ｽﾌﾟﾘｱｽ発射又は不要発射の強度（近傍以外）
     #
 
-    
     $sock.puts("INST SPECT")
     $sock.puts("*OPC?")
     $sock.gets
