@@ -1,9 +1,8 @@
+#!/usr/bin/ruby
 
 #
 # 11.•Ï’²¸“x
 #
-
-#!/usr/bin/ruby
 
 require '../openif.rb'
 
