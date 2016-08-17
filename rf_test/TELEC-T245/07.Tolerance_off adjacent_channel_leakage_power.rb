@@ -3,6 +3,10 @@
 # 隣接ﾁｬﾝﾈﾙ漏洩電力
 #
 
+#!/usr/bin/ruby
+
+require '../openif.rb'
+
     $sock.puts("INST SPECT")                                #SAモードでは下記のコマンドを使用   INST SIGANA"
     $sock.puts("*OPC?")
     $sock.gets

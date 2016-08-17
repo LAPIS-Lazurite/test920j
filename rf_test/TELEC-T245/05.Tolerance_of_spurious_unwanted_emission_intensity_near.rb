@@ -1,8 +1,10 @@
-
     #
     # ｽﾌﾟﾘｱｽ発射又は不要発射の強度（近傍）
     #
 
+#!/usr/bin/ruby
+
+require '../openif.rb'
     
     $sock.puts("INST SPECT")
     $sock.puts("*OPC?")

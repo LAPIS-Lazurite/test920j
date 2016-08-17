@@ -3,6 +3,9 @@
 # 12-1.óMŒ±iBER‘ª’èj
 #
 
+#!/usr/bin/ruby
+
+require '../openif.rb'
 
     $sock.puts("INST BER")
     $sock.puts("INP:BERT:CLOC:POL NEG")             #Clock Edge‚ğİ’è‚·‚é   ‚±‚Ì—á‚Å‚ÍNegative‚Éİ’è‚·‚é

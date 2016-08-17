@@ -3,6 +3,10 @@
 # 11.•Ï’²¸“x
 #
 
+#!/usr/bin/ruby
+
+require '../openif.rb'
+
     $sock.puts("INST VMA")  
     $sock.puts("*OPC?")
     $sock.gets

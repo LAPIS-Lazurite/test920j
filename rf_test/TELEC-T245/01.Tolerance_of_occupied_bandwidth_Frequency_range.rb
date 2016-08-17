@@ -1,7 +1,7 @@
-
 #
 # 周波数偏差（変調）、占有帯域測定
 #
+#!/usr/bin/ruby
 
 require '../openif.rb'
 

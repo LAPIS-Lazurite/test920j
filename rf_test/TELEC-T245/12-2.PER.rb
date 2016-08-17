@@ -3,6 +3,10 @@
 # 12-2.受信試験（PER測定）
 #
 
+#!/usr/bin/ruby
+
+require '../openif.rb'
+
     $sock.puts("INST SG")                       #アクティブなアプリケーションをSGに設定する
     $sock.puts("INST:DEF")                      #現在選択しているアプリケーションの設定と状態を初期化する   SGを初期化する
     $sock.puts("MMEM:LOAD:WAV 'WiSUN-TxDemo','WiSUN_FET_D100F2_P08'")  #波形パターンをロードする    この例ではPackage名がWiSUN-TxDemo、パターン名がWiSUN_FET_D100F2_P08の波形をロードする

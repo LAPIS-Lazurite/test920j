@@ -3,6 +3,10 @@
 # ½Íß¸Ä×Ñ´Ð¯¼®ÝÏ½¸
 #
 
+#!/usr/bin/ruby
+
+require '../openif.rb'
+
     $sock.puts("INST SPECT")    
     $sock.puts("*OPC?") 
     $sock.gets
