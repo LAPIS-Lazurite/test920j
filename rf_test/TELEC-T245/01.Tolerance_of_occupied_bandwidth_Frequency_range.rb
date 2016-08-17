@@ -3,6 +3,9 @@
 # 周波数偏差（変調）、占有帯域測定
 #
 
+require '../openif.rb'
+
+class MS2830a_init
 
     $sock.puts("INST SPECT")                                #SAモードでは下記のコマンドを使用  INST SIGANA
     $sock.puts("*OPC?")

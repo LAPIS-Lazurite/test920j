@@ -1,8 +1,8 @@
-#! /usr/bin/ruby
+#!/usr/bin/ruby
 
-p "test"
+require '../openif.rb'
 
-class ms2830a_init
+class MS2830a_init
     $sock.puts("INST CONFIG Config")                        #‰æ–Ê‚ÉˆÚ“® 
     $sock.puts("*OPC?")
     $sock.gets
