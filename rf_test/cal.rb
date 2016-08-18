@@ -20,6 +20,9 @@ class Calibration
 	p20mW_mode = pow_param.new(20, 1300, PA_ADJ3_ADDR, 0x10, 0xf0, "ewr 41 ")
 	@pow = {1  => p1mW_mode, 20 => p20mW_mode}
 
+	Summary = Struct.new(:frq, :lv20mw, :lv1mw, :myaddr, :macaddr, :result)
+	summary = Summary.new(923100000, 13, 0, 0x0000, 0x0000000000000000, 0)
+
 	@max_num=9
 
 # TESTER setup ----------------------------------
@@ -93,10 +96,13 @@ class Calibration
 				end
 			end
 		rescue RuntimeError
+			summary.result = -1
 			print ("Error: stoped adjustment\n")
 		end
 
-		printf("Fixed to %s MHz\n",(value.to_f/1000000).round(3))
+		ret_val = (value.to_f/1000000).round(3)
+		printf("Fixed to %s MHz\n",ret_val)
+		return ret_val
 	end
 
 
@@ -160,21 +166,41 @@ class Calibration
 				end
 			end
 		rescue RuntimeError
+			summary.result = -1
 			print ("Error: stoped adjustment\n")
 		rescue StandardError
+			summary.result = -1
 			print ("Error: not enough adjustment\n")
 		end
 
 		printf("Fixed to %s dBm\n",value.chop)
+		return value.chop
 	end
 
-	frq_adj(50,61)
+#	frq_adj(50,61)
 #	frq_adj(100,33)
-#	frq_adj(100,36)
+	summary.frq = frq_adj(100,36)
 #	frq_adj(100,60)
 
-	pow_adj(20)
-	pow_adj(1)
+	summary.lv20mw = pow_adj(20)
+	summary.lv1mw = pow_adj(1)
+
+	$sp.puts("sggma")
+	summary.myaddr = $sp.gets().split(",")
+	$sp.puts("erd 32 8")
+	summary.macaddr = $sp.gets().split(",")
+
+	printf("############ Calibration Summary #############\n")
+	printf("Frequency: %s\n",summary.frq)
+	printf("Output level: 20mW=%s, 2mW=%s\n",summary.lv20mw,summary.lv1mw)
+	printf("MY Address: %s",summary.myaddr[1])
+	printf("MAC Address: %s\n",summary.macaddr[3...11])
+	if summary.result == 0 then
+		printf("Result: !!!SUCCESS!!!\n")
+	else
+		printf("Result: !!!ERROR!!!\n")
+	end
+	printf("##############################################\n")
 
 	$sock.close
 	$sp.close

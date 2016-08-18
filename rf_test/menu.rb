@@ -5,7 +5,7 @@ class Top_menu
 	def self.telec_menu
 		Dir.chdir "./TELEC-T245"
 		while 1
-			print("=================== TELEC MENU ============================\n")
+			print("====================== TELEC MENU =======================\n")
 			p = Dir.glob("*")
 			p.sort.each{|d| puts "" + d + "\n" }
 			print("99.exit\n")
