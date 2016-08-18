@@ -12,6 +12,7 @@ require 'serialport'
 $sock=TCPSocket.open("192.168.11.6",49153)
 $sock.puts("*IDN?")
 p $sock.gets
+$sock.puts("syst:lang nat")
 
 
 serial_port ='/dev/ttyUSB0'

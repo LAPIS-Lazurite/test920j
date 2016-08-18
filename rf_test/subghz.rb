@@ -2,14 +2,15 @@
 
 require './openif.rb'
 
-ch=36
-rate=100
-mode=20
+RF_STATUS_ADDR	= "8 0x6c "
+OSC_ADJ2_ADDR	= "8 0x0a "
+PA_ADJ1_ADDR 	= "9 0x04 "
+PA_ADJ3_ADDR 	= "9 0x06 "
+
 # DUT setup ------------------------------------
-	RF_STATUS_ADDR	= "8 0x6c "
-	OSC_ADJ2_ADDR	= "8 0x0a "
-	PA_ADJ1_ADDR 	= "9 0x04 "
-	PA_ADJ3_ADDR 	= "9 0x06 "
+	ch=36
+	rate=100
+	mode=20
 
 	rate50  = {24 => "920600000",33 => "922400000", 36 => "923000000", 60 => "927800000" }
 	rate100 = {24 => "920700000",33 => "922500000", 36 => "923100000", 60 => "927900000" }
@@ -27,3 +28,32 @@ mode=20
 	p $sp.gets()
 	$sp.puts("rfw " + RF_STATUS_ADDR + "0x09")
 	p $sp.gets()
+
+
+# TESTER setup ----------------------------------
+	$sock.puts("*RST")
+	$sock.puts("*OPC?")
+	$sock.gets
+
+	$sock.puts("spf 500khz")
+	$sock.puts("*OPC?")
+	$sock.gets
+
+	$sock.puts("rlv 20")
+	$sock.puts("*OPC?")
+	$sock.gets
+
+	$sock.puts("cnf " + @frq[rate][ch].to_s)
+	$sock.puts("*OPC?")
+	$sock.gets
+
+	$sock.puts("mkpk")
+	$sock.puts("*OPC?")
+	$sock.gets
+
+	$sock.puts("mkf?")
+	$sock.puts("*OPC?")
+	value = $sock.gets
+	p value
+
+

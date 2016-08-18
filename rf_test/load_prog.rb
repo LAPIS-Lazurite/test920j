@@ -2,7 +2,12 @@
 
 require 'serialport'
 
-devName ="LAZURITE mini series"
+if ARGV[1] == "Rev3" then
+	devName ="LAZURITE Sub-GHz Rev3"
+else
+	devName ="LAZURITE mini series"
+end
+
 program = ARGV[0]
 
 kern = `uname -r`
