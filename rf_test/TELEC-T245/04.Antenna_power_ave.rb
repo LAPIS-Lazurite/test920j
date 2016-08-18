@@ -1,10 +1,8 @@
-
+#!/usr/bin/ruby
 #
 # 空中線電力（平均電力）
 #
 
-
-#!/usr/bin/ruby
 
 require '../openif.rb'
 
