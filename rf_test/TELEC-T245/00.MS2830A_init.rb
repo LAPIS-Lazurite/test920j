@@ -2,7 +2,6 @@
 
 require '../openif.rb'
 
-class MS2830a_init
     $sock.puts("INST CONFIG Config")                        #画面に移動 
     $sock.puts("*OPC?")
     $sock.gets
@@ -43,4 +42,3 @@ class MS2830a_init
     $sock.puts("SWE:RUL OSW")                               #測定時の掃引/FFT の切り替えルールを設定    掃引のみ使用します。
     $sock.puts("*OPC?")
     $sock.gets
-end
