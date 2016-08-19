@@ -193,7 +193,7 @@ class Calibration
 	printf("############ Calibration Summary #############\n")
 	printf("Frequency: %s\n",summary.frq)
 	printf("Output level: 20mW=%s, 2mW=%s\n",summary.lv20mw,summary.lv1mw)
-	printf("MY Address: %s",summary.myaddr[1])
+	printf("MY Address: %s\n",summary.myaddr[1])
 	printf("MAC Address: %s\n",summary.macaddr[3...11])
 	if summary.result == 0 then
 		printf("Result: !!!SUCCESS!!!\n")

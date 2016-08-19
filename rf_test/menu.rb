@@ -35,6 +35,7 @@ class Top_menu
 			print("5: execute calibration\n")
 			print("6: TELEC-T245 sub menu\n")
 			print("7: SubGHz TXON\n")
+			print("8: Get my address\n")
 			print("9: exit\n")
 			print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n")
 			print("input number => ")
@@ -57,6 +58,8 @@ class Top_menu
 				telec_menu()
 			when 7
 				system("./subghz.rb")
+			when 8
+				system("./get_addr.rb")
 			when 9
 				break
 			end
