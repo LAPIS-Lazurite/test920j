@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
 #include "../ftdi/ftd2xx.h"
 
 #define SUCCEEDED			0
@@ -57,21 +56,22 @@ int main(int argc, char* argv[])
 			FT_Close(hFt);
 			continue;
 		}
+		/*
+		printf("Manufacture = %s\n",Data.Manufacturer);
+		printf("ManufactureId = %s\n",Data.ManufacturerId);
+		printf("Description = %s\n",Data.Description);
+		printf("SerialNumber = %s\n",Data.SerialNumber);
+		*/
 
 		// check Description
-		printf("usb device = %s, target device=%s = ",Description,argv[1]);
-		if(strncmp(Data.Description,argv[1],sizeof(Description)) == 0)
-		{
-			printf("match device\n");
-			break;
-		}
+		if(strncmp(Data.Description,argv[1],sizeof(Description)) == 0) break;
 		FT_Close(hFt);
 	}
 	 // error check
 	if(testDev>= numDevs)
 	{
 		ret = ERR_NO_DEVICE;
-		printf("ERR_NO_DEVICE, numDev %d\n",ERR_NO_DEVICE);
+		printf("%d\n",ERR_NO_DEVICE);
 		return ret;
 	}
 
@@ -82,19 +82,15 @@ int main(int argc, char* argv[])
 		goto error;
 	} 
 
-	usleep(10000);
-
 	// set test pin of ML620Q504H to high
-	ftStatus = FT_SetBitMode(hFt, 0xF1 , FT_BITMODE_CBUS_BITBANG);
+	ftStatus = FT_SetBitMode(hFt, 0xF2 , FT_BITMODE_CBUS_BITBANG);
 	if(ftStatus != FT_OK) {
 		ret = ERR_CBUS_BITBANG;
 		goto error;
 	} 
 
-	usleep(10000);
-
 	// start ML620Q504H as boot mode
-	ftStatus = FT_SetBitMode(hFt, 0xF3 , FT_BITMODE_CBUS_BITBANG);
+	ftStatus = FT_SetBitMode(hFt, 0xC0 , FT_BITMODE_CBUS_BITBANG);
 	if(ftStatus != FT_OK) {
 		ret = ERR_CBUS_BITBANG;
 		goto error;
@@ -102,7 +98,7 @@ int main(int argc, char* argv[])
 
 error:
 	FT_Close(hFt);
-	printf("%d\n",ret);
+	//printf("%d\n",ret);
 	return ret;
 }
 
