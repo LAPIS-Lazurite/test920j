@@ -4,7 +4,7 @@ require './openif.rb'
 
 $sp.puts("sggma")
 myaddr = $sp.gets().split(",")
-printf("My addrress:%s", myaddr[1])
+printf("My address:%s", myaddr[1])
 sleep(1)
 
 $sock.close
