@@ -26,7 +26,7 @@ class Lazurite::Test
 		system(cmd)
 
 		funcNum = funcNum+1
-		cmd = sprintf("sudo ./lib/cpp/auth/auth %s \"%s\"",manuName,devName)
+		cmd = sprintf("sudo ../lib/cpp/auth/auth %s \"%s\"",manuName,devName)
 		system(cmd)
 		ret = $?.exitstatus
 		if ret != 0 then
@@ -56,7 +56,7 @@ class Lazurite::Test
 		system(cmd)
 
 		funcNum = funcNum+1
-		cmd = sprintf("sudo ./lib/cpp/bootwriter/bootwriter 0 LAPIS \"%s\" %s 0xf000 0xfc4f",devName,program)
+		cmd = sprintf("sudo ../lib/cpp/bootwriter/bootwriter 0 LAPIS \"%s\" %s 0xf000 0xfc4f",devName,program)
 		system(cmd)
 		ret = $?.exitstatus
 		if ret == 0 then
@@ -78,7 +78,7 @@ class Lazurite::Test
 		ret = $?.exitstatus
 
 		funcNum = funcNum + 1
-		cmd = sprintf("sudo ./lib/cpp/bootmode/bootmode \"%s\"",devName);
+		cmd = sprintf("sudo ../lib/cpp/bootmode/bootmode \"%s\"",devName);
 		system(cmd)
 		ret = $?.exitstatus
 		print @@testBin,",",funcNum,",",cmd,",",ret,"\n"
@@ -149,7 +149,7 @@ class Lazurite::Test
 		end
 
 		funcNum = funcNum + 1
-		cmd = sprintf("sudo ./lib/cpp/reset/reset \"%s\"",devName);
+		cmd = sprintf("sudo ../lib/cpp/reset/reset \"%s\"",devName);
 		system(cmd)
 		ret = $?.exitstatus
 		print @@testBin,",",funcNum,",",cmd,",",ret,"\n"
@@ -192,7 +192,7 @@ class Lazurite::Test
 		ret = $?.exitstatus
 
 		funcNum = funcNum + 1
-		cmd = sprintf("sudo ./lib/cpp/bootmode/bootmode \"%s\"",devName);
+		cmd = sprintf("sudo ../lib/cpp/bootmode/bootmode \"%s\"",devName);
 		system(cmd)
 		ret = $?.exitstatus
 		print @@testBin,",",funcNum,",",cmd,",",ret,"\n"
@@ -246,7 +246,7 @@ class Lazurite::Test
 		ret = $?.exitstatus
 
 		funcNum = funcNum + 1
-		cmd = sprintf("sudo ./lib/cpp/reset/reset \"%s\"",devName);
+		cmd = sprintf("sudo ../lib/cpp/reset/reset \"%s\"",devName);
 		system(cmd)
 		ret = $?.exitstatus
 		print @@testBin,",",funcNum,",",cmd,",",ret,"\n"
@@ -289,7 +289,7 @@ class Lazurite::Test
 		ret = $?.exitstatus
 
 		funcNum = funcNum + 1
-		cmd = sprintf("sudo ./lib/cpp/reset/reset \"%s\"",devName);
+		cmd = sprintf("sudo ../lib/cpp/reset/reset \"%s\"",devName);
 		system(cmd)
 		ret = $?.exitstatus
 		print @@testBin,",",funcNum,",",cmd,",",ret,"\n"
@@ -426,6 +426,7 @@ class Lazurite::Test
 			sp.puts(cmd)
 			dummy = sp.gets()
 		end
+		sp.close()
 		return "OK"
 	end
 end

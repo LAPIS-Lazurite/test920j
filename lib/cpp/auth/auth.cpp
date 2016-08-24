@@ -76,8 +76,14 @@ int main(int argc, char* argv[])
 				FT_Close(hFt);
 				ret |= -ERR_EE_PROGRAM;
 				continue;
-			} else printf("success to write\n");
+			} else {
+				printf("success to write\n");
+				break;
+			}
 		}
+	}
+	if (testDev >= numDevs) {
+		ret = -ERR_NO_DEVICE;
 	}
 	 // error check
 	FT_Close(hFt);

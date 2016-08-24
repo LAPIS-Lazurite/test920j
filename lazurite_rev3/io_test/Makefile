@@ -4,7 +4,8 @@ CC = gcc
 SUBDIRS = \
 		lib/cpp/bootmode\
 		lib/cpp/reset\
-		lib/cpp/bootwriter
+		lib/cpp/bootwriter\
+		lib/cpp/auth
 
 all: subdirs
 

@@ -3,7 +3,7 @@
 # Halt process when CTRL+C is pushed.
 
 require 'serialport'
-require './lib/Lazurite'
+require '../lib/Lazurite'
 
 @finish_flag=0
 Signal.trap(:INT){
