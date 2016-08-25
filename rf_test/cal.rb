@@ -145,7 +145,6 @@ class Calibration
 					com = "rfw " + @pow[mode].pa_addr + "0x" + i.to_s(16)
 					$sp.puts(com)
 					p $sp.gets()
-					p i.to_s
 				elsif (diff.to_i) > 100 then
 					#i = "0x%x" % (reg.hex + @pow[mode].pa_bit)
 					#com = "rfw " + @pow[mode].pa_addr + i.to_s
@@ -153,7 +152,6 @@ class Calibration
 					com = "rfw " + @pow[mode].pa_addr + "0x" + i.to_s(16)
 					$sp.puts(com)
 					p $sp.gets()
-					p i.to_s
 				else
 					i = reg.hex
 					com = @pow[mode].ep_addr + i.to_s
@@ -173,12 +171,10 @@ class Calibration
 			end
 		rescue RuntimeError
 			printf("Error: stoped adjustment %s dBm\n",value.chop)
-			value = 0
-			return value
+			return value.chop
 		rescue StandardError
 			printf("Error: not enough adjustment %s dBm\n",value.chop)
-			value = 0
-			return value
+			return value.chop
 		end
 
 		printf("Fixed to %s dBm\n",value.chop)
@@ -203,8 +199,12 @@ class Calibration
 	printf("Output level: 20mW=%s, 1mW=%s\n",summary.lv20mw,summary.lv1mw)
 	printf("MY Address: %s\n",summary.myaddr[1])
 	printf("MAC Address: %s\n",summary.macaddr[3...11])
-	if summary.frq == 0 || summary.lv20mw == 0 || summary.lv1mw == 0 then
+	if summary.frq == 0 then
 		printf("Result: !!!ERROR!!!\n")
+	elsif summary.lv20mw.to_i.between?(12,13) == false then
+		printf("Result: !!!ERROR!!!\n")
+	elsif summary.lv1mw.to_i.between?(0,-1) == false then
+		printf("Result: !!!WARNIG!!!\n")
 	else
 		printf("Result: !!!SUCCESS!!!\n")
 	end
