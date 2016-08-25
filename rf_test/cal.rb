@@ -20,8 +20,8 @@ class Calibration
 	p20mW_mode = pow_param.new(20, 1300, PA_ADJ3_ADDR, 0x10, 0xf0, "ewr 41 ")
 	@pow = {1  => p1mW_mode, 20 => p20mW_mode}
 
-	Summary = Struct.new(:frq, :lv20mw, :lv1mw, :myaddr, :macaddr, :result)
-	summary = Summary.new(923100000, 13, 0, 0x0000, 0x0000000000000000, 0)
+	Summary = Struct.new(:frq, :lv20mw, :lv1mw, :myaddr, :macaddr)
+	summary = Summary.new(923100000, 13, 0, 0x0000, 0x0000000000000000)
 
 	@max_num=9
 
@@ -96,8 +96,9 @@ class Calibration
 				end
 			end
 		rescue RuntimeError
-			summary.result = -1
 			print ("Error: stoped adjustment\n")
+			ret_val = 0
+			return ret_val
 		end
 
 		ret_val = (value.to_f/1000000).round(3)
@@ -136,18 +137,23 @@ class Calibration
 				$sp.puts("rfr " + @pow[mode].pa_addr)
 				get_addr = $sp.gets().split(",")
 				reg = get_addr[get_addr.size - 1]
-				p reg
 
 				if (diff.to_i) < 0 then
-					i = "0x%x" % (reg.hex - @pow[mode].pa_bit)
-					com = "rfw " + @pow[mode].pa_addr + i.to_s
+					#i = "0x%x" % (reg.hex - @pow[mode].pa_bit)
+					#com = "rfw " + @pow[mode].pa_addr + i.to_s
+					i = reg.hex - @pow[mode].pa_bit
+					com = "rfw " + @pow[mode].pa_addr + "0x" + i.to_s(16)
 					$sp.puts(com)
 					p $sp.gets()
+					p i.to_s
 				elsif (diff.to_i) > 100 then
-					i = "0x%x" % (reg.hex + @pow[mode].pa_bit)
-					com = "rfw " + @pow[mode].pa_addr + i.to_s
+					#i = "0x%x" % (reg.hex + @pow[mode].pa_bit)
+					#com = "rfw " + @pow[mode].pa_addr + i.to_s
+					i = reg.hex + @pow[mode].pa_bit
+					com = "rfw " + @pow[mode].pa_addr + "0x" + i.to_s(16)
 					$sp.puts(com)
 					p $sp.gets()
+					p i.to_s
 				else
 					i = reg.hex
 					com = @pow[mode].ep_addr + i.to_s
@@ -157,7 +163,7 @@ class Calibration
 					break
 				end
 
-				if (reg.hex & @pow[mode].pa_max) == @pow[mode].pa_max then
+				if (i.to_s(16).hex & @pow[mode].pa_max) == @pow[mode].pa_max then
 					raise StandardError, "ERRR\n"
 				end
 
@@ -166,11 +172,13 @@ class Calibration
 				end
 			end
 		rescue RuntimeError
-			summary.result = -1
-			print ("Error: stoped adjustment\n")
+			printf("Error: stoped adjustment %s dBm\n",value.chop)
+			value = 0
+			return value
 		rescue StandardError
-			summary.result = -1
-			print ("Error: not enough adjustment\n")
+			printf("Error: not enough adjustment %s dBm\n",value.chop)
+			value = 0
+			return value
 		end
 
 		printf("Fixed to %s dBm\n",value.chop)
@@ -192,13 +200,13 @@ class Calibration
 
 	printf("############ Calibration Summary #############\n")
 	printf("Frequency: %s\n",summary.frq)
-	printf("Output level: 20mW=%s, 2mW=%s\n",summary.lv20mw,summary.lv1mw)
+	printf("Output level: 20mW=%s, 1mW=%s\n",summary.lv20mw,summary.lv1mw)
 	printf("MY Address: %s\n",summary.myaddr[1])
 	printf("MAC Address: %s\n",summary.macaddr[3...11])
-	if summary.result == 0 then
-		printf("Result: !!!SUCCESS!!!\n")
-	else
+	if summary.frq == 0 || summary.lv20mw == 0 || summary.lv1mw == 0 then
 		printf("Result: !!!ERROR!!!\n")
+	else
+		printf("Result: !!!SUCCESS!!!\n")
 	end
 	printf("##############################################\n")
 

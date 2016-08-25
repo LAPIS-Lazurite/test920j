@@ -36,8 +36,9 @@ class Top_menu
 			print("6: TELEC-T245 sub menu\n")
 			print("7: SubGHz TXON\n")
 			print("8: TX interval\n")
-			print("9: Get my address\n")
-			print("10: Carrier Sense\n")
+			print("9: Carrier Sense\n")
+			print("10: Set my address\n")
+			print("11: Get my address\n")
 			print("99: exit\n")
 			print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n")
 			print("input number => ")
@@ -61,9 +62,11 @@ class Top_menu
 			when 8
 				system("./tx_interval.rb")
 			when 9
-				system("./get_addr.rb")
-			when 10
 				system("./cca.rb")
+			when 10
+				system("./set_addr.rb")
+			when 11
+				system("./get_addr.rb")
 			when 99
 				break
 			end
