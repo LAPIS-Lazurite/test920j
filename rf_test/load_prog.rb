@@ -21,7 +21,7 @@ cmd = "sudo rmmod usbserial"
 system(cmd)
 p $?.exitstatus
 
-cmd = sprintf("sudo ../io_test/lib/cpp/bootmode/bootmode \"%s\"",devName);
+cmd = sprintf("sudo ../lib/cpp/bootmode/bootmode \"%s\"",devName);
 system(cmd)
 p $?.exitstatus
 
@@ -49,7 +49,7 @@ cmd = "sudo rmmod usbserial"
 system(cmd)
 p $?.exitstatus
 
-cmd = sprintf("sudo ../io_test/lib/cpp/reset/reset \"%s\"",devName);
+cmd = sprintf("sudo ../lib/cpp/reset/reset \"%s\"",devName);
 system(cmd)
 p $?.exitstatus
 
