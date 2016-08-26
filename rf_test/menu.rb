@@ -28,17 +28,18 @@ class Top_menu
 		while 1
 			system("pwd")
 			print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n")
-			print("1: load Boot loader\n")
-			print("2: load test program\n")
-			print("3: load test program for BP3596A\n")
-			print("4: install basic parameter to E2P\n")
-			print("5: execute calibration\n")
+			print("1: Load boot loader\n")
+			print("2: Load test program\n")
+			print("3: Load test program for BP3596A\n")
+			print("4: Install basic parameter to E2P\n")
+			print("5: Execute calibration\n")
 			print("6: TELEC-T245 sub menu\n")
 			print("7: SubGHz TXON\n")
 			print("8: TX interval\n")
 			print("9: Carrier Sense\n")
 			print("10: Set my address\n")
 			print("11: Get my address\n")
+			print("12: Direct Command mode\n")
 			print("99: exit\n")
 			print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n")
 			print("input number => ")
@@ -49,6 +50,8 @@ class Top_menu
 				system("./boot_wr.rb")
 			when 2
 				system("./load_prog.rb bin/test.bin mini")
+#				system("./load_prog.rb bin/test_debug.bin mini")
+#				system("./load_prog.rb bin/test_FIRST.bin mini")
 			when 3
 				system("./load_prog.rb bin/test_for_BP3596A.bin Rev3")
 			when 4
@@ -67,6 +70,8 @@ class Top_menu
 				system("./set_addr.rb")
 			when 11
 				system("./get_addr.rb")
+			when 12
+				system("./command.rb")
 			when 99
 				break
 			end

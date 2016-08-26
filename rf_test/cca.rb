@@ -7,13 +7,12 @@ OSC_ADJ2_ADDR	= "8 0x0a "
 PA_ADJ1_ADDR 	= "9 0x04 "
 PA_ADJ3_ADDR 	= "9 0x06 "
 
-print("input sg amp(ex:-75):")
-sg_amp = gets().to_s
+#print("input sg amp(ex:-74):")
+#sg_amp = gets().to_s
+sg_amp = "-75"
 
 print("input cca level(default:0x55):")
 cca_lvl = gets().to_s
-$sp.puts("rfw 8 0x13 " + cca_lvl)
-p $sp.gets()
 
 # setup DUT -------------------------------------------------
 print("Input loop count(ex:10)= ")
@@ -22,11 +21,12 @@ print("input ch[24-61] => ")
 ch = gets().to_i
 print("input rate[100,50] => ")
 rate = gets().to_i
-print("input mode[20,1] => ")
-mode = gets().to_i
+#print("input mode[20,1] => ")
+#mode = gets().to_i
+mode = 20
 
-rate50  = {24 => "920600000",33 => "922400000", 36 => "923000000", 60 => "927800000" }
-rate100 = {24 => "920700000",33 => "922500000", 36 => "923100000", 60 => "927900000" }
+rate50  = {24 => "920600000",36 => "923000000",39=>"923600000",40=> "923800000",41=>"924000000",43 => "924400000",61 => "928000000" }
+rate100 = {24 => "920700000",36 => "923100000",39=>"923700000",40=> "923900000",41=>"924100000",42 => "924300000",60 => "927900000" }
 rate50.store(61,"928000000") # Extended
 @frq = {50 => rate50, 100 => rate100}
 
@@ -42,9 +42,9 @@ $sock.gets
 
 $sock.puts("inst spect")
 $sock.puts("*OPC?")
-p $sock.gets
+$sock.gets
 
-$sock.puts("spf 5mhz")
+$sock.puts("spf 10mhz")
 $sock.puts("*OPC?")
 $sock.gets
 
@@ -54,7 +54,7 @@ $sock.gets
 
 $sock.puts("cnf " + @frq[rate][ch].to_s)
 $sock.puts("*OPC?")
-p $sock.gets
+$sock.gets
 
 # setup SG --------------------------------------------------
 $sock.puts("inst sg")
@@ -65,7 +65,14 @@ $sock.puts("outp 1") 				#SG out 1:ON  0:OFF
 $sock.puts("*OPC?")
 $sock.gets
 
-$sock.puts("freq " + @frq[rate][ch].to_s)
+if rate.eql?(100) == true then
+	print("input offset[-100000 or 100000]:")
+	offset = gets().to_i
+else
+offset = 0
+end
+
+$sock.puts("freq " + (@frq[rate][ch].to_i + offset).to_s)
 $sock.puts("*OPC?")
 $sock.gets
 
@@ -79,10 +86,26 @@ p $sock.gets
 
 
 # Send Packet ------------------------------------------------
+$sp.puts("sgi")
+p $sp.gets()
+$sp.puts("sgb," + ch.to_s + ",0xabcd," + rate.to_s + "," + mode.to_s)
+p $sp.gets()
+
+$sp.puts("rfw 8 0x13 " + cca_lvl)
+p $sp.gets()
+
+#$sp.puts("rfw 8 0x71 0x02")
+#p $sp.gets()
+#$sp.puts("rfw 8 0x75 0x23")
+#p $sp.gets()
+
+$sp.puts("w,Welcome_SubGHz_LAPIS_semiconductorWelcome_SubGHz_LAPIS_semiconductorWelcome_SubGHz_LAPIS_semiconductorWelcome_SubGHz_LAPIS_semiconductor")
+
+p $sp.gets()
 for i in 1..loop
 	$sp.puts("sgs 0xffff 0xffff")
 	p $sp.gets()
-	sleep(1)
+	sleep(0.5)
 end
 
 

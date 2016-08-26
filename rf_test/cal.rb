@@ -30,6 +30,8 @@ class Calibration
 	$sock.puts("*OPC?")
 	$sock.gets
 
+    $sock.puts("INST SPECT")
+
 	$sock.puts("spf 500khz")
 	$sock.puts("*OPC?")
 	$sock.gets

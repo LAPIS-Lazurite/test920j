@@ -10,3 +10,5 @@ require './openif.rb'
 msg = $sock.puts("REBOOT")
 p msg
 
+$sock.close
+$sp.close

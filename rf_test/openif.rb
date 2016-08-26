@@ -19,6 +19,3 @@ serial_port ='/dev/ttyUSB0'
 serial_baudrate=115200
 $sp = SerialPort.new(serial_port,serial_baudrate)
 $sp.read_timeout=500
-$sp.puts("sggma")
-p $sp.gets()
-
