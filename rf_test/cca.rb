@@ -35,6 +35,9 @@ p1mW_mode = pow_param.new(1, 0, PA_ADJ1_ADDR, 0x01, 0x0f, "ewr 43 ")
 p20mW_mode = pow_param.new(20, 1300, PA_ADJ3_ADDR, 0x10, 0xf0, "ewr 41 ")
 @pow = {1  => p1mW_mode, 20 => p20mW_mode}
 
+
+offset = [0, -100000, 100000]
+
 # setup SPA --------------------------------------------------
 $sock.puts("*RST")
 $sock.puts("*OPC?")
@@ -57,55 +60,55 @@ $sock.puts("*OPC?")
 $sock.gets
 
 # setup SG --------------------------------------------------
-$sock.puts("inst sg")
-$sock.puts("*OPC?")
-$sock.gets
+for offset_loop in 0..2 
 
-$sock.puts("outp 1") 				#SG out 1:ON  0:OFF
-$sock.puts("*OPC?")
-$sock.gets
+	$sock.puts("inst sg")
+	$sock.puts("*OPC?")
+	$sock.gets
 
-if rate.eql?(100) == true then
-	print("input offset[-100000 or 100000]:")
-	offset = gets().to_i
-else
-offset = 0
-end
+	$sock.puts("outp 1") 				#SG out 1:ON  0:OFF
+	$sock.puts("*OPC?")
+	$sock.gets
 
-$sock.puts("freq " + (@frq[rate][ch].to_i + offset).to_s)
-$sock.puts("*OPC?")
-$sock.gets
+	$sock.puts("freq " + (@frq[rate][ch].to_i + offset[offset_loop]).to_s)
+	$sock.puts("*OPC?")
+	$sock.gets
 
-$sock.puts("pow " + sg_amp)				#output level 
-$sock.puts("*OPC?")
-$sock.gets
+	$sock.puts("pow " + sg_amp)				#output level 
+	$sock.puts("*OPC?")
+	$sock.gets
 
-$sock.puts("pow?")
-$sock.puts("*OPC?")
-p $sock.gets
+	$sock.puts("pow?")
+	$sock.puts("*OPC?")
+	p $sock.gets
 
 
 # Send Packet ------------------------------------------------
-$sp.puts("sgi")
-p $sp.gets()
-$sp.puts("sgb," + ch.to_s + ",0xabcd," + rate.to_s + "," + mode.to_s)
-p $sp.gets()
+	$sp.puts("sgi")
+	p $sp.gets()
+	$sp.puts("sgb," + ch.to_s + ",0xabcd," + rate.to_s + "," + mode.to_s)
+	p $sp.gets()
 
-$sp.puts("rfw 8 0x13 " + cca_lvl)
-p $sp.gets()
+	$sp.puts("rfw 8 0x13 " + cca_lvl)
+	p $sp.gets()
 
 #$sp.puts("rfw 8 0x71 0x02")
 #p $sp.gets()
 #$sp.puts("rfw 8 0x75 0x23")
 #p $sp.gets()
 
-$sp.puts("w,Welcome_SubGHz_LAPIS_semiconductorWelcome_SubGHz_LAPIS_semiconductorWelcome_SubGHz_LAPIS_semiconductorWelcome_SubGHz_LAPIS_semiconductor")
+	$sp.puts("w,Welcome_SubGHz_LAPIS_semiconductorWelcome_SubGHz_LAPIS_semiconductorWelcome_SubGHz_LAPIS_semiconductorWelcome_SubGHz_LAPIS_semiconductor")
 
-p $sp.gets()
-for i in 1..loop
-	$sp.puts("sgs 0xffff 0xffff")
 	p $sp.gets()
-	sleep(0.5)
+	for i in 1..loop
+		$sp.puts("sgs 0xffff 0xffff")
+		p $sp.gets()
+		sleep(0.5)
+	end
+
+	if rate.eql?(100) == false then
+		break
+	end
 end
 
 
