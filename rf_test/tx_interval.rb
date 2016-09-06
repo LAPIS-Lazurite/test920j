@@ -1,6 +1,9 @@
 #! /usr/bin/ruby
 
-require './openif.rb'
+require './socket.rb'
+require './subghz.rb'
+
+sbg = Subghz.new()
 #require ("tk")
 
 #root = TkRoot.new
@@ -53,6 +56,10 @@ $sock.puts("*RST")
 $sock.puts("*OPC?")
 $sock.gets
 
+$sock.puts("inst spect")
+$sock.puts("*OPC?")
+$sock.gets
+
 $sock.puts("cnf " + @frq[rate][ch].to_s)
 $sock.puts("*OPC?")
 $sock.gets
@@ -78,17 +85,12 @@ $sock.puts("*OPC?")
 $sock.gets
 
 # DUT send ------------------------------------
-$sp.puts("sgi")
-p $sp.gets()
-$sp.puts("sgb," + ch.to_s + ",0xabcd," + rate.to_s + "," + mode.to_s)
-p $sp.gets()
-$sp.puts("w,Welcome_SubGHz_LAPIS_semiconductorWelcome_SubGHz_LAPIS_semiconductorWelcome_SubGHz_LAPIS_semiconductorWelcome_SubGHz_LAPIS_semiconductorWelcome_SubGHz_LAPIS_semiconductor")
-p $sp.gets()
+sbg.setup(ch.to_s,rate.to_s,mode.to_s)
+
+sbg.wf("Welcome_SubGHz_LAPIS_semiconductorWelcome_SubGHz_LAPIS_semiconductorWelcome_SubGHz_LAPIS_semiconductorWelcome_SubGHz_LAPIS_semiconductorWelcome_SubGHz_LAPIS_semiconductor")
 
 for i in 1..loop
-	$sp.puts("sgs 0xffff 0xffff")
-	p $sp.gets()
+	p sbg.com("sgs 0xffff 0xffff")
 end
 
 $sock.close
-$sp.close

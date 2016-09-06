@@ -34,7 +34,7 @@ class Top_menu
 			print("4: Install basic parameter to E2P\n")
 			print("5: Execute calibration\n")
 			print("6: TELEC-T245 sub menu\n")
-			print("7: SubGHz TXON\n")
+			print("7: Continuous Wave\n")
 			print("8: TX interval\n")
 			print("9: Carrier Sense\n")
 			print("10: Set my address\n")
@@ -61,7 +61,7 @@ class Top_menu
 			when 6
 				telec_menu()
 			when 7
-				system("./subghz.rb")
+				system("./cw.rb")
 			when 8
 				system("./tx_interval.rb")
 			when 9

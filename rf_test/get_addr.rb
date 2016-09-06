@@ -1,33 +1,22 @@
 #! /usr/bin/ruby
 
-require './openif.rb'
+require './subghz.rb'
 
-$sp.puts("sggma")
-myaddr = $sp.gets().split(",")
+sbg = Subghz.new()
+
+myaddr = sbg.ra()
 printf("My address:%s", myaddr[1])
 sleep(1)
 
 
 # eeprom read -------------------
-$sp.puts("erd 0 32")
-p $sp.gets()
-$sp.puts("erd 32 32")
-p $sp.gets()
-$sp.puts("erd 64 32")
-p $sp.gets()
-$sp.puts("erd 96 32")
-p $sp.gets()
-$sp.puts("erd 128 32")
-p $sp.gets()
-$sp.puts("erd 160 32")
-p $sp.gets()
-$sp.puts("erd 192 32")
-p $sp.gets()
-$sp.puts("erd 224 32")
-p $sp.gets()
-$sp.puts("erd 256 32")
-p $sp.gets()
+p sbg.com("erd,0,32")
+p sbg.com("erd,32,32")
+p sbg.com("erd,64,32")
+p sbg.com("erd,96,32")
+p sbg.com("erd,128,32")
+p sbg.com("erd,160,32")
+p sbg.com("erd,192,32")
+p sbg.com("erd,224,32")
+p sbg.com("erd,256,32")
 
-
-$sock.close
-$sp.close

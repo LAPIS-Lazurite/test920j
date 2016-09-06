@@ -1,6 +1,7 @@
 #! /usr/bin/ruby
 
-require './openif.rb'
+require './socket.rb'
+require './subghz.rb'
 
 class Calibration
 
@@ -9,6 +10,7 @@ class Calibration
 	OSC_ADJ2_ADDR	= "8 0x0a "
 	PA_ADJ1_ADDR 	= "9 0x04 "
 	PA_ADJ3_ADDR 	= "9 0x06 "
+	ATT = 6
 
 	rate50  = {24 => "920600000",33 => "922400000", 36 => "923000000", 60 => "927800000" }
 	rate100 = {24 => "920700000",33 => "922500000", 36 => "923100000", 60 => "927900000" }
@@ -24,6 +26,8 @@ class Calibration
 	summary = Summary.new(923100000, 13, 0, 0x0000, 0x0000000000000000)
 
 	@max_num=9
+
+	@sbg = Subghz.new()
 
 # TESTER setup ----------------------------------
 	$sock.puts("*RST")
@@ -44,12 +48,8 @@ class Calibration
 # Frequency adjustment ------------------------
 	def self.frq_adj(rate,ch)
 		begin
-			$sp.puts("sgi")
-			p $sp.gets()
-			$sp.puts("sgb," + ch.to_s + ",0xabcd," + rate.to_s + ",20")
-			p $sp.gets()
-			$sp.puts("rfw " + RF_STATUS_ADDR + "0x09")
-			p $sp.gets()
+			@sbg.setup(ch, rate, 20)
+			@sbg.txon()
 
 			for num in 1..10
 				$sock.puts("cnf " + @frq[rate][ch].to_s)
@@ -69,26 +69,19 @@ class Calibration
 				diff = diff/1000
 				printf("%s\n",diff)
 
-				$sp.puts("rfr " + OSC_ADJ2_ADDR)
-				get_addr = $sp.gets().split(",")
-				reg = get_addr[get_addr.size - 1]
+				reg = @sbg.rr(OSC_ADJ2_ADDR)
 				p reg
 
 				if (diff) < -10 then
 					i = reg.hex + 1
-					com = "rfw " + OSC_ADJ2_ADDR + " 0x0" + i.to_s
-					$sp.puts(com)
-					p $sp.gets()
+					@sbg.rw(OSC_ADJ2_ADDR,"0x0" + i.to_s)
 				elsif (diff) > 10 then
 					i = reg.hex - 1
-					com = "rfw " + OSC_ADJ2_ADDR + " 0x0" + i.to_s
-					$sp.puts(com)
-					p $sp.gets()
+					@sbg.rw(OSC_ADJ2_ADDR,"0x0" + i.to_s)
 				else
 					i = reg.hex
 					com = "ewr 128 " + i.to_s
-					$sp.puts(com)
-					p $sp.gets()
+					p @sbg.com(com)
 					print("Frequency adjustment completed\n")
 					break
 				end
@@ -112,12 +105,8 @@ class Calibration
 # Power adjustment ------------------------
 	def self.pow_adj(mode)
 		begin
-			$sp.puts("sgi")
-			p $sp.gets()
-			$sp.puts("sgb,36,0xabcd,100," + mode.to_s)
-			p $sp.gets()
-			$sp.puts("rfw " + RF_STATUS_ADDR + "0x09")
-			p $sp.gets()
+			@sbg.setup(36, 100, mode.to_s)
+			@sbg.txon()
 
 			for num in 1..10
 				$sock.puts("cnf " + @frq[100][36].to_s)
@@ -133,32 +122,22 @@ class Calibration
 				value = $sock.gets
 				p value
 
-				diff = @pow[mode].level.to_i - (value.to_f * 100)
+				diff = @pow[mode].level.to_i - (value.to_f * 100) - ATT
 				printf("%d %d %d\n",diff,@pow[mode].level.to_i,value.to_i * 100)
 
-				$sp.puts("rfr " + @pow[mode].pa_addr)
-				get_addr = $sp.gets().split(",")
-				reg = get_addr[get_addr.size - 1]
+				reg = @sbg.rr(@pow[mode].pa_addr)
+				p reg
 
 				if (diff.to_i) < 0 then
-					#i = "0x%x" % (reg.hex - @pow[mode].pa_bit)
-					#com = "rfw " + @pow[mode].pa_addr + i.to_s
 					i = reg.hex - @pow[mode].pa_bit
-					com = "rfw " + @pow[mode].pa_addr + "0x" + i.to_s(16)
-					$sp.puts(com)
-					p $sp.gets()
+					@sbg.rw(@pow[mode].pa_addr,"0x" + i.to_s(16))
 				elsif (diff.to_i) > 100 then
-					#i = "0x%x" % (reg.hex + @pow[mode].pa_bit)
-					#com = "rfw " + @pow[mode].pa_addr + i.to_s
 					i = reg.hex + @pow[mode].pa_bit
-					com = "rfw " + @pow[mode].pa_addr + "0x" + i.to_s(16)
-					$sp.puts(com)
-					p $sp.gets()
+					@sbg.rw(@pow[mode].pa_addr,"0x" + i.to_s(16))
 				else
 					i = reg.hex
 					com = @pow[mode].ep_addr + i.to_s
-					$sp.puts(com)
-					p $sp.gets()
+					p @sbg.com(com)
 					print ("Power adjustment completed\n")
 					break
 				end
@@ -191,10 +170,8 @@ class Calibration
 	summary.lv20mw = pow_adj(20)
 	summary.lv1mw = pow_adj(1)
 
-	$sp.puts("sggma")
-	summary.myaddr = $sp.gets().split(",")
-	$sp.puts("erd 32 8")
-	summary.macaddr = $sp.gets().split(",")
+	summary.myaddr = @sbg.ra
+	summary.macaddr = @sbg.com("erd 32 8").split(",")
 
 	printf("############ Calibration Summary #############\n")
 	printf("Frequency: %s\n",summary.frq)
@@ -203,9 +180,9 @@ class Calibration
 	printf("MAC Address: %s\n",summary.macaddr[3...11])
 	if summary.frq == 0 then
 		printf("Result: !!!ERROR!!!\n")
-	elsif summary.lv20mw.to_i.between?(12,13) == false then
+	elsif summary.lv20mw.to_i.between?(12-ATT,13-ATT) == false then
 		printf("Result: !!!ERROR!!!\n")
-	elsif summary.lv1mw.to_i.between?(0,-1) == false then
+	elsif summary.lv1mw.to_i.between?(0-ATT,-1-ATT) == false then
 		printf("Result: !!!WARNIG!!!\n")
 	else
 		printf("Result: !!!SUCCESS!!!\n")
@@ -213,5 +190,4 @@ class Calibration
 	printf("##############################################\n")
 
 	$sock.close
-	$sp.close
 end

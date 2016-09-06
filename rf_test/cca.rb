@@ -1,6 +1,7 @@
 #! /usr/bin/ruby
 
-require './openif.rb'
+require './socket.rb'
+require './subghz.rb'
 
 RF_STATUS_ADDR	= "8 0x6c "
 OSC_ADJ2_ADDR	= "8 0x0a "
@@ -37,6 +38,8 @@ p20mW_mode = pow_param.new(20, 1300, PA_ADJ3_ADDR, 0x10, 0xf0, "ewr 41 ")
 
 
 offset = [0, -100000, 100000]
+
+sbg = Subghz.new()
 
 # setup SPA --------------------------------------------------
 $sock.puts("*RST")
@@ -84,25 +87,16 @@ for offset_loop in 0..2
 
 
 # Send Packet ------------------------------------------------
-	$sp.puts("sgi")
-	p $sp.gets()
-	$sp.puts("sgb," + ch.to_s + ",0xabcd," + rate.to_s + "," + mode.to_s)
-	p $sp.gets()
+	sbg.setup(ch.to_s,rate.to_s,mode.to_s)
+	sbg.rw("8 0x13",cca_lvl)
 
-	$sp.puts("rfw 8 0x13 " + cca_lvl)
-	p $sp.gets()
+#sbg.rw("8 0x71","0x02")
+#sbg.rw("8 0x75","0x23")
 
-#$sp.puts("rfw 8 0x71 0x02")
-#p $sp.gets()
-#$sp.puts("rfw 8 0x75 0x23")
-#p $sp.gets()
+	sbg.wf("Welcome_SubGHz_LAPIS_semiconductorWelcome_SubGHz_LAPIS_semiconductorWelcome_SubGHz_LAPIS_semiconductorWelcome_SubGHz_LAPIS_semiconductor")
 
-	$sp.puts("w,Welcome_SubGHz_LAPIS_semiconductorWelcome_SubGHz_LAPIS_semiconductorWelcome_SubGHz_LAPIS_semiconductorWelcome_SubGHz_LAPIS_semiconductor")
-
-	p $sp.gets()
 	for i in 1..loop
-		$sp.puts("sgs 0xffff 0xffff")
-		p $sp.gets()
+		p sbg.com("sgs 0xffff 0xffff")
 		sleep(0.5)
 	end
 
@@ -113,4 +107,3 @@ end
 
 
 $sock.close
-$sp.close
