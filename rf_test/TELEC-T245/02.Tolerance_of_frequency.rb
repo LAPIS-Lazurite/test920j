@@ -5,8 +5,15 @@
 #
 
 require '../socket.rb'
+require '../subghz.rb'
 
+#setup DUT --------------------------------------
+sbg = Subghz.new()
+sbg.setup(42, 100, 20)
+sbg.rw("8 0x0c ","0x00")
+sbg.txon()
 
+#setup TESTER --------------------------------------
 $sock.puts("INST SPECT")
 $sock.puts("*OPC?")
 $sock.gets
@@ -31,7 +38,7 @@ $sock.puts("INIT:CONT ON")                              #連続掃引設定
 $sock.puts("*OPC?")
 $sock.gets
 
-$sock.puts("FREQ:CENT 920.7MHZ")                          #中心周波数設定
+$sock.puts("FREQ:CENT 924.3MHZ")                          #中心周波数設定
 $sock.puts("*OPC?")
 $sock.gets
 
@@ -90,4 +97,5 @@ $sock.gets
 $sock.puts("CALC:MARK:FCO:X?")                          #周波数カウンタの値を読み取る   SAモードでは下記のコマンドを使用する    CALC:MARK:Y?"
 $sock.puts("*OPC")
 
+sbg.trxoff()
 $sock.close

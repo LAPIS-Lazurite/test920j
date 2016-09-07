@@ -11,14 +11,16 @@ class Top_menu
 			print("99.exit\n")
 			print("=========================================================\n")
 			print("input number => ")
-			input = gets().to_i
+			input = gets().to_s
 
-			if input == 99 then
+			if input == "99\n" then
 				Dir.chdir "./.."
 				break
+			elsif input == "\n" then
+				p "ignore input"
 			else
-				p p.sort[input]
-				com = "./" + p.sort[input]
+				p p.sort[input.to_i]
+				com = "./" + p.sort[input.to_i]
 				system(com)
 			end
 		end

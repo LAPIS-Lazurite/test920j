@@ -6,8 +6,15 @@
 
 
 require '../socket.rb'
+require '../subghz.rb'
 
+#setup DUT --------------------------------------
+sbg = Subghz.new()
+sbg.setup(42, 100, 20)
+sbg.rw("8 0x0c ","0x03")
+sbg.txon()
 
+#setup TESTER --------------------------------------
 $sock.puts("INST SPECT")                                #SAƒ‚[ƒh‚Å‚Í‰º‹L‚ÌƒRƒ}ƒ“ƒh‚ğg—p  INST SIGANA"
 $sock.puts("*OPC?")
 $sock.gets
@@ -32,7 +39,7 @@ $sock.puts("INIT:CONT ON")                              #˜A‘±‘|ˆøİ’è
 $sock.puts("*OPC?")
 $sock.gets
 
-$sock.puts("FREQ:CENT 920.7MHZ")                          #’†Sü”g”İ’è  ‚±‚Ì—á‚Å‚Í’†Sü”g”‚ğ920MHz‚Éİ’è
+$sock.puts("FREQ:CENT 924.3MHZ")                          #’†Sü”g”İ’è  ‚±‚Ì—á‚Å‚Í’†Sü”g”‚ğ920MHz‚Éİ’è
 $sock.puts("*OPC?")
 $sock.gets
 
@@ -116,4 +123,5 @@ $sock.puts(":CALCulate:MARKer:Y?")                      #ƒ}[ƒJ“_‚ÌƒŒƒxƒ‹‚ğ“Ç‚İ
 $sock.puts("*OPC?")
 $sock.gets
 
+sbg.trxoff()
 $sock.close

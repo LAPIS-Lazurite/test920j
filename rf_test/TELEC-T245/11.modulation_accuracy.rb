@@ -5,6 +5,12 @@
 #
 
 require '../socket.rb'
+require '../subghz.rb'
+
+	sbg = Subghz.new()
+	sbg.setup(42, 100, 1)
+	sbg.rw("8 0x0c ","0x03")
+	sbg.txon()
 
     $sock.puts("INST VMA")  
     $sock.puts("*OPC?")
@@ -14,7 +20,11 @@ require '../socket.rb'
     $sock.puts("*OPC?")  
     $sock.gets
     
-    $sock.puts("FREQ:CENT 920MHZ")                          #’†Sü”g”İ’è ‚±‚Ì—á‚Å‚Í’†Sü”g”‚ğ920MHz‚Éİ’è
+#$sock.puts("syst:lang scpi")
+#$sock.puts("*OPC?")
+#$sock.gets
+	
+    $sock.puts("FREQ:CENT 924.3MHZ")                          #’†Sü”g”İ’è ‚±‚Ì—á‚Å‚Í’†Sü”g”‚ğ920MHz‚Éİ’è
     $sock.puts("*OPC?")    
     $sock.gets
     

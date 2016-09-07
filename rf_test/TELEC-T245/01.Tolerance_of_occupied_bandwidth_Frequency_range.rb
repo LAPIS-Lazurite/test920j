@@ -3,6 +3,13 @@
 # 周波数偏差（変調）、占有帯域測定
 #
 require '../socket.rb'
+require '../subghz.rb'
+
+#setup DUT --------------------------------------
+sbg = Subghz.new()
+sbg.setup(42, 100, 20)
+sbg.rw("8 0x0c ","0x00")
+sbg.txon()
 
 #setup TESTER --------------------------------------
 $sock.puts("INST SPECT")                                #SAモードでは下記のコマンドを使用  INST SIGANA
@@ -29,7 +36,7 @@ $sock.puts("INIT:CONT ON")                              #連続掃引設定
 $sock.puts("*OPC?")
 $sock.gets
 
-$sock.puts("FREQ:CENT 920.7MHZ")                          #中心周波数設定 この例では中心周波数を920MHzに設定
+$sock.puts("FREQ:CENT 924.3MHZ")                          #中心周波数設定 この例では中心周波数を920MHzに設定
 $sock.puts("*OPC?")
 $sock.gets
 
@@ -97,4 +104,5 @@ $sock.puts("FETC:OBW?")                                 #OBW、周波数偏差の測定結
 $sock.puts("*OPC?")
 $sock.gets
 
+sbg.trxoff()
 $sock.close

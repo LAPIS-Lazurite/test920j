@@ -8,7 +8,17 @@
 require '../socket.rb'
 
     $sock.puts("INST SG")                       #アクティブなアプリケーションをSGに設定する
+	$sock.puts("*OPC?")
+	$sock.gets
+
     $sock.puts("INST:DEF")                      #現在選択しているアプリケーションの設定と状態を初期化する   SGを初期化する
+	$sock.puts("*OPC?")
+	$sock.gets
+
+	$sock.puts("syst:lang scpi")
+	$sock.puts("*OPC?")
+	$sock.gets
+
     $sock.puts("MMEM:LOAD:WAV 'WiSUN-TxDemo','WiSUN_FET_D100F2_P08'")  #波形パターンをロードする    この例ではPackage名がWiSUN-TxDemo、パターン名がWiSUN_FET_D100F2_P08の波形をロードする
     $sock.puts("*OPC?")
     $sock.gets

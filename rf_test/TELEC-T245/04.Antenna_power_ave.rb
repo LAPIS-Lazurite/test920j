@@ -4,7 +4,15 @@
 #
 
 require '../socket.rb'
+require '../subghz.rb'
 
+#setup DUT --------------------------------------
+sbg = Subghz.new()
+sbg.setup(42, 100, 20)
+sbg.rw("8 0x0c ","0x03")
+sbg.txon()
+
+#setup TESTER --------------------------------------
 $sock.puts("INST SPECT")                                #SAモードでは下記のコマンドを使用   INST SIGANA"
 $sock.puts("*OPC?")
 $sock.gets
@@ -29,7 +37,7 @@ $sock.puts("INIT:CONT OFF")                             #連続掃引OFF設定
 $sock.puts("*OPC?")
 $sock.gets
 
-$sock.puts("FREQ:CENT 920.7MHZ")                          #中心周波数設定     この例では中心周波数を920MHzに設定
+$sock.puts("FREQ:CENT 924.3MHZ")                          #中心周波数設定     この例では中心周波数を920MHzに設定
 $sock.puts("*OPC?")
 $sock.gets
 
@@ -88,37 +96,29 @@ $sock.gets
 $sock.puts(":UNIT:POWer W")                             #表示をWに変換
 $sock.puts("*OPC?")
 $sock.gets
-p "a"
 
 $sock.puts("CALC:MARK:MODE OFF")                        #マーカーOFF設定
 $sock.puts("*OPC?")
 $sock.gets
-p "b"
 
 $sock.puts("INIT:MODE:SING")                            #SAモードではトレースモードを変更してからからこのコマンドを送る(6行下を参照)
 $sock.puts("*OPC?")
-$sock.gets
-p "c"
 
 $sock.puts("TRAC? TRAC1")                               #トレースデータを読み出す
 $sock.puts("*OPC?")
-$sock.gets
-p "d"
 
 $sock.puts("BPOW:BURS:STOP 2.67818181818182MS")         #Burst Average Power 測定の終了位置（時間）を設定   SAモードでは下記コマンドを使用      TRAC:MODE PVT"
 $sock.puts("*OPC?")
-$sock.gets
 
-$sock.puts("INIT:MODE:SING")                             #SAモードでは本コマンドを挿入
-$sock.puts("*OPC?")
-$sock.gets
+#$sock.puts("INIT:MODE:SING")                             #SAモードでは本コマンドを挿入
+#$sock.puts("*OPC?")
+#$sock.gets
 
 $sock.puts("FETC:BPOW?")                                #BurstAveragePowerの測定結果を読み取る
 $sock.puts("*OPC?")
-$sock.gets
 
 $sock.puts("TRIG OFF")
 $sock.puts("*OPC?")
-$sock.gets
 
+sbg.trxoff()
 $sock.close
