@@ -8,7 +8,7 @@ require '../subghz.rb'
 #setup DUT --------------------------------------
 sbg = Subghz.new()
 sbg.setup(42, 100, 20)
-sbg.rw("8 0x0c ","0x00")
+sbg.rw("8 0x0c ","0x03")
 sbg.txon()
 
 #setup TESTER --------------------------------------

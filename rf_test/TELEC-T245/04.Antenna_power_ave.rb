@@ -101,24 +101,24 @@ $sock.puts("CALC:MARK:MODE OFF")                        #マーカーOFF設定
 $sock.puts("*OPC?")
 $sock.gets
 
-$sock.puts("INIT:MODE:SING")                            #SAモードではトレースモードを変更してからからこのコマンドを送る(6行下を参照)
-$sock.puts("*OPC?")
+#$sock.puts("INIT:MODE:SING")                            #SAモードではトレースモードを変更してからからこのコマンドを送る(6行下を参照)
+#$sock.puts("*OPC?")
 
-$sock.puts("TRAC? TRAC1")                               #トレースデータを読み出す
-$sock.puts("*OPC?")
+#$sock.puts("TRAC? TRAC1")                               #トレースデータを読み出す
+#$sock.puts("*OPC?")
 
-$sock.puts("BPOW:BURS:STOP 2.67818181818182MS")         #Burst Average Power 測定の終了位置（時間）を設定   SAモードでは下記コマンドを使用      TRAC:MODE PVT"
-$sock.puts("*OPC?")
+#$sock.puts("BPOW:BURS:STOP 2.67818181818182MS")         #Burst Average Power 測定の終了位置（時間）を設定   SAモードでは下記コマンドを使用      TRAC:MODE PVT"
+#$sock.puts("*OPC?")
 
 #$sock.puts("INIT:MODE:SING")                             #SAモードでは本コマンドを挿入
 #$sock.puts("*OPC?")
 #$sock.gets
 
-$sock.puts("FETC:BPOW?")                                #BurstAveragePowerの測定結果を読み取る
-$sock.puts("*OPC?")
+#$sock.puts("FETC:BPOW?")                                #BurstAveragePowerの測定結果を読み取る
+#$sock.puts("*OPC?")
 
-$sock.puts("TRIG OFF")
-$sock.puts("*OPC?")
+#$sock.puts("TRIG OFF")
+#$sock.puts("*OPC?")
 
 sbg.trxoff()
 $sock.close
