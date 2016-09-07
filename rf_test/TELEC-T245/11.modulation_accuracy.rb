@@ -4,7 +4,7 @@
 # 11.ïœí≤ê∏ìx
 #
 
-require '../openif.rb'
+require '../socket.rb'
 
     $sock.puts("INST VMA")  
     $sock.puts("*OPC?")
@@ -54,3 +54,4 @@ require '../openif.rb'
     $sock.puts("*OPC")  
     $sock.gets
     
+	$sock.close

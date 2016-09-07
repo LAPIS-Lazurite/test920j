@@ -4,8 +4,7 @@
 # 12-1.受信試験（BER測定）
 #
 
-
-require '../openif.rb'
+require '../socket.rb'
 
     $sock.puts("INST BER")
     $sock.puts("INP:BERT:CLOC:POL NEG")             #Clock Edgeを設定する   この例ではNegativeに設定する
@@ -36,4 +35,6 @@ require '../openif.rb'
     $sock.puts("INIT:MODE:SING")                    #シングルモードでBER測定を開始する
     $sock.puts("STAT:BERT:MEAS?")                   #現在の動作状態を読み出す   戻り値が1（測定中）でなくなるまでこのコマンドを繰り返し送る。
     $sock.puts("CALC:BERT:BER? ER")                 #BERの測定結果を取得する
+
+	$sock.close
  

@@ -15,6 +15,8 @@ PA_ADJ3_ADDR 	= "9 0x06 "
 	rate = gets().to_i
 	print("input mode[20,1] => ")
 	mode = gets().to_i
+	print("input test mode[CW=21, PN9=03, non=00 => ")
+	test = gets().to_s
 
 #	rate50  = {24 => "920600000",33 => "922400000", 36 => "923000000", 60 => "927800000" }
 #	rate100 = {24 => "920700000",33 => "922500000", 36 => "923100000", 60 => "927900000" }
@@ -30,6 +32,7 @@ PA_ADJ3_ADDR 	= "9 0x06 "
 
 	sbg = Subghz.new()
 	sbg.setup(ch, rate, mode)
+	sbg.rw("8 0x0c ","0x" + test)
 	sbg.txon()
 
 # TESTER setup ----------------------------------

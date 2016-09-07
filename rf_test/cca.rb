@@ -88,10 +88,10 @@ for offset_loop in 0..2
 
 # Send Packet ------------------------------------------------
 	sbg.setup(ch.to_s,rate.to_s,mode.to_s)
-	sbg.rw("8 0x13",cca_lvl)
+	sbg.rw("8 0x13 ",cca_lvl)
 
-#sbg.rw("8 0x71","0x02")
-#sbg.rw("8 0x75","0x23")
+#sbg.rw("8 0x71 ","0x02")
+#sbg.rw("8 0x75 ","0x23")
 
 	sbg.wf("Welcome_SubGHz_LAPIS_semiconductorWelcome_SubGHz_LAPIS_semiconductorWelcome_SubGHz_LAPIS_semiconductorWelcome_SubGHz_LAPIS_semiconductor")
 

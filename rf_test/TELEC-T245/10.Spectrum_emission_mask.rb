@@ -4,8 +4,7 @@
 # ½Íß¸Ä×Ñ´Ð¯¼®ÝÏ½¸
 #
 
-
-require '../openif.rb'
+require '../socket.rb'
 
     $sock.puts("INST SPECT")    
     $sock.puts("*OPC?") 
@@ -115,3 +114,4 @@ require '../openif.rb'
     $sock.puts("*OPC") 
     $sock.gets
     
+	$sock.close

@@ -25,6 +25,22 @@ class Subghz
 		sp.close
 	end
 
+	def trxoff
+		sp = SerialPort.new(SERIAL_PORT,SERIAL_BAUDRATE)
+		sp.read_timeout=500
+		sp.puts("rfw 8 0x6c 0x08")
+		p sp.gets()
+		sp.close
+	end
+
+	def rxon
+		sp = SerialPort.new(SERIAL_PORT,SERIAL_BAUDRATE)
+		sp.read_timeout=500
+		sp.puts("rfw 8 0x6c 0x08")
+		p sp.gets()
+		sp.close
+	end
+
 	def com(s)
 		sp = SerialPort.new(SERIAL_PORT,SERIAL_BAUDRATE)
 		sp.read_timeout=500
@@ -46,7 +62,7 @@ class Subghz
 	def rw(addr,data)
 		sp = SerialPort.new(SERIAL_PORT,SERIAL_BAUDRATE)
 		sp.read_timeout=500
-		sp.puts("rfw " + addr + data)
+		sp.puts("rfw " + addr.to_s + data.to_s)
 		p sp.gets()
 		sp.close
 	end

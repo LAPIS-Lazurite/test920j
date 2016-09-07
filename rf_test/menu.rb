@@ -35,7 +35,7 @@ class Top_menu
 			print("5: Execute calibration\n")
 			print("6: TELEC-T245 sub menu\n")
 			print("7: Continuous Wave\n")
-			print("8: TX interval\n")
+			print("8: Send packet\n")
 			print("9: Carrier Sense\n")
 			print("10: Set my address\n")
 			print("11: Get my address\n")
@@ -63,7 +63,7 @@ class Top_menu
 			when 7
 				system("./cw.rb")
 			when 8
-				system("./tx_interval.rb")
+				system("./snd.rb")
 			when 9
 				system("./cca.rb")
 			when 10

@@ -1,6 +1,6 @@
 #!/usr/bin/ruby
 
-require '../openif.rb'
+require '../socket.rb'
 
     $sock.puts("INST CONFIG Config")                        #画面に移動 
     $sock.puts("*OPC?")
@@ -42,3 +42,5 @@ require '../openif.rb'
     $sock.puts("SWE:RUL OSW")                               #測定時の掃引/FFT の切り替えルールを設定    掃引のみ使用します。
     $sock.puts("*OPC?")
     $sock.gets
+
+	$sock.close

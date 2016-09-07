@@ -4,8 +4,7 @@
 # ｽﾌﾟﾘｱｽ発射又は不要発射の強度（近傍）
 #
 
-
-require '../openif.rb'
+require '../socket.rb'
     
     $sock.puts("INST SPECT")
     $sock.puts("*OPC?")
@@ -115,3 +114,4 @@ require '../openif.rb'
     $sock.puts("*OPC?")
     $sock.gets
     
+	$sock.close

@@ -3,7 +3,7 @@
 # ｷｬﾘｱｾﾝｽ機能
 #
 
-require '../openif.rb'
+require '../socket.rb'
 
     $sock.puts("INST SPECT")                                #SAモードでは下記のコマンドを使用   INST SIGANA"
     $sock.puts("*OPC?")
@@ -132,3 +132,4 @@ require '../openif.rb'
     $sock.puts("*OPC")   
     $sock.gets
     
+	$sock.close

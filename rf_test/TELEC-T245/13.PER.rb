@@ -5,7 +5,7 @@
 #
 
 
-require '../openif.rb'
+require '../socket.rb'
 
     $sock.puts("INST SG")                       #アクティブなアプリケーションをSGに設定する
     $sock.puts("INST:DEF")                      #現在選択しているアプリケーションの設定と状態を初期化する   SGを初期化する
@@ -36,3 +36,5 @@ require '../openif.rb'
     $sock.puts("OUTP:MOD ON")                   #ModをOnに設定する
     
     $sock.puts("RAD:ARB:TRIG:GEN")              #波形パターンの出力を開始する。 指定したパケット数の信号出力を開始する。
+
+	$sock.close

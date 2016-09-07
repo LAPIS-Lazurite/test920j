@@ -5,7 +5,7 @@
 #
 
 
-require '../openif.rb'
+require '../socket.rb'
 
     $sock.puts("INST SPECT")
     $sock.puts("*OPC?")
@@ -71,26 +71,30 @@ require '../openif.rb'
     $sock.puts("*OPC?")
     $sock.gets
     
-    $sock.puts("SPUR:SWE:POIN 1001,1001,10001,10001,10001,10001,10001,10001,10001,10001,10001,10001,10001,10001,10001,10001,10001,10001,10001,10001")  #各セグメントのトレース表示のポイント数を設定
+	#各セグメントのトレース表示のポイント数を設定
+    $sock.puts("SPUR:SWE:POIN 1001,1001,10001,10001,10001,10001,10001,10001,10001,10001,10001,10001,10001,10001,10001,10001,10001,10001,10001,10001")
     $sock.puts("*OPC?")
     $sock.gets
     
-    $sock.puts("CALC:SPUR:LIM:ABS:DATA -36DBM,-36DBM,-10DBM,-10DBM,-13DBM,-13DBM,-10DBM,-10DBM,-13DBM,-13DBM,-13DBM,-13DBM,-13DBM,-13DBM,-10DBM,-10DBM,-13DBM,-13DBM,-13DBM,-13DBM")    #Limitを設定
+	#Limitを設定
+    $sock.puts("CALC:SPUR:LIM:ABS:DATA -36DBM,-36DBM,-10DBM,-10DBM,-13DBM,-13DBM,-10DBM,-10DBM,-13DBM,-13DBM,-13DBM,-13DBM,-13DBM,-13DBM,-10DBM,-10DBM,-13DBM,-13DBM,-13DBM,-13DBM")
     $sock.puts("*OPC?")
     $sock.gets
     
-    $sock.puts("SPUR:TDOM:SPAN:ZERO OFF")                                                                                                       #スプリアス電力をタイムドメイン(Span=0Hz)に設定
+    $sock.puts("SPUR:TDOM:SPAN:ZERO OFF")       #スプリアス電力をタイムドメイン(Span=0Hz)に設定
     $sock.puts("*OPC?")
     $sock.gets
     
-    $sock.puts("CONF:SPUR")                                                                                                                     #Spurious Emission 測定をOn に設定
+    $sock.puts("CONF:SPUR")                     #Spurious Emission 測定をOn に設定
     $sock.puts("*OPC?")
     $sock.gets
     
-    $sock.puts("INIT:SPUR")                                                                                                                     #Spurious 測定を開始
+    $sock.puts("INIT:SPUR")                     #Spurious 測定を開始
     $sock.puts("*OPC?")
     $sock.gets
     
-    $sock.puts("FETC:SPUR?")                                                                                                                    #Spurious Emission 測定の測定結果を取得
+    $sock.puts("FETC:SPUR?")                    #Spurious Emission 測定の測定結果を取得
     $sock.puts("*OPC?")
     $sock.gets
+
+	$sock.close
