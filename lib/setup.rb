@@ -8,6 +8,8 @@ class Lazurite::Test
 	kern = `uname -r`
 	@@kernel = "/lib/modules/"+kern.chomp
 	p @@kernel
+	@@com_tester =  "/dev/ttyUSB1"
+	@@com_target = "/dev/ttyUSB0"
 
 	def getMiniPortName()
 		return @@miniPortName
@@ -45,24 +47,6 @@ class Lazurite::Test
 		system(cmd)
 
 		return "OK"
-	end
-	def boot_write(devName,program)
-		@@testBin = @@testBin + 1
-		funcNum = 0
-		cmd = "sudo rmmod ftdi_sio"
-		system(cmd)
-
-		cmd = "sudo rmmod usbserial"
-		system(cmd)
-
-		funcNum = funcNum+1
-		cmd = sprintf("sudo ../lib/cpp/bootwriter/bootwriter 0 LAPIS \"%s\" %s 0xf000 0xfc4f",devName,program)
-		system(cmd)
-		ret = $?.exitstatus
-		if ret == 0 then
-			return "OK"
-		end
-		return @@testBin,funcNum,ret
 	end
 	def prog_write(devName,program)
 		@@testBin = @@testBin + 1
@@ -109,7 +93,7 @@ class Lazurite::Test
 
 		funcNum = funcNum + 1
 		sleep(0.1)
-		cmd = "sudo stty -F /dev/ttyUSB0 115200"
+		cmd = "sudo stty -F " + @@com_target + " 115200"
 		system(cmd)
 		ret = $?.exitstatus
 		print @@testBin,",",funcNum,",",cmd,",",ret,"\n"
@@ -119,7 +103,7 @@ class Lazurite::Test
 		end
 
 		funcNum = funcNum + 1
-		cmd = sprintf("sudo sx -b %s > /dev/ttyUSB0 < /dev/ttyUSB0",program)
+		cmd = sprintf("sudo sx -b %s > %s < %s",program,@@com_target,@@com_target)
 		system(cmd)
 		ret = $?.exitstatus
 		print @@testBin,",",funcNum,",",cmd,",",ret,"\n"
@@ -319,7 +303,7 @@ class Lazurite::Test
 
 		sleep(0.1)
 		funcNum = funcNum + 1
-		sp=SerialPort.new('/dev/ttyUSB0',115200)
+		sp=SerialPort.new(@@com_target,115200)
 
 		funcNum = funcNum + 1
 		sp.puts("pm,25,o")

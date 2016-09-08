@@ -2,6 +2,10 @@
 
 require 'serialport'
 class Lazurite::Test
+###
+#		find target device
+#		return nil = can't find device
+###
 	def getComPortName()
 		cycle = 0
 		serial_baudrate = 115200

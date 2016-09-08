@@ -5,6 +5,10 @@ require 'serialport'
 devName ="LAZURITE Sub-GHz Rev2"
 program = "bin/blue_led.bin"
 
+kern = `uname -r`
+kernel = "/lib/modules/"+kern.chomp
+p kernel
+
 cmd = "sudo rmmod ftdi_sio"
 system(cmd)
 p $?.exitstatus
@@ -17,11 +21,11 @@ cmd = sprintf("sudo lib/cpp/bootmode/bootmode \"%s\"",devName);
 system(cmd)
 p $?.exitstatus
 
-cmd = "sudo insmod /lib/modules/4.4.8-v7+/kernel/drivers/usb/serial/usbserial.ko"
+cmd = "sudo insmod "+kernel+"/kernel/drivers/usb/serial/usbserial.ko"
 system(cmd)
 p $?.exitstatus
 
-cmd = "sudo insmod /lib/modules/4.4.8-v7+/kernel/drivers/usb/serial/ftdi_sio.ko"
+cmd = "sudo insmod "+kernel+"/kernel/drivers/usb/serial/ftdi_sio.ko"
 system(cmd)
 p $?.exitstatus
 
@@ -45,10 +49,10 @@ cmd = sprintf("sudo lib/cpp/reset/reset \"%s\"",devName);
 system(cmd)
 p $?.exitstatus
 
-cmd = "sudo insmod /lib/modules/4.4.8-v7+/kernel/drivers/usb/serial/usbserial.ko"
+cmd = "sudo insmod "+kernel+"/kernel/drivers/usb/serial/usbserial.ko"
 system(cmd)
 p $?.exitstatus
 
-cmd = "sudo insmod /lib/modules/4.4.8-v7+/kernel/drivers/usb/serial/ftdi_sio.ko"
+cmd = "sudo insmod " + kernel + "/kernel/drivers/usb/serial/ftdi_sio.ko"
 system(cmd)
 p $?.exitstatus
