@@ -14,6 +14,7 @@ Signal.trap(:INT){
 
 test = Lazurite::Test.new
 result = test.boot_write("LAZURITE mini series","bin/ML620Q504_000RA.bin")
+#	devName ="LAZURITE mini series"
 #result = test.boot_write("LAZURITE Sub-GHz Rev3","bin/ML620Q504_000RA.bin")
 #	devName ="LAZURITE Sub-GHz Rev3"
 p result

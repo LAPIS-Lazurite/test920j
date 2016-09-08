@@ -1,3 +1,4 @@
+# encoding: utf-8
 require 'serialport'
 
 class Lazurite::Test

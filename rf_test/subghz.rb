@@ -71,6 +71,7 @@ class Subghz
 		sp = SerialPort.new(SERIAL_PORT,SERIAL_BAUDRATE)
 		sp.read_timeout=500
 		sp.puts("w," + payload)
+		sp.close
 	end
 
 	def ra
