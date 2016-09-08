@@ -1,3 +1,4 @@
+# encoding: utf-8
 module Lazurite; end
 require_relative "../lib/setup"
 require_relative "../lib/boot_write"

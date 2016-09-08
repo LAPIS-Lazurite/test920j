@@ -1,4 +1,5 @@
 #! /usr/bin/ruby
+# encoding: utf-8
 #
 # Halt process when CTRL+C is pushed.
 
