@@ -10,7 +10,8 @@ class Calibration
 	OSC_ADJ2_ADDR	= "8 0x0a "
 	PA_ADJ1_ADDR 	= "9 0x04 "
 	PA_ADJ3_ADDR 	= "9 0x06 "
-	ATT = 6
+	ATT = ARGV[0].to_f.round(2)
+	p "ATT:" + ATT.to_s
 
 	rate50  = {24 => "920600000",33 => "922400000", 36 => "923000000", 60 => "927800000" }
 	rate100 = {24 => "920700000",33 => "922500000", 36 => "923100000", 60 => "927900000" }
@@ -67,7 +68,7 @@ class Calibration
 
 				diff = @frq[rate][ch].to_i - value.to_i
 				diff = diff/1000
-				printf("%s\n",diff)
+				printf("diff:%s\n",diff)
 
 				reg = @sbg.rr(OSC_ADJ2_ADDR)
 				p reg
@@ -122,8 +123,8 @@ class Calibration
 				value = $sock.gets
 				p value
 
-				diff = @pow[mode].level.to_i - (value.to_f * 100) - ATT
-				printf("%d %d %d\n",diff,@pow[mode].level.to_i,value.to_i * 100)
+				diff = @pow[mode].level.to_i - (ATT * 100) - (value.to_f * 100)
+				printf("diff:%d, base:%d, value:%d, ATT:%d\n",diff,@pow[mode].level.to_i,value.to_i * 100, ATT * 100)
 
 				reg = @sbg.rr(@pow[mode].pa_addr)
 				p reg
@@ -176,16 +177,17 @@ class Calibration
 	printf("############ Calibration Summary #############\n")
 	printf("Frequency: %s\n",summary.frq)
 	printf("Output level: 20mW=%s, 1mW=%s\n",summary.lv20mw,summary.lv1mw)
-	printf("MY Address: %s\n",summary.myaddr[1])
+	printf("My Address: %s",summary.myaddr[1])
 	printf("MAC Address: %s\n",summary.macaddr[3...11])
+	
 	if summary.frq == 0 then
-		printf("Result: !!!ERROR!!!\n")
+		printf("!!!ERROR!!!\n")
 	elsif summary.lv20mw.to_i.between?(12-ATT,13-ATT) == false then
-		printf("Result: !!!ERROR!!!\n")
-	elsif summary.lv1mw.to_i.between?(0-ATT,-1-ATT) == false then
-		printf("Result: !!!WARNIG!!!\n")
+		printf("!!!ERROR!!!\n")
+	elsif summary.lv1mw.to_i.between?(-1-ATT,0-ATT) == false then
+		printf("!!!WARNIG!!!\n")
 	else
-		printf("Result: !!!SUCCESS!!!\n")
+		printf("!!!SUCCESS!!!\n")
 	end
 	printf("##############################################\n")
 
