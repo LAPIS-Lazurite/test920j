@@ -2,6 +2,12 @@
 
 class Top_menu
 
+	ATT = "7"
+	LOAD_FILE = "bin/test.bin mini"
+#	LOAD_FILE = "bin/test_debug.bin mini"
+#	LOAD_FILE = "bin/test_FIRST.bin mini"
+#	LOAD_FILE = "bin/test_for_BP3596A.bin Rev3"
+
 	def self.telec_menu
 		Dir.chdir "./TELEC-T245"
 		while 1
@@ -32,16 +38,15 @@ class Top_menu
 			print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n")
 			print("1: Load boot loader\n")
 			print("2: Load test program\n")
-			print("3: Load test program for BP3596A\n")
-			print("4: Install basic parameter to E2P\n")
-			print("5: Execute calibration\n")
-			print("6: TELEC-T245 sub menu\n")
-			print("7: Continuous Wave\n")
-			print("8: Send packet\n")
-			print("9: Carrier Sense\n")
-			print("10: Set my address\n")
-			print("11: Get my address\n")
-			print("12: Direct Command mode\n")
+			print("3: Install basic parameter to E2P\n")
+			print("4: Execute calibration\n")
+			print("5: TELEC-T245 sub menu\n")
+			print("10: Continuous Wave\n")
+			print("11: Send packet\n")
+			print("12: Carrier Sense\n")
+			print("20: Set my address\n")
+			print("21: Get my address\n")
+			print("22: Direct Command mode\n")
 			print("99: exit\n")
 			print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n")
 			print("input number => ")
@@ -51,28 +56,24 @@ class Top_menu
 			when 1
 				system("./boot_wr.rb")
 			when 2
-				system("./load_prog.rb bin/test.bin mini")
-#				system("./load_prog.rb bin/test_debug.bin mini")
-#				system("./load_prog.rb bin/test_FIRST.bin mini")
+				system("./load_prog.rb " + LOAD_FILE)
 			when 3
-				system("./load_prog.rb bin/test_for_BP3596A.bin Rev3")
-			when 4
 				system("./e2p_base.rb")
+			when 4
+				system("./cal.rb " + ATT)
 			when 5
-				system("./cal.rb")
-			when 6
 				telec_menu()
-			when 7
-				system("./cw.rb")
-			when 8
-				system("./snd.rb")
-			when 9
-				system("./cca.rb")
 			when 10
-				system("./set_addr.rb")
+				system("./cw.rb")
 			when 11
-				system("./get_addr.rb")
+				system("./snd.rb")
 			when 12
+				system("./cca.rb")
+			when 20
+				system("./set_addr.rb")
+			when 21
+				system("./get_addr.rb")
+			when 22
 				system("./command.rb")
 			when 99
 				break
