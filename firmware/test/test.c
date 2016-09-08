@@ -1273,16 +1273,16 @@ void eeprom_read(uint8_t** pparam,SUBGHZ_MAC_PARAM* mac) {
 		i++;
 	} while((pparam[i] = strtok(NULL,", \r\n"))!=NULL);
 
-	Serial.println("erd");
+//	Serial.println("erd");
 	
 	// command process
 	if(pparam[1]==NULL) goto error;
 	addr.addr16 = (int)strtol(pparam[1],&en,0);
 	if(*en != NULL) return;
-	Serial.println_long(addr.addr16,HEX);
+//	Serial.println_long(addr.addr16,HEX);
 	size = (int)strtol(pparam[2],&en,0);
 	if(*en != NULL) return;
-	Serial.println_long(size,HEX);
+//	Serial.println_long(size,HEX);
 
 	if((addr.addr16<0)||(addr.addr16>0xFFF) || (size<0) || (size > 32)) {
 		goto error;
