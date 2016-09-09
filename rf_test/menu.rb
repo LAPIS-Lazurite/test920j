@@ -4,11 +4,6 @@ class Top_menu
 
 	ATT = "7"
 	LOAD_FILE = "bin/test.bin mini"
-#	LOAD_FILE = "bin/Read_SubGHz.bin"
-#	LOAD_FILE = "bin/test_debug.bin mini"
-#	LOAD_FILE = "bin/test_FIRST.bin mini"
-#	LOAD_FILE = "bin/test_for_BP3596A.bin Rev3"
-#	LOAD_FILE = "bin/test_for_BP3596A.bin Rev3"
 
 	def self.telec_menu
 		Dir.chdir "./TELEC-T245"
