@@ -6,10 +6,19 @@ require '../socket.rb'
 require '../subghz.rb'
 
 #setup DUT --------------------------------------
+RATE = 50
+CH = 43
+DEV = 20 * (10**-6)
+
+rate50  = {24 => "920600000",33 => "922400000", 36 => "923000000", 60 => "927800000", 43 => "924400000" }
+rate100 = {24 => "920700000",33 => "922500000", 36 => "923100000", 60 => "927900000", 42 => "924300000" }
+frq = {50 => rate50, 100 => rate100}
+
 sbg = Subghz.new()
-sbg.setup(42, 100, 20)
+sbg.setup(CH, RATE, 20)
 sbg.rw("8 0x0c ","0x03")
 sbg.txon()
+
 
 #setup TESTER --------------------------------------
 $sock.puts("INST SPECT")                                #SAモードでは下記のコマンドを使用  INST SIGANA
@@ -36,7 +45,9 @@ $sock.puts("INIT:CONT ON")                              #連続掃引設定
 $sock.puts("*OPC?")
 $sock.gets
 
-$sock.puts("FREQ:CENT 924.3MHZ")                          #中心周波数設定 この例では中心周波数を920MHzに設定
+p frq[RATE][CH].to_s
+
+$sock.puts("FREQ:CENT " + frq[RATE][CH].to_s)           #中心周波数設定 この例では中心周波数を920MHzに設定
 $sock.puts("*OPC?")
 $sock.gets
 
@@ -102,7 +113,16 @@ $sock.gets
 
 $sock.puts("FETC:OBW?")                                 #OBW、周波数偏差の測定結果問い合わせ
 $sock.puts("*OPC?")
-$sock.gets
+val = $sock.gets
+p val.split(",")
+p val.split(",")[2]
+p val.split(",")[3]
+
+p (frq[RATE][CH].to_i - val.split(",")[2].to_i)
+p (val.split(",")[3].to_i - frq[RATE][CH].to_i)
+p DEV
+
+
 
 sbg.trxoff()
 $sock.close

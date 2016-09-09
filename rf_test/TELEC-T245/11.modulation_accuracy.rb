@@ -4,6 +4,9 @@
 # 11.•Ï’²¸“x
 #
 
+print("!!!unsupported test!!!\n")
+exit
+
 require '../socket.rb'
 require '../subghz.rb'
 

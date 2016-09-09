@@ -7,7 +7,7 @@ require '../socket.rb'
 require '../subghz.rb'
 
 sbg = Subghz.new()
-sbg.setup(42, 100, 20)
+sbg.setup(42, 50, 20)
 sbg.rw("8 0x0c ","0x03")
 sbg.txon()
 
@@ -35,7 +35,7 @@ $sock.puts("INIT:CONT OFF")                              #˜A‘±‘|ˆøOFFİ’è
 $sock.puts("*OPC?")
 $sock.gets
 
-$sock.puts("FREQ:CENT 924.3MHZ")                          #’†Sü”g”İ’è
+$sock.puts("FREQ:CENT 924.2MHZ")                          #’†Sü”g”İ’è
 $sock.puts("*OPC?")
 $sock.gets
 
@@ -79,7 +79,7 @@ $sock.puts("SWE:TIME 5.46s")                            #‘|ˆøŠÔ‚Ìİ’è     SAƒ‚
 $sock.puts("*OPC?")
 $sock.gets
 
-$sock.puts("DISP:WIND:TRAC:Y:RLEV -10")                 #Reference Level
+$sock.puts("DISP:WIND:TRAC:Y:RLEV -30")                 #Reference Level
 $sock.puts("*OPC?")
 $sock.gets
 
@@ -125,7 +125,7 @@ $sock.gets
 
 $sock.puts("FETC:ACP?")                                 #ACP‘ª’è’l‚ğ–â‚¢‡‚í‚¹
 $sock.puts("*OPC?")
-$sock.gets
+p $sock.gets
 
 sbg.trxoff()
 $sock.close

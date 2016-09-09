@@ -4,6 +4,9 @@
 # 12-1.óMŒ±iBER‘ª’èj
 #
 
+print("!!!unsupported test!!!\n")
+exit
+
 require '../socket.rb'
 
     $sock.puts("INST BER")
