@@ -173,6 +173,26 @@ static void gpio_read(uint8_t** pparam,SUBGHZ_MAC_PARAM* mac) {
 	// command process
 	levelNum = digitalRead(portNum);
 
+	// message output
+	Print.init(obuf,sizeof(obuf));
+	Print.p(CMD_DIGITAL_READ);
+	Print.p(",");
+	Print.l((long)portNum,DEC);
+	Print.p(",");
+	Print.l((long)levelNum,DEC);
+	Print.ln();
+	if(mac==NULL)
+	{
+		Serial.print(obuf);
+	} else {
+		uint16_t rx_addr;
+		rx_addr = *((uint16_t *)mac->tx_addr);
+		digitalWrite(TXLED,LOW);
+		SubGHz.send(mac->rx_panid,rx_addr,obuf,Print.len(),NULL);
+		digitalWrite(TXLED,HIGH);
+	}	
+	
+	return;
 
 }
 static void gpio_set(uint8_t** pparam,SUBGHZ_MAC_PARAM* mac) {
