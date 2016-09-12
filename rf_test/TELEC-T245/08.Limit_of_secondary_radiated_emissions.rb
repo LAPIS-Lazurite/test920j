@@ -116,9 +116,20 @@ $sock.puts("INIT:SPUR")                                                         
 $sock.puts("*OPC?")
 $sock.gets
 
-$sock.puts("FETC:SPUR?")                                                                                    #Spurious Emission ‘ª’è‚Ì‘ª’èŒ‹‰Ê‚ðŽæ“¾
+$sock.puts("FETC:SPUR?")                                                                                  #Spurious Emission ‘ª’è‚Ì‘ª’èŒ‹‰Ê‚ðŽæ“¾
 $sock.puts("*OPC?")
-$sock.gets
+result = $sock.gets.split(",")
+
+printf("######################## SUMMARY #####################\n")
+printf("Tatol: Limit of secondary radiated emissionsn\n")
+printf("Judged flag : %d\n",result[0].to_i)
+if result[0].to_i == 1 then
+	printf("!!!FAIL!!!\n")
+else
+	printf("!!!PASS!!!\n")
+end
+printf("######################################################\n")
+
 
 sbg.trxoff()
 $sock.close

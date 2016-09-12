@@ -13,7 +13,9 @@ require '../subghz.rb'
 
 	snd_thread = Thread.new do
 		while 1
-			p sbg.com("sgs 0xffff 0xffff")
+			confirm = sbg.com("sgs 0xffff 0xffff")
+			p confirm.split(",")
+			@status = confirm.split(",")[3]
 			if @send_flg == 1 then
 				break
 			end
@@ -133,25 +135,30 @@ require '../subghz.rb'
 		$sock.puts("*OPC?")  
 		$sock.gets
 
- 		$sock.puts("MMEM:Load:WAV 'WiSUN-TxDemo','WiSUN_FET_D100F2_P08'")       #SGの波形メモリに波形をロードする   この例ではPackage名が'WiSUN-TxDemo、パターン名がWiSUN_FET_D100F2_P08の波形をロード
- 		$sock.puts("*OPC?")   
- 		$sock.gets
+# 		$sock.puts("MMEM:Load:WAV 'WiSUN-TxDemo','WiSUN_FET_D100F2_P08'")       #SGの波形メモリに波形をロードする   この例ではPackage名が'WiSUN-TxDemo、パターン名がWiSUN_FET_D100F2_P08の波形をロード
+# 		$sock.puts("*OPC?")   
+# 		$sock.gets
 		
- 		$sock.puts("SOUR:RAD:ARB:WAV 'WiSUN-TxDemo','WiSUN_FET_D100F2_P08'")    #SGの波形を選択する この例ではPackage名が'WiSUN-TxDemo、パターン名がWiSUN_FET_D100F2_P08の波形を選択
-		$sock.puts("*OPC?")
-		$sock.gets
+# 		$sock.puts("SOUR:RAD:ARB:WAV 'WiSUN-TxDemo','WiSUN_FET_D100F2_P08'")    #SGの波形を選択する この例ではPackage名が'WiSUN-TxDemo、パターン名がWiSUN_FET_D100F2_P08の波形を選択
+#		$sock.puts("*OPC?")
+#		$sock.gets
 		
 		$sock.puts("OUTP ON")                                   #SGの信号出力をONに設定
 		$sock.puts("*OPC?")    
 		$sock.gets
 		
 #		$sock.puts("OUTP:MOD ON")                               #SGの変調をONに設定
-		$sock.puts("OUTP:MOD OFF")                               #SGの変調をONに設定
+		$sock.puts("OUTP:MOD OFF")                              #SGの変調をONに設定
 		$sock.puts("*OPC?")    
 		$sock.gets
 		
 		sleep 5
 		@send_flg = 1
+		sleep 3
+
+		$sock.puts("OUTP OFF")                                   #SGの信号出力をONに設定
+		$sock.puts("*OPC?")    
+		$sock.gets
 
 		$sock.puts("INST SPECT")                                #アクティブなアプリケーションをスペアナに設定   SAモードでは下記のコマンドを使用    INST SIGANA"
 		$sock.puts("*OPC")   
@@ -160,5 +167,17 @@ require '../subghz.rb'
 		$sock.close
 	end
 
-	tester_thread.join
-	snd_thread.join
+tester_thread.join
+snd_thread.join
+
+
+printf("######################## SUMMARY #####################\n")
+printf("Tatol: Career sense\n")
+printf("Judged send status : %d\n",@status.to_i)
+if @status.to_i != 9 then
+	printf("!!!FAIL!!!\n")
+else
+	printf("!!!PASS!!!\n")
+end
+printf("######################################################\n")
+

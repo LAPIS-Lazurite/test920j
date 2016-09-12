@@ -79,7 +79,8 @@ $sock.puts("SWE:TIME 5.46s")                            #‘|ˆøŽžŠÔ‚ÌÝ’è     SAƒ‚
 $sock.puts("*OPC?")
 $sock.gets
 
-$sock.puts("DISP:WIND:TRAC:Y:RLEV -30")                 #Reference Level
+#$sock.puts("DISP:WIND:TRAC:Y:RLEV -30")                 #Reference Level
+$sock.puts("DISP:WIND:TRAC:Y:RLEV 0")                 #Reference Level
 $sock.puts("*OPC?")
 $sock.gets
 
@@ -125,7 +126,23 @@ $sock.gets
 
 $sock.puts("FETC:ACP?")                                 #ACP‘ª’è’l‚ð–â‚¢‡‚í‚¹
 $sock.puts("*OPC?")
-p $sock.gets
+result = $sock.gets.split(",")
+p result
+spec = -26
+upper = result[3].to_f
+lower = result[5].to_f
+
+printf("######################## SUMMARY #####################\n")
+printf("Tatol: Tolerance off adjacent channel leakage power\n")
+printf("Specification: %ddBm less\n",spec)
+printf("Upper: %3.2fdBm, Lower: %3.2fdBm\n",upper,lower)
+
+if upper > spec || lower > spec then
+	printf("!!!FAIL!!!\n")
+else
+	printf("!!!PASS!!!\n")
+end
+printf("######################################################\n")
 
 sbg.trxoff()
 $sock.close

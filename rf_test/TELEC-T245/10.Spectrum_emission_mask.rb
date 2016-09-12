@@ -12,7 +12,6 @@ sbg.setup(42, 100, 1)
 sbg.rw("8 0x0c ","0x03")
 sbg.txon()
 
-
 $sock.puts("INST SPECT")    
 $sock.puts("*OPC?") 
 $sock.gets
@@ -124,5 +123,20 @@ $sock.gets
 $sock.puts(":READ:SEMask?")                             #‘ª’èŒ‹‰Ê‚ğ“Ç‚İ‚Ş
 $sock.puts("*OPC") 
 
+$sock.puts("FETC:SEM?")                                #Spectrum Emission ‘ª’è‚Ì‘ª’èŒ‹‰Ê‚ğæ“¾
+$sock.puts("*OPC?")
+result = $sock.gets.split(",")
+
+printf("######################## SUMMARY #####################\n")
+printf("Tatol: Spectrum emission mask\n")
+printf("Judged flag : %d\n",result[0].to_i)
+if result[0].to_i == 1 then
+	printf("!!!FAIL!!!\n")
+else
+	printf("!!!PASS!!!\n")
+end
+printf("######################################################\n")
+
+sleep 5
 sbg.trxoff()
 $sock.close
