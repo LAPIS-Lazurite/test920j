@@ -173,6 +173,26 @@ static void gpio_read(uint8_t** pparam,SUBGHZ_MAC_PARAM* mac) {
 	// command process
 	levelNum = digitalRead(portNum);
 
+	// message output
+	Print.init(obuf,sizeof(obuf));
+	Print.p(CMD_DIGITAL_READ);
+	Print.p(",");
+	Print.l((long)portNum,DEC);
+	Print.p(",");
+	Print.l((long)levelNum,DEC);
+	Print.ln();
+	if(mac==NULL)
+	{
+		Serial.print(obuf);
+	} else {
+		uint16_t rx_addr;
+		rx_addr = *((uint16_t *)mac->tx_addr);
+		digitalWrite(TXLED,LOW);
+		SubGHz.send(mac->rx_panid,rx_addr,obuf,Print.len(),NULL);
+		digitalWrite(TXLED,HIGH);
+	}	
+	
+	return;
 
 }
 static void gpio_set(uint8_t** pparam,SUBGHZ_MAC_PARAM* mac) {
@@ -1273,16 +1293,16 @@ void eeprom_read(uint8_t** pparam,SUBGHZ_MAC_PARAM* mac) {
 		i++;
 	} while((pparam[i] = strtok(NULL,", \r\n"))!=NULL);
 
-	Serial.println("erd");
+//	Serial.println("erd");
 	
 	// command process
 	if(pparam[1]==NULL) goto error;
 	addr.addr16 = (int)strtol(pparam[1],&en,0);
 	if(*en != NULL) return;
-	Serial.println_long(addr.addr16,HEX);
+//	Serial.println_long(addr.addr16,HEX);
 	size = (int)strtol(pparam[2],&en,0);
 	if(*en != NULL) return;
-	Serial.println_long(size,HEX);
+//	Serial.println_long(size,HEX);
 
 	if((addr.addr16<0)||(addr.addr16>0xFFF) || (size<0) || (size > 32)) {
 		goto error;
