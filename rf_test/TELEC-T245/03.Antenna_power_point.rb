@@ -24,6 +24,11 @@ sbg.rw("8 0x0c ",MOD)
 sbg.txon()
 
 #setup TESTER --------------------------------------
+MAKER = "DELTA" # NORM(mW) or DELTA(dBm) When using ATT, set DELTA
+normal = {"lower" => 19, "upper" => 20, "unit" => "mW", "att" => 0} 
+delta  = {"lower" => 12, "upper" => 13, "unit" => "dBm", "att" => 7} 
+range  = {"NORM" => normal, "DELTA" => delta}
+
 $sock.puts("INST SPECT")                                #SAƒ‚[ƒh‚Å‚Í‰º‹L‚ÌƒRƒ}ƒ“ƒh‚ğg—p  INST SIGANA"
 $sock.puts("*OPC?")
 $sock.gets
@@ -48,10 +53,11 @@ $sock.puts("INIT:CONT ON")                              #˜A‘±‘|ˆøİ’è
 $sock.puts("*OPC?")
 $sock.gets
 
-$sock.puts("FREQ:CENT " + frq[RATE][CH])                          #’†Sü”g”İ’è  ‚±‚Ì—á‚Å‚Í’†Sü”g”‚ğ920MHz‚Éİ’è
+$sock.puts("FREQ:CENT " + frq[RATE][CH])                #’†Sü”g”İ’è  ‚±‚Ì—á‚Å‚Í’†Sü”g”‚ğ920MHz‚Éİ’è
 $sock.puts("*OPC?")
 $sock.gets
 
+#$sock.puts("FREQ:SPAN 10MHZ")                          #SPANİ’è  ‚±‚Ì—á‚Å‚ÍSpan=500kHz‚Éİ’è
 $sock.puts("FREQ:SPAN 500KHZ")                          #SPANİ’è  ‚±‚Ì—á‚Å‚ÍSpan=500kHz‚Éİ’è
 $sock.puts("*OPC?")
 $sock.gets
@@ -88,7 +94,8 @@ $sock.puts("SWE:TIME:AUTO:MODE FAST")                   #ƒgƒŒ[ƒXƒf[ƒ^‚ÌƒXƒgƒŒ
 $sock.puts("*OPC?")
 $sock.gets
 
-$sock.puts("DISP:WIND:TRAC:Y:RLEV -10")                 #ƒŠƒtƒ@ƒŒƒ“ƒXƒŒƒxƒ‹İ’è(dBm)  ‚±‚Ì—á‚Å‚ÍƒŠƒtƒ@ƒŒƒ“ƒXƒŒƒxƒ‹‚ğ-10dBm‚Éİ’è
+#$sock.puts("DISP:WIND:TRAC:Y:RLEV -10")                 #ƒŠƒtƒ@ƒŒƒ“ƒXƒŒƒxƒ‹İ’è(dBm)  ‚±‚Ì—á‚Å‚ÍƒŠƒtƒ@ƒŒƒ“ƒXƒŒƒxƒ‹‚ğ-10dBm‚Éİ’è
+$sock.puts("DISP:WIND:TRAC:Y:RLEV 10")                 #ƒŠƒtƒ@ƒŒƒ“ƒXƒŒƒxƒ‹İ’è(dBm)  ‚±‚Ì—á‚Å‚ÍƒŠƒtƒ@ƒŒƒ“ƒXƒŒƒxƒ‹‚ğ-10dBm‚Éİ’è
 $sock.puts("*OPC?")
 $sock.gets
 
@@ -96,7 +103,7 @@ $sock.puts(":UNIT:POWer W")                             #•\¦‚ğW‚É•ÏŠ·
 $sock.puts("*OPC?")
 $sock.gets
 
-$sock.puts(":CALC:MARK:MODE NORM")                      #ƒ}[ƒJ‚ğNORMAL‚Éİ’è‚·‚éB
+$sock.puts(":CALC:MARK:MODE " + MAKER)                      #ƒ}[ƒJ‚ğNORMAL or DELTA‚Éİ’è‚·‚éB
 $sock.puts("*OPC?")
 $sock.gets
 
@@ -128,9 +135,29 @@ $sock.puts(":CALCulate:MARKer:WIDTh:POINt 1001")        #ƒ][ƒ“•‚ğSPAN‚Éİ’è‚·‚
 $sock.puts("*OPC?")
 $sock.gets
 
-$sock.puts(":CALCulate:MARKer:Y?")                      #ƒ}[ƒJ“_‚ÌƒŒƒxƒ‹‚ğ“Ç‚İo‚µ‚Ü‚·B
-$sock.puts("*OPC?")
-$sock.gets
+if MAKER == "NORM" then
+	$sock.puts(":CALCulate:MARKer:Y?")                      #ƒ}[ƒJ“_‚ÌƒŒƒxƒ‹‚ğ“Ç‚İo‚µ‚Ü‚·B
+	$sock.puts("*OPC?")
+	result = $sock.gets.to_f * 1000
+else
+	$sock.puts(":CALCulate:MARKer:Y:DELT?")                 #ƒ}[ƒJ“_‚Ì‘Š‘Î’l‚ğ“Ç‚İo‚µ‚Ü‚·B
+	$sock.puts("*OPC?")
+	result = $sock.gets.to_f + range[MAKER]["att"]
+end
+p result
+
+
+printf("######################## SUMMARY #####################\n")
+printf("Tatol: Antenna power pointn\n")
+printf("Makeer mode: %s\n",MAKER)
+printf("Attenuate: %d dB\n",range[MAKER]["att"])
+printf("result: %3.2f%s\n",result,range[MAKER]["unit"])
+if result.between?(range[MAKER]["lower"].to_i,range[MAKER]["upper"].to_i) == false then
+	printf("!!!FAIL!!!\n")
+else
+	printf("!!!PASS!!!\n")
+end
+printf("######################################################\n")
 
 sbg.trxoff()
 $sock.close

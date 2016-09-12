@@ -12,6 +12,7 @@ CH = 42
 RATE = 100
 POW = 20
 MOD = "0x00"
+DEV = 20 * (10**-6)
 
 rate50  = {24 => "920600000",33 => "922400000", 36 => "923000000", 60 => "927800000", 43 => "924400000" }
 rate100 = {24 => "920700000",33 => "922500000", 36 => "923100000", 60 => "927900000", 42 => "924300000" }
@@ -95,7 +96,8 @@ $sock.puts("SWE:TIME 1s")                               #掃引時間の設定 SAモード
 $sock.puts("*OPC?")
 $sock.gets
 
-$sock.puts("DISP:WIND:TRAC:Y:RLEV -10")                 #Reference Level
+#$sock.puts("DISP:WIND:TRAC:Y:RLEV -10")                 #Reference Level
+$sock.puts("DISP:WIND:TRAC:Y:RLEV 10")                 #Reference Level
 $sock.puts("*OPC?")
 $sock.gets
 
@@ -104,7 +106,20 @@ $sock.puts("*OPC?")
 $sock.gets
 
 $sock.puts("CALC:MARK:FCO:X?")                          #周波数カウンタの値を読み取る   SAモードでは下記のコマンドを使用する    CALC:MARK:Y?"
-$sock.puts("*OPC")
+$sock.puts("*OPC?")
+result = $sock.gets.to_i
+frequency = frq[RATE][CH].to_i
+
+printf("######################## SUMMARY #####################\n")
+printf("Tatol: Tolerance of frequency\n")
+printf("Center Frequencey: %d\n",frequency)
+printf("Frequency counter: %d\n",result)
+if (frequency - result).abs > (DEV * frequency) then
+	printf("!!!FAIL!!!\n")
+else
+	printf("!!!PASS!!!\n")
+end
+printf("######################################################\n")
 
 sbg.trxoff()
 $sock.close

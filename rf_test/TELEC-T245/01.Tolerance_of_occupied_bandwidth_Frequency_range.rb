@@ -98,7 +98,8 @@ $sock.puts("SWE:TIME 5.46s")                            #掃引時間の設定 SAモード
 $sock.puts("*OPC?")
 $sock.gets
 
-$sock.puts("DISP:WIND:TRAC:Y:RLEV -10")                 #Reference Level    この例ではリファレンスレベルを-10dBmに設定
+#$sock.puts("DISP:WIND:TRAC:Y:RLEV -10")                 #Reference Level    この例ではリファレンスレベルを-10dBmに設定
+$sock.puts("DISP:WIND:TRAC:Y:RLEV 10")                 #Reference Level    この例ではリファレンスレベルを-10dBmに設定
 $sock.puts("*OPC?")
 $sock.gets
 
@@ -112,16 +113,25 @@ $sock.gets
 
 $sock.puts("FETC:OBW?")                                 #OBW、周波数偏差の測定結果問い合わせ
 $sock.puts("*OPC?")
-val = $sock.gets
-p val.split(",")
-p val.split(",")[2]
-p val.split(",")[3]
+result = $sock.gets.split(",")
+center = result[1].to_i
+lower = result[2].to_i
+upper = result[3].to_i
+frequency = frq[RATE][CH].to_i
 
-p (frq[RATE][CH].to_i - val.split(",")[2].to_i)
-p (val.split(",")[3].to_i - frq[RATE][CH].to_i)
-p DEV
-
-
+printf("######################## SUMMARY #####################\n")
+printf("Tatol: Tolerance of occupied bandwidth Frequency rangen\n")
+printf("Center Frequencey: %d\n",frequency)
+printf("OBW Center: %d\n",center)
+#printf("OBW Lower: %d\n",lower)
+#printf("OBW Upper: %d\n",upper)
+printf("Deviation: %d\n",DEV * frq[RATE][CH].to_i)
+if (frequency - center).abs > (DEV * frequency) then
+	printf("!!!FAIL!!!\n")
+else
+	printf("!!!PASS!!!\n")
+end
+printf("######################################################\n")
 
 sbg.trxoff()
 $sock.close
