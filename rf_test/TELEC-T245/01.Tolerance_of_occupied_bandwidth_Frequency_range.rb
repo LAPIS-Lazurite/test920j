@@ -6,8 +6,10 @@ require '../socket.rb'
 require '../subghz.rb'
 
 #setup DUT --------------------------------------
-RATE = 50
 CH = 43
+RATE = 50
+POW = 20
+MOD = "0x03"
 DEV = 20 * (10**-6)
 
 rate50  = {24 => "920600000",33 => "922400000", 36 => "923000000", 60 => "927800000", 43 => "924400000" }
@@ -15,10 +17,9 @@ rate100 = {24 => "920700000",33 => "922500000", 36 => "923100000", 60 => "927900
 frq = {50 => rate50, 100 => rate100}
 
 sbg = Subghz.new()
-sbg.setup(CH, RATE, 20)
-sbg.rw("8 0x0c ","0x03")
+sbg.setup(CH, RATE, POW)
+sbg.rw("8 0x0c ",MOD)
 sbg.txon()
-
 
 #setup TESTER --------------------------------------
 $sock.puts("INST SPECT")                                #SAモードでは下記のコマンドを使用  INST SIGANA
@@ -45,9 +46,7 @@ $sock.puts("INIT:CONT ON")                              #連続掃引設定
 $sock.puts("*OPC?")
 $sock.gets
 
-p frq[RATE][CH].to_s
-
-$sock.puts("FREQ:CENT " + frq[RATE][CH].to_s)           #中心周波数設定 この例では中心周波数を920MHzに設定
+$sock.puts("FREQ:CENT " + frq[RATE][CH])                #中心周波数設定 この例では中心周波数を920MHzに設定
 $sock.puts("*OPC?")
 $sock.gets
 
