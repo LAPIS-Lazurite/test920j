@@ -1,9 +1,22 @@
 #! /usr/bin/ruby
 
-require 'serialport'
+if RUBY_PLATFORM ==  "x64-mingw32" then
+    require 'rubygems'
+    require 'serialport'
 
-SERIAL_PORT ='/dev/ttyUSB0'
-SERIAL_BAUDRATE=115200
+    SERIAL_PORT ='COM38'
+    SERIAL_BAUDRATE=115200
+#   sp = SerialPort.new(SERIAL_PORT, SERIAL_BAUDRATE)
+#   sp.read_timeout=500
+#   sp.puts("sggma")
+#   p sp.gets()
+#   SERIAL_BAUDRATE="115200, 8, 1, 0"
+#   SerialPort.new(serial_port, 115200, 8, 1, 0)
+else
+    require 'serialport'
+    SERIAL_PORT ='/dev/ttyUSB0'
+    SERIAL_BAUDRATE=115200
+end
 
 class Subghz
 
