@@ -36,6 +36,7 @@ static bool sgRxEvent=false;
 #define CMD_SUBGHZ_INIT "sgi"
 #define CMD_SUBGHZ_BEGIN "sgb"
 #define CMD_SUBGHZ_SEND "sgs"
+#define CMD_SUBGHZ_CONTINUE_SENDING "sgcs"
 #define CMD_SUBGHZ_RXENABLE "sgre"
 #define CMD_SUBGHZ_RXDISABLE "sgrd"
 #define CMD_SUBGHZ_SET_SEND_MODE "sgssm"
@@ -323,6 +324,52 @@ static void sgs(uint8_t** pparam){
 	} else {
 		Serial.println("");
 	}
+}
+
+static void sgcs(uint8_t** pparam){
+	int i=0;
+	char* en;
+	uint16_t distPanid=0xabcd;
+	uint16_t distAddr=0xffff;
+	uint16_t len;
+	uint16_t packets;
+	SUBGHZ_STATUS tx;
+	SUBGHZ_MSG msg;
+	
+	// command sprit
+	do {			
+		i++;
+	} while((pparam[i] = strtok(NULL,", \r\n"))!=NULL);
+
+	len = (int)strtol(pparam[1],&en,0);
+	packets = (int)strtol(pparam[2],&en,0);
+
+    for(i=0; i < len; i++){
+        wbuf[i]=i;
+    }
+
+	if((len<20)||(len>230)) {
+		goto error;
+	} else {		
+#ifdef DEBUG_SERIAL
+		Serial.print("sgcs,");
+		Serial.print_long(len,DEC);
+		Serial.print(",0x");
+		Serial.print_long(packets,HEX);
+		Serial.print(",");
+	    Serial.println(wbuf);
+#endif	
+	}
+
+	delay(100);
+
+    for(i=0; i < packets; i++){
+        digitalWrite(TXLED,LOW);
+        msg = SubGHz.send(distPanid,distAddr,wbuf,len,NULL);
+        digitalWrite(TXLED,HIGH);
+    }
+error:
+	return;
 }
 
 static void write_data(uint8_t** pparam,SUBGHZ_MAC_PARAM* mac){
@@ -1427,6 +1474,7 @@ void command_decoder(uint8_t* pcmd,uint8_t** pparam,SUBGHZ_MAC_PARAM* mac)
 	else if(strncmp(pparam[0],CMD_SUBGHZ_INIT,16)== 0) sgi(pparam);
 	else if(strncmp(pparam[0],CMD_SUBGHZ_BEGIN,16)== 0) sgb(pparam);
 	else if(strncmp(pparam[0],CMD_SUBGHZ_SEND,16)== 0) sgs(pparam);
+	else if(strncmp(pparam[0],CMD_SUBGHZ_CONTINUE_SENDING,16)== 0) sgcs(pparam);
 	else if(strncmp(pparam[0],CMD_WRITE_DATA,16)== 0) write_data(pparam,mac);
 	else if(strncmp(pparam[0],CMD_WRITE_BINARY,16)== 0) write_binary(pparam,mac);
 	else if(strncmp(pparam[0],CMD_SUBGHZ_RXENABLE,16)== 0) sgre(pparam);
