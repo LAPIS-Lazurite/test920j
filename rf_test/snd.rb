@@ -40,15 +40,10 @@ rate = gets().to_i
 print("input mode[20,1] => ")
 mode = gets().to_i
 
-rate50  = {24 => "920600000",33 => "922400000", 36 => "923000000", 60 => "927800000" }
-rate100 = {24 => "920700000",33 => "922500000", 36 => "923100000", 60 => "927900000" }
-rate50.store(61,"928000000") # Extended
-@frq = {50 => rate50, 100 => rate100}
-
 pow_param = Struct.new(:mode, :level, :pa_addr, :pa_bit, :pa_max, :ep_addr)
 p1mW_mode = pow_param.new(1, 0, PA_ADJ1_ADDR, 0x01, 0x0f, "ewr 43 ")
 p20mW_mode = pow_param.new(20, 1300, PA_ADJ3_ADDR, 0x10, 0xf0, "ewr 41 ")
-@pow = {1  => p1mW_mode, 20 => p20mW_mode}
+@pow = {1 => p1mW_mode, 20 => p20mW_mode}
 
 
 # TESTER control -----------------------------
@@ -60,7 +55,7 @@ $sock.puts("inst spect")
 $sock.puts("*OPC?")
 $sock.gets
 
-$sock.puts("cnf " + @frq[rate][ch].to_s)
+$sock.puts("cnf " + $frq[rate][ch].to_s)
 $sock.puts("*OPC?")
 $sock.gets
 
@@ -86,8 +81,7 @@ $sock.gets
 
 # DUT send ------------------------------------
 sbg.setup(ch.to_s,rate.to_s,mode.to_s)
-
-sbg.wf("Welcome_SubGHz_LAPIS_semiconductorWelcome_SubGHz_LAPIS_semiconductorWelcome_SubGHz_LAPIS_semiconductorWelcome_SubGHz_LAPIS_semiconductorWelcome_SubGHz_LAPIS_semiconductor")
+sbg.wf()
 
 for i in 1..loop
 	p sbg.com("sgs 0xffff 0xffff")

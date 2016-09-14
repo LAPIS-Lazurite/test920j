@@ -14,10 +14,6 @@ POW = 20
 MOD = "0x00"
 DEV = 20 * (10**-6)
 
-rate50  = {24 => "920600000",33 => "922400000", 36 => "923000000", 60 => "927800000", 43 => "924400000" }
-rate100 = {24 => "920700000",33 => "922500000", 36 => "923100000", 60 => "927900000", 42 => "924300000" }
-frq = {50 => rate50, 100 => rate100}
-
 sbg = Subghz.new()
 sbg.setup(CH, RATE, POW)
 sbg.rw("8 0x0c ",MOD)
@@ -48,7 +44,7 @@ $sock.puts("INIT:CONT ON")                              #連続掃引設定
 $sock.puts("*OPC?")
 $sock.gets
 
-$sock.puts("FREQ:CENT " + frq[RATE][CH])                #中心周波数設定
+$sock.puts("FREQ:CENT " + $frq[RATE][CH])                #中心周波数設定
 $sock.puts("*OPC?")
 $sock.gets
 
@@ -108,7 +104,7 @@ $sock.gets
 $sock.puts("CALC:MARK:FCO:X?")                          #周波数カウンタの値を読み取る   SAモードでは下記のコマンドを使用する    CALC:MARK:Y?"
 $sock.puts("*OPC?")
 result = $sock.gets.to_i
-frequency = frq[RATE][CH].to_i
+frequency = $frq[RATE][CH].to_i
 
 printf("######################## SUMMARY #####################\n")
 printf("Tatol: Tolerance of frequency\n")

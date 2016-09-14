@@ -14,10 +14,6 @@ RATE = 100
 POW = 20
 MOD = "0x03"
 
-rate50  = {24 => "920600000",33 => "922400000", 36 => "923000000", 60 => "927800000", 43 => "924400000" }
-rate100 = {24 => "920700000",33 => "922500000", 36 => "923100000", 60 => "927900000", 42 => "924300000" }
-frq = {50 => rate50, 100 => rate100}
-
 sbg = Subghz.new()
 sbg.setup(CH, RATE, POW)
 sbg.rw("8 0x0c ",MOD)
@@ -54,7 +50,7 @@ $sock.puts("INIT:CONT ON")                              #連続掃引設定
 $sock.puts("*OPC?")
 $sock.gets
 
-$sock.puts("FREQ:CENT " + frq[RATE][CH])                #中心周波数設定  この例では中心周波数を920MHzに設定
+$sock.puts("FREQ:CENT " + $frq[RATE][CH])                #中心周波数設定  この例では中心周波数を920MHzに設定
 $sock.puts("*OPC?")
 $sock.gets
 

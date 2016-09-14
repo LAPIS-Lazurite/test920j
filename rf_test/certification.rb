@@ -55,7 +55,7 @@ class Certification
 		print("Input loop number => ")
 		loop = gets().to_i
 
-        p @sbg.wf("welcome_SubGHz_LAPIS_semiconductor welcome_SubGHz_LAPIS_semiconductor welcome_SubGHz_LAPIS_semiconductor welcome_SubGHz_LAPIS_semiconductor welcome_SubGHz_LAPIS_semiconductor welcome_SubGHz_LAPIS_semiconductor welcome_SubGHz_LAPIS")
+        p @sbg.wf()
         for i in 1..loop
             p @sbg.com("sgs 0xffff 0xffff")
           # p @sbg.com("sgs 0xabcd 0x0004")

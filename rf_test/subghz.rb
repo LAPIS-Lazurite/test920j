@@ -18,6 +18,10 @@ else
     SERIAL_BAUDRATE=115200
 end
 
+rate50  = {24 => "920600000",33 => "922400000",36 => "923000000",39=>"923600000",40=> "923800000",41=>"924000000",43 => "924400000",61 => "928000000" }
+rate100 = {24 => "920700000",33 => "922500000",36 => "923100000",39=>"923700000",40=> "923900000",41=>"924100000",42 => "924300000",60 => "927900000" }
+$frq = {50 => rate50, 100 => rate100}
+
 class Subghz
 
 	def setup(ch, rate, mode)
@@ -80,9 +84,10 @@ class Subghz
 		sp.close
 	end
 
-	def wf(payload)
+	def wf()
 		sp = SerialPort.new(SERIAL_PORT,SERIAL_BAUDRATE)
 		sp.read_timeout=500
+		payload = "Welcome_SubGHz_LAPIS_semiconductorWelcome_SubGHz_LAPIS_semiconductorWelcome_SubGHz_LAPIS_semiconductorWelcome_SubGHz_LAPIS_semiconductorWelcome_SubGHz_LAPIS_semiconductor"
 		sp.puts("w," + payload)
 		sp.close
 	end

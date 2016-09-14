@@ -12,10 +12,6 @@ POW = 20
 MOD = "0x03"
 DEV = 20 * (10**-6)
 
-rate50  = {24 => "920600000",33 => "922400000", 36 => "923000000", 60 => "927800000", 43 => "924400000" }
-rate100 = {24 => "920700000",33 => "922500000", 36 => "923100000", 60 => "927900000", 42 => "924300000" }
-frq = {50 => rate50, 100 => rate100}
-
 sbg = Subghz.new()
 sbg.setup(CH, RATE, POW)
 sbg.rw("8 0x0c ",MOD)
@@ -46,7 +42,7 @@ $sock.puts("INIT:CONT ON")                              #˜A‘±‘|ˆøÝ’è
 $sock.puts("*OPC?")
 $sock.gets
 
-$sock.puts("FREQ:CENT " + frq[RATE][CH])                #’†SŽü”g”Ý’è ‚±‚Ì—á‚Å‚Í’†SŽü”g”‚ð920MHz‚ÉÝ’è
+$sock.puts("FREQ:CENT " + $frq[RATE][CH])                #’†SŽü”g”Ý’è ‚±‚Ì—á‚Å‚Í’†SŽü”g”‚ð920MHz‚ÉÝ’è
 $sock.puts("*OPC?")
 $sock.gets
 
@@ -117,7 +113,7 @@ result = $sock.gets.split(",")
 center = result[1].to_i
 lower = result[2].to_i
 upper = result[3].to_i
-frequency = frq[RATE][CH].to_i
+frequency = $frq[RATE][CH].to_i
 
 printf("######################## SUMMARY #####################\n")
 printf("Tatol: Tolerance of occupied bandwidth Frequency rangen\n")
@@ -125,7 +121,7 @@ printf("Center Frequencey: %d\n",frequency)
 printf("OBW Center: %d\n",center)
 #printf("OBW Lower: %d\n",lower)
 #printf("OBW Upper: %d\n",upper)
-printf("Deviation: %d\n",DEV * frq[RATE][CH].to_i)
+printf("Deviation: %d\n",DEV * $frq[RATE][CH].to_i)
 if (frequency - center).abs > (DEV * frequency) then
 	printf("!!!FAIL!!!\n")
 else
