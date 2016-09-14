@@ -24,9 +24,10 @@ sbg.rw("8 0x0c ",MOD)
 sbg.txon()
 
 #setup TESTER --------------------------------------
+ATT = 7
 MAKER = "DELTA" # NORM(mW) or DELTA(dBm) When using ATT, set DELTA
-normal = {"lower" => 19, "upper" => 20, "unit" => "mW", "att" => 0} 
-delta  = {"lower" => 12, "upper" => 13, "unit" => "dBm", "att" => 7} 
+normal = {"lower" => 19, "upper" => 20, "unit" => "mW"}
+delta  = {"lower" => 12, "upper" => 13, "unit" => "dBm"}
 range  = {"NORM" => normal, "DELTA" => delta}
 
 $sock.puts("INST SPECT")                                #SAモードでは下記のコマンドを使用  INST SIGANA"
@@ -142,7 +143,7 @@ if MAKER == "NORM" then
 else
 	$sock.puts(":CALCulate:MARKer:Y:DELT?")                 #マーカ点の相対値を読み出します。
 	$sock.puts("*OPC?")
-	result = $sock.gets.to_f + range[MAKER]["att"]
+	result = $sock.gets.to_f + ATT
 end
 p result
 
@@ -150,7 +151,7 @@ p result
 printf("######################## SUMMARY #####################\n")
 printf("Tatol: Antenna power pointn\n")
 printf("Makeer mode: %s\n",MAKER)
-printf("Attenuate: %d dB\n",range[MAKER]["att"])
+printf("Attenuate: %d dB\n",ATT)
 printf("result: %3.2f%s\n",result,range[MAKER]["unit"])
 if result.between?(range[MAKER]["lower"].to_i,range[MAKER]["upper"].to_i) == false then
 	printf("!!!FAIL!!!\n")

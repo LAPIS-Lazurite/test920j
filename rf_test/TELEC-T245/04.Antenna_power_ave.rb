@@ -21,6 +21,7 @@ sbg.setup(CH, RATE, POW)
 sbg.wf("Welcome_SubGHz_LAPIS_semiconductorWelcome_SubGHz_LAPIS_semiconductorWelcome_SubGHz_LAPIS_semiconductorWelcome_SubGHz_LAPIS_semiconductorWelcome_SubGHz_LAPIS_semiconductor")
 
 #setup TESTER --------------------------------------
+ATT = 7
 $sock.puts("INST SPECT")                                #SAモードでは下記のコマンドを使用   INST SIGANA"
 $sock.puts("*OPC?")
 $sock.gets
@@ -101,7 +102,8 @@ $sock.puts("DISP:WIND:TRAC:Y:RLEV -10")                #リファレンスレベル設定(d
 $sock.puts("*OPC?")
 $sock.gets
 
-$sock.puts(":UNIT:POWer W")                             #表示をWに変換
+#$sock.puts(":UNIT:POWer W")                             #表示をWに変換
+$sock.puts(":UNIT:POWer DBM")                             #表示をWに変換
 $sock.puts("*OPC?")
 $sock.gets
 
@@ -135,7 +137,7 @@ end
 
 $sock.puts("FETC:BPOW?")                                #BurstAveragePowerの測定結果を読み取る
 $sock.puts("*OPC?")
-result = ($sock.gets.to_f * 1000)
+result = $sock.gets.to_f + ATT
 p result
 
 $sock.puts("TRIG OFF")
@@ -146,8 +148,9 @@ $sock.close
 
 printf("######################## SUMMARY #####################\n")
 printf("Tatol: Antenna power ave\n")
-printf("result: %3.2f mW\n",result)
-if result.between?(2.0,3.0) == false then
+printf("Attenuate: %d dB\n",ATT)
+printf("result: %3.2f dBm\n",result)
+if result.between?(10,13) == false then
 	printf("!!!FAIL!!!\n")
 else
 	printf("!!!PASS!!!\n")
