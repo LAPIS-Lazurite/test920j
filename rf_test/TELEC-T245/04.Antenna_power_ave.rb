@@ -97,7 +97,7 @@ $sock.puts("SWE:TIME:AUTO:MODE FAST")                   #掃引モード設定     SAモ
 $sock.puts("*OPC?")
 $sock.gets
 
-$sock.puts("DISP:WIND:TRAC:Y:RLEV -10")                 #リファレンスレベル設定(dBm)    この例ではリファレンスレベルを-10dBmに設定する。
+$sock.puts("DISP:WIND:TRAC:Y:RLEV -10")                #リファレンスレベル設定(dBm)    この例ではリファレンスレベルを-10dBmに設定する。
 $sock.puts("*OPC?")
 $sock.gets
 
@@ -109,27 +109,47 @@ $sock.puts("CALC:MARK:MODE OFF")                        #マーカーOFF設定
 $sock.puts("*OPC?")
 $sock.gets
 
-$sock.puts("INIT:MODE:SING")                            #SAモードではトレースモードを変更してからからこのコマンドを送る(6行下を参照)
-$sock.puts("*OPC?")
+#$sock.puts("INIT:MODE:SING")                            #SAモードではトレースモードを変更してからからこのコマンドを送る(6行下を参照)
+#$sock.puts("*OPC?")
+#$sock.gets
 
 $sock.puts("TRAC? TRAC1")                               #トレースデータを読み出す
 $sock.puts("*OPC?")
+$sock.gets
 
 $sock.puts("BPOW:BURS:STOP 2.67818181818182MS")         #Burst Average Power 測定の終了位置（時間）を設定   SAモードでは下記コマンドを使用      TRAC:MODE PVT"
 $sock.puts("*OPC?")
+$sock.gets
 
-#$sock.puts("INIT:MODE:SING")                             #SAモードでは本コマンドを挿入
-#$sock.puts("*OPC?")
-
-$sock.puts("FETC:BPOW?")                                #BurstAveragePowerの測定結果を読み取る
+$sock.puts("INIT:MODE:SING")                            #SAモードではトレースモードを変更してからからこのコマンドを送る(6行下を参照)
 $sock.puts("*OPC?")
+$sock.puts("*WAI")
 
 for i in 1..10
 	p sbg.com("sgs 0xffff 0xffff")
 end
 
+#$sock.puts("INIT:MODE:SING")                             #SAモードでは本コマンドを挿入
+#$sock.puts("*OPC?")
+#$sock.gets
+
+$sock.puts("FETC:BPOW?")                                #BurstAveragePowerの測定結果を読み取る
+$sock.puts("*OPC?")
+result = ($sock.gets.to_f * 1000)
+p result
+
 $sock.puts("TRIG OFF")
 $sock.puts("*OPC?")
+$sock.gets
 
-sbg.trxoff()
 $sock.close
+
+printf("######################## SUMMARY #####################\n")
+printf("Tatol: Antenna power ave\n")
+printf("result: %3.2f mW\n",result)
+if result.between?(2.0,3.0) == false then
+	printf("!!!FAIL!!!\n")
+else
+	printf("!!!PASS!!!\n")
+end
+printf("######################################################\n")
