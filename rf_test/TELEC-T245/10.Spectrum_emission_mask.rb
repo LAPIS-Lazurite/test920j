@@ -10,7 +10,7 @@ require '../subghz.rb'
 #setup DUT --------------------------------------
 CH = 42
 RATE = 100
-POW = 1
+POW = 20
 MOD = "0x03"
 
 sbg = Subghz.new()
@@ -19,6 +19,9 @@ sbg.rw("8 0x0c ",MOD)
 sbg.txon()
 
 #setup TESTER --------------------------------------
+pow = {20 => "13", 1 => "0"}
+band= {50 => "200", 100 => "400"}
+
 $sock.puts("INST SPECT")    
 $sock.puts("*OPC?") 
 $sock.gets
@@ -47,11 +50,11 @@ $sock.puts("FREQ:CENT " + $frq[RATE][CH])                #中心周波数を設定
 $sock.puts("*OPC?")  
 $sock.gets
 
-$sock.puts("SEM:BAND:CHAN 200KHZ")                      #Channel BWをチャネル帯域幅×キャリア数に設定   チャネル帯域幅は試験周波数から判定する
+$sock.puts("SEM:BAND:CHAN " + band[RATE] + "KHZ")                      #Channel BWをチャネル帯域幅×キャリア数に設定   チャネル帯域幅は試験周波数から判定する
 $sock.puts("*OPC?")    
 $sock.gets
 
-$sock.puts("SEM:OFFS:LIST:STAR:ABS1 0DBM,-36DBM,0,0,0,0")                           #Limit Startレベルを設定
+$sock.puts("SEM:OFFS:LIST:STAR:ABS1 " + pow[POW] + "DBM,-36DBM,0,0,0,0")                           #Limit Startレベルを設定
 $sock.puts("*OPC?") 
 $sock.gets
 
@@ -115,7 +118,7 @@ $sock.puts("AVER:COUN 10")                              #掃引回数の設定 この例で
 $sock.puts("*OPC?")
 $sock.gets
 
-$sock.puts("DISP:WIND:TRAC:Y:RLEV 0")                   #Reference Level    この例ではリファレンスレベルを0dBmに設定
+$sock.puts("DISP:WIND:TRAC:Y:RLEV " + pow[POW])                   #Reference Level    この例ではリファレンスレベルを0dBmに設定
 $sock.puts("*OPC?") 
 $sock.gets
 
