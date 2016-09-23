@@ -8,8 +8,8 @@ require '../socket.rb'
 require '../subghz.rb'
 
 #setup DUT --------------------------------------
-CH = 43
-RATE = 50
+CH = 42
+RATE = 100
 POW = 20
 MOD = "0x03"
 

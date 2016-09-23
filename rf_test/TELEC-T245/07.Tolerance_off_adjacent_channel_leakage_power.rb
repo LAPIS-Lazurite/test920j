@@ -17,6 +17,8 @@ sbg.setup(CH, RATE, POW)
 sbg.rw("8 0x0c ",MOD)
 sbg.txon()
 
+band = {50 =>"200", 100 =>"400"}
+
 #setup TESTER --------------------------------------
 $sock.puts("INST SPECT")                                #SAƒ‚[ƒh‚Å‚Í‰º‹L‚ÌƒRƒ}ƒ“ƒh‚ğg—p   INST SIGANA"
 $sock.puts("*OPC?")
@@ -46,7 +48,8 @@ $sock.puts("FREQ:CENT " + $frq[RATE][CH])                          #’†Sü”g”İ
 $sock.puts("*OPC?")
 $sock.gets
 
-$sock.puts("FREQ:SPAN 1MHZ")                            #SPANİ’è
+#$sock.puts("FREQ:SPAN 1MHZ")                            #SPANİ’è
+$sock.puts("FREQ:SPAN 1.25MHZ")                            #SPANİ’è
 $sock.puts("*OPC?")
 $sock.gets
 
@@ -103,7 +106,7 @@ $sock.puts("ACP:CARR:LIST:WIDT 200000")                 #ƒLƒƒƒŠƒA‚Ìü”g”ŠÔŠu‚ğ
 $sock.puts("*OPC?")
 $sock.gets
 
-$sock.puts("ACP:CARR:LIST:BAND 200KHZ")                 #ƒLƒƒƒŠƒA‚Ì‘ª’è‘Ñˆæ•‚ğİ’è
+$sock.puts("ACP:CARR:LIST:BAND " + band[RATE].to_s + "KHZ")                 #ƒLƒƒƒŠƒA‚Ì‘ª’è‘Ñˆæ•‚ğİ’è
 $sock.puts("*OPC?")
 $sock.gets
 
@@ -111,7 +114,7 @@ $sock.puts("ACP:CARR:FILT:TYPE RECT")                   #ƒLƒƒƒŠƒA‚ÌƒtƒBƒ‹ƒ^í—Ş‚
 $sock.puts("*OPC?")
 $sock.gets
 
-$sock.puts("ACP:OFFS:BAND 200KHZ")                      #Offset Channel ‘Ñˆæ•‚ğİ’è
+$sock.puts("ACP:OFFS:BAND " + band[RATE].to_s + "KHZ")                      #Offset Channel ‘Ñˆæ•‚ğİ’è
 $sock.puts("*OPC?")
 $sock.gets
 
@@ -119,7 +122,7 @@ $sock.puts("ACP:OFFS:FILT:TYPE RECT")                   #ƒIƒtƒZƒbƒg‚ÌƒtƒBƒ‹ƒ^í—
 $sock.puts("*OPC?")
 $sock.gets
 
-$sock.puts("ACP:OFFS:LIST 200KHZ,0,0")                  #ƒIƒtƒZƒbƒgƒ`ƒƒƒlƒ‹‚ÌƒIƒtƒZƒbƒgü”g”‚ğİ’è
+$sock.puts("ACP:OFFS:LIST " + band[RATE] + "KHZ,0,0")                  #ƒIƒtƒZƒbƒgƒ`ƒƒƒlƒ‹‚ÌƒIƒtƒZƒbƒgü”g”‚ğİ’è
 $sock.puts("*OPC?")
 $sock.gets
 
