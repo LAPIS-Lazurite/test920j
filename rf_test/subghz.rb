@@ -53,7 +53,7 @@ class Subghz
 	def rxon
 		sp = SerialPort.new(SERIAL_PORT,SERIAL_BAUDRATE)
 		sp.read_timeout=500
-		sp.puts("rfw 8 0x6c 0x08")
+		sp.puts("rfw 8 0x6c 0x06")
 		p sp.gets()
 		sp.close
 	end
