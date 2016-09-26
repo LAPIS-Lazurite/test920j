@@ -135,18 +135,22 @@ $sock.puts("*OPC")
 
 $sock.puts("FETC:SEM?")                                #Spectrum Emission ‘ª’è‚Ì‘ª’èŒ‹‰Ê‚ðŽæ“¾
 $sock.puts("*OPC?")
-result = $sock.gets.split(",")
+r = $sock.gets.split(",")
 
+sleep 5
+sbg.trxoff()
+$sock.close
+
+i=0
 printf("######################## SUMMARY #####################\n")
 printf("Tatol: Spectrum emission mask\n")
-printf("Judged flag : %d\n",result[0].to_i)
-if result[0].to_i == 1 then
+printf("Reference power: %s\n",r[1])
+printf("%-16s %-16s %-16s %-16s %-16s %-16s\n","Lower peak","Lower margin","Lower frequency","Upper peak"," Upper margin","Upper frequency")
+printf("%-16s %-16s %-16s %-16s %-16s %-16s\n",r[i+=2],r[i+=1],r[i+=1],r[i+=2],r[i+=1],r[i+=1])
+printf("%-16s %-16s %-16s %-16s %-16s %-16s\n",r[i+=2],r[i+=1],r[i+=1],r[i+=2],r[i+=1],r[i+=1])
+if r[0].to_i == 1 then
 	printf("!!!FAIL!!!\n")
 else
 	printf("!!!PASS!!!\n")
 end
 printf("######################################################\n")
-
-sleep 5
-sbg.trxoff()
-$sock.close

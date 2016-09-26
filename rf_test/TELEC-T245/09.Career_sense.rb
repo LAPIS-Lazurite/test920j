@@ -180,7 +180,7 @@ snd_thread.join
 
 printf("######################## SUMMARY #####################\n")
 printf("Tatol: Career sense\n")
-printf("Judged send status : %d\n",@status.to_i)
+printf("Send status : %d\n",@status.to_i)
 if @status.to_i != 9 then
 	printf("!!!FAIL!!!\n")
 else

@@ -143,6 +143,8 @@ else
 end
 p result
 
+sbg.trxoff()
+$sock.close
 
 printf("######################## SUMMARY #####################\n")
 printf("Tatol: Antenna power pointn\n")
@@ -155,6 +157,3 @@ else
 	printf("!!!PASS!!!\n")
 end
 printf("######################################################\n")
-
-sbg.trxoff()
-$sock.close

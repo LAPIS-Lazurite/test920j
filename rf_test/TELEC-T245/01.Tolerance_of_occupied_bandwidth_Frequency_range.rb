@@ -115,6 +115,9 @@ lower = result[2].to_i
 upper = result[3].to_i
 frequency = $frq[RATE][CH].to_i
 
+sbg.trxoff()
+$sock.close
+
 printf("######################## SUMMARY #####################\n")
 printf("Tatol: Tolerance of occupied bandwidth Frequency rangen\n")
 printf("Center Frequencey: %d\n",frequency)
@@ -128,6 +131,3 @@ else
 	printf("!!!PASS!!!\n")
 end
 printf("######################################################\n")
-
-sbg.trxoff()
-$sock.close

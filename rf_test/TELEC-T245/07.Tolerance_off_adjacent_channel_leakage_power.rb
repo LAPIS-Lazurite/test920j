@@ -142,6 +142,9 @@ spec = -26
 upper = result[3].to_f
 lower = result[5].to_f
 
+sbg.trxoff()
+$sock.close
+
 printf("######################## SUMMARY #####################\n")
 printf("Tatol: Tolerance off adjacent channel leakage power\n")
 printf("Specification: %ddBm less\n",spec)
@@ -153,6 +156,3 @@ else
 	printf("!!!PASS!!!\n")
 end
 printf("######################################################\n")
-
-sbg.trxoff()
-$sock.close

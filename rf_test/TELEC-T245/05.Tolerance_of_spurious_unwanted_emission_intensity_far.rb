@@ -133,6 +133,9 @@ $sock.puts("FETC:SPUR?")
 $sock.puts("*OPC?")
 result = $sock.gets.split(",")
 
+sbg.trxoff()
+$sock.close
+
 printf("######################## SUMMARY #####################\n")
 printf("Tatol: Tolerance of spurious unwanted emission intensity far\n")
 printf("Judged flag : %d\n",result[0].to_i)
@@ -142,6 +145,3 @@ else
 	printf("!!!PASS!!!\n")
 end
 printf("######################################################\n")
-
-sbg.trxoff()
-$sock.close
