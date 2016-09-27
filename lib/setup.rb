@@ -19,4 +19,8 @@ class Lazurite::Test
 	def set_halt()
 		@halt = 1
 	end
+
+	def setTarget(comPort)
+		@@com_target = comPort
+	end
 end

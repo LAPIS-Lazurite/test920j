@@ -13,6 +13,13 @@ Signal.trap(:INT){
 
 test = Lazurite::Test.new
 
+#result = test.boot_write("LAZURITE mini series","bin/ML620Q504_000RA.bin")
+#p result
+#if(result != "OK") then
+#	p result[0],result[1],result[3]
+#	exit 0
+#end
+
 result = test.getComPort("LAZURITE mini series","LAZURITE Sub-GHz Rev3")
 if(result == nil) then
 	exit
@@ -22,20 +29,9 @@ end
 
 result = test.pwr(true)
 if(result != "OK") then
-	exit
+	p result[0],result[1],result[3]
 else
 	p result
-end
-
-sleep(1)
-
-p "bootwrite"
-
-result = test.boot_write("LAZURITE mini series","../bin/ML620Q504_000RA.bin")
-p result
-if(result != "OK") then
-	p result[0],result[1],result[3]
-	exit 0
 end
 
 sleep(0.1)
@@ -47,10 +43,9 @@ else
 	p result
 end
 
-result = test.pwr(false)
-if(result != "OK") then
-	exit
-else
-	p result
-end
-
+#result = test.pwr(false)
+#if(result != "OK") then
+	#p result[0],result[1],result[3]
+#else
+	#p result
+#end
