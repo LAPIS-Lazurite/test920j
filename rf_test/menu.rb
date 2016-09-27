@@ -21,6 +21,7 @@ class Top_menu
 			end
 		end
 		if (i == n-1) then
+			system("./get_addr.rb")
 			printf("!!!Verification for TELEC-T245 was normalend\n")
 		end
 		Dir.chdir "./.."

@@ -6,30 +6,28 @@
 require '../socket.rb'
 require '../subghz.rb'
 
-#setup DUT --------------------------------------
-CH = 42
-RATE = 100
 POW = 20
 MOD = "0x03"
 
-sbg = Subghz.new()
-sbg.setup(CH, RATE, POW)
-sbg.wf()
+class Career_sense
+	#setup method --------------------------------------
+	def self.snd(ra,ch)
+		sbg = Subghz.new()
+		sbg.setup(ch, ra, POW)
+		sbg.wf()
 
-
-#setup THREAD --------------------------------------
-	snd_thread = Thread.new do
 		while 1
 			confirm = sbg.com("sgs 0xffff 0xffff")
-			p confirm.split(",")
-			@status = confirm.split(",")[3]
+			str = confirm.split(",")
+			p str
+			@status = str[3]
 			if @send_flg == 1 then
 				break
 			end
 		end
 	end
 
-	tester_thread = Thread.new do
+	def self.tester(ra,ch)
 		@send_flg = 0
 		$sock.puts("INST SPECT")                                #SAモードでは下記のコマンドを使用   INST SIGANA"
 		$sock.puts("*OPC?")
@@ -67,7 +65,7 @@ sbg.wf()
 		$sock.puts("*OPC?")
 		$sock.gets
 
-		$sock.puts("FREQ:CENT " + $frq[RATE][CH])                          #中心周波数設定 この例では中心周波数を920MHzに設定
+		$sock.puts("FREQ:CENT " + $frq[ra][ch])                          #中心周波数設定 この例では中心周波数を920MHzに設定
 		$sock.puts("*OPC?")
 		$sock.gets
 		
@@ -115,7 +113,7 @@ sbg.wf()
 		$sock.puts("*OPC?") 
 		$sock.gets
 
-		$sock.puts("FREQ:CENT " + $frq[RATE][CH])                          #中心周波数を設定
+		$sock.puts("FREQ:CENT " + $frq[ra][ch])                          #中心周波数を設定
 		$sock.puts("*OPC?") 
 		$sock.gets
 
@@ -134,7 +132,7 @@ sbg.wf()
 		$sock.puts("*OPC?")  
 		$sock.gets
 
-		$sock.puts("FREQ " + $frq[RATE][CH])                               #SGの中心周波数を設定する   この例では中心周波数を920MHzに設定
+		$sock.puts("FREQ " + $frq[ra][ch])                               #SGの中心周波数を設定する   この例では中心周波数を920MHzに設定
 		$sock.puts("*OPC?")    
 		$sock.gets
 
@@ -159,7 +157,7 @@ sbg.wf()
 		$sock.puts("*OPC?")    
 		$sock.gets
 		
-		sleep 5
+		sleep 2
 		@send_flg = 1
 		sleep 3
 
@@ -170,20 +168,24 @@ sbg.wf()
 		$sock.puts("INST SPECT")                                #アクティブなアプリケーションをスペアナに設定   SAモードでは下記のコマンドを使用    INST SIGANA"
 		$sock.puts("*OPC")   
 #		$sock.gets
-		
-		$sock.close
 	end
 
-tester_thread.join
-snd_thread.join
+	#setup THREAD --------------------------------------
+	def self.func_thread(ra,ch)
+		tester_thread = Thread.new(ra,ch, &method(:tester))
+		snd_thread = Thread.new(ra,ch, &method(:snd))
+		tester_thread.join
+		snd_thread.join
 
+#	printf("Send status : %d\n",@status.to_i)
+		if @status.to_i != 9 then
+			raise StandardError, "FAIL\n"
+		end
+	end
 
-printf("+++++++++++ SUMMARY ++++++++++\n")
-printf("Subject: Career sense\n")
-printf("Send status : %d\n",@status.to_i)
-if @status.to_i != 9 then
-	printf("Judgement: %s\n", "FAIL")
-	raise StandardError, "FAIL\n"
-else
-	printf("Judgement: %s\n", "PASS")
+#	func_thread(50,24)
+	func_thread(100,42)
+#	func_thread(50,61)
+	$sock.close
+	printf("Career sense is PASS!!!\n")
 end
