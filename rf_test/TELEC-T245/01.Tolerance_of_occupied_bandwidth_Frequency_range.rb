@@ -118,16 +118,16 @@ frequency = $frq[RATE][CH].to_i
 sbg.trxoff()
 $sock.close
 
-printf("######################## SUMMARY #####################\n")
-printf("Tatol: Tolerance of occupied bandwidth Frequency rangen\n")
+printf("+++++++++++ SUMMARY ++++++++++\n")
+printf("Subject: Tolerance of occupied bandwidth Frequency rangen]\n")
 printf("Center Frequencey: %d\n",frequency)
 printf("OBW Center: %d\n",center)
 printf("OBW Lower: %d\n",lower)
 printf("OBW Upper: %d\n",upper)
 printf("Deviation: %d\n",DEV * $frq[RATE][CH].to_i)
 if (frequency - center).abs > (DEV * frequency) then
-	printf("!!!FAIL!!!\n")
+	printf("Judgement: %s\n", "FAIL")
+	raise StandardError, "FAIL\n"
 else
-	printf("!!!PASS!!!\n")
+	printf("Judgement: %s\n", "PASS")
 end
-printf("######################################################\n")

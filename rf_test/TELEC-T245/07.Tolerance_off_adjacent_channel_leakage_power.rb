@@ -145,14 +145,13 @@ lower = result[5].to_f
 sbg.trxoff()
 $sock.close
 
-printf("######################## SUMMARY #####################\n")
-printf("Tatol: Tolerance off adjacent channel leakage power\n")
+printf("+++++++++++ SUMMARY ++++++++++\n")
+printf("Subject: Tolerance off adjacent channel leakage power\n")
 printf("Specification: %ddBm less\n",spec)
 printf("Upper: %3.2fdBm, Lower: %3.2fdBm\n",upper,lower)
-
 if upper > spec || lower > spec then
-	printf("!!!FAIL!!!\n")
+	printf("Judgement: %s\n", "FAIL")
+	raise StandardError, "FAIL\n"
 else
-	printf("!!!PASS!!!\n")
+	printf("Judgement: %s\n", "PASS")
 end
-printf("######################################################\n")

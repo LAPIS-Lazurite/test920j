@@ -146,14 +146,14 @@ p result
 sbg.trxoff()
 $sock.close
 
-printf("######################## SUMMARY #####################\n")
-printf("Tatol: Antenna power pointn\n")
+printf("+++++++++++ SUMMARY ++++++++++\n")
+printf("Subject: Antenna power pointn\n")
 printf("Makeer mode: %s\n",MAKER)
 printf("Attenuate: %d dB\n",ATT)
-printf("result: %3.2f%s\n",result,range[MAKER]["unit"])
+printf("Result: %3.2f%s\n",result,range[MAKER]["unit"])
 if result.between?(range[MAKER]["lower"].to_i,range[MAKER]["upper"].to_i) == false then
-	printf("!!!FAIL!!!\n")
+	printf("Judgement: %s\n", "FAIL")
+	raise StandardError, "FAIL\n"
 else
-	printf("!!!PASS!!!\n")
+	printf("Judgement: %s\n", "PASS")
 end
-printf("######################################################\n")

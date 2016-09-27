@@ -131,17 +131,24 @@ $sock.gets
 #Spurious Emission ‘ª’è‚Ì‘ª’èŒ‹‰Ê‚ðŽæ“¾
 $sock.puts("FETC:SPUR?")
 $sock.puts("*OPC?")
-result = $sock.gets.split(",")
+r = $sock.gets.split(",")
 
 sbg.trxoff()
 $sock.close
 
-printf("######################## SUMMARY #####################\n")
-printf("Tatol: Tolerance of spurious unwanted emission intensity far\n")
-printf("Judged flag : %d\n",result[0].to_i)
-if result[0].to_i == 1 then
-	printf("!!!FAIL!!!\n")
+i=0
+printf("+++++++++++ SUMMARY ++++++++++\n")
+printf("Subject: Tolerance of spurious unwanted emission intensity far\n")
+printf("%-3s %-7s %-15s %-10s %-10s %-10s %-10s\n", "No","Segment","frequency","peak","margin","limit","jude")
+printf("%-3s %-7s %-15s %-10s %-10s %-10s %-10s\n", r[i+=1],r[i+=1],r[i+=1],r[i+=1],r[i+=1],r[i+=1],r[i+=1])
+printf("%-3s %-7s %-15s %-10s %-10s %-10s %-10s\n", r[i+=1],r[i+=1],r[i+=1],r[i+=1],r[i+=1],r[i+=1],r[i+=1])
+printf("%-3s %-7s %-15s %-10s %-10s %-10s %-10s\n", r[i+=1],r[i+=1],r[i+=1],r[i+=1],r[i+=1],r[i+=1],r[i+=1])
+printf("%-3s %-7s %-15s %-10s %-10s %-10s %-10s\n", r[i+=1],r[i+=1],r[i+=1],r[i+=1],r[i+=1],r[i+=1],r[i+=1])
+printf("%-3s %-7s %-15s %-10s %-10s %-10s %-10s\n", r[i+=1],r[i+=1],r[i+=1],r[i+=1],r[i+=1],r[i+=1],r[i+=1])
+printf("%-3s %-7s %-15s %-10s %-10s %-10s %-10s\n", r[i+=1],r[i+=1],r[i+=1],r[i+=1],r[i+=1],r[i+=1],r[i+=1])
+if r[0].to_i == 1 then
+	printf("Judgement: %s\n", "FAIL")
+	raise StandardError, "FAIL\n"
 else
-	printf("!!!PASS!!!\n")
+	printf("Judgement: %s\n", "PASS")
 end
-printf("######################################################\n")

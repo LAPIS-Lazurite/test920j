@@ -5,13 +5,34 @@ class Top_menu
 	ATT = "7"
 	LOAD_FILE = "bin/test.bin mini"
 
+	def self.exe_all_telec
+		Dir.chdir "./TELEC-T245"
+		p = Dir.glob("*")
+		n = p.count
+		for i in 0 ..(n-1)
+			com = "./" + p.sort[i]
+			print("---------------------------------------------\n")
+			p com
+			ret = system(com)
+			p ret
+			if ret == false then
+				printf("!!!STOP!!!: Let's check this subject\n")
+				break
+			end
+		end
+		if (i == n-1) then
+			printf("!!!Verification for TELEC-T245 was normalend\n")
+		end
+		Dir.chdir "./.."
+	end
+
 	def self.telec_menu
 		Dir.chdir "./TELEC-T245"
 		while 1
 			print("====================== TELEC MENU =======================\n")
 			p = Dir.glob("*")
 			p.sort.each{|d| puts "" + d + "\n" }
-			print("99.exit\n")
+			print("99.Exit\n")
 			print("=========================================================\n")
 			print("input number => ")
 			input = gets().to_s
@@ -39,13 +60,14 @@ class Top_menu
 			print("4: Execute calibration\n")
 			print("5: Continue from 1 to 4\n")
 			print("10: Sub menu for TELEC-T245 certification\n")
+			print("11: Execute all TELEC-T245 certification\n")
 			print("20: Continuous Wave\n")
 			print("21: Send packet\n")
 			print("22: Carrier Sense\n")
 			print("30: Set my address\n")
 			print("31: Get my address\n")
 			print("32: Direct Command\n")
-			print("99: exit\n")
+			print("99: Exit\n")
 			print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n")
 			print("input number => ")
 			input = gets().to_i
@@ -69,6 +91,8 @@ class Top_menu
 				system("./cal.rb " + ATT)
 			when 10
 				telec_menu()
+			when 11
+				exe_all_telec()
 			when 20
 				system("./cw.rb")
 			when 21

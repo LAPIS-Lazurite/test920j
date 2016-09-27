@@ -178,13 +178,12 @@ tester_thread.join
 snd_thread.join
 
 
-printf("######################## SUMMARY #####################\n")
-printf("Tatol: Career sense\n")
+printf("+++++++++++ SUMMARY ++++++++++\n")
+printf("Subject: Career sense\n")
 printf("Send status : %d\n",@status.to_i)
 if @status.to_i != 9 then
-	printf("!!!FAIL!!!\n")
+	printf("Judgement: %s\n", "FAIL")
+	raise StandardError, "FAIL\n"
 else
-	printf("!!!PASS!!!\n")
+	printf("Judgement: %s\n", "PASS")
 end
-printf("######################################################\n")
-

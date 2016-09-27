@@ -11,6 +11,11 @@ $sock.puts("inst spect")
 $sock.puts("*OPC?")
 $sock.gets
 
+$sock.puts("SYST:PRES")                                 #スペアナを初期化   
+$sock.puts("DISP:WIND:TRAC:Y:RLEV:OFFS:STAT ON")        #リファレンスレベルオフセット機能をOn にする    
+$sock.puts("*OPC?")
+$sock.gets
+
 $sock.puts("cnf 924.3MHZ")
 $sock.puts("*OPC?")
 $sock.gets

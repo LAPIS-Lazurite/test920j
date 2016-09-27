@@ -142,13 +142,13 @@ $sock.gets
 
 $sock.close
 
-printf("######################## SUMMARY #####################\n")
-printf("Tatol: Antenna power ave\n")
+printf("+++++++++++ SUMMARY ++++++++++\n")
+printf("Subject: Antenna power average\n")
 printf("Attenuate: %d dB\n",ATT)
-printf("result: %3.2f dBm\n",result)
+printf("Result: %3.2f dBm\n",result)
 if result.between?(10,13) == false then
-	printf("!!!FAIL!!!\n")
+	printf("Judgement: %s\n", "FAIL")
+	raise StandardError, "FAIL\n"
 else
-	printf("!!!PASS!!!\n")
+	printf("Judgement: %s\n", "PASS")
 end
-printf("######################################################\n")
