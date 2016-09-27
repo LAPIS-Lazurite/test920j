@@ -24,6 +24,8 @@ static uint16_t rlen=0;
 static uint16_t rindex=0;
 static bool bRemote=false;
 static bool sgRxEvent=false;
+static bool sgRxAuto = false;
+
 #define CMD_INPUT "i"
 #define CMD_OUTPUT "o"
 #define CMD_INPUT_PULLDOWN "pd"
@@ -38,6 +40,7 @@ static bool sgRxEvent=false;
 #define CMD_SUBGHZ_SEND "sgs"
 #define CMD_SUBGHZ_CONTINUE_SENDING "sgcs"
 #define CMD_SUBGHZ_RXENABLE "sgre"
+#define CMD_SUBGHZ_RX_AUTO "sgra"
 #define CMD_SUBGHZ_RXDISABLE "sgrd"
 #define CMD_SUBGHZ_SET_SEND_MODE "sgssm"
 #define CMD_SUBGHZ_GET_SEND_MODE "sggsm"
@@ -70,6 +73,10 @@ static bool sgRxEvent=false;
 #define CMD_RESET "rst"
 #define CMD_SUBGHZ_REMOTE "sgremote"
 #define CMD_SET_BAUD "sb"
+
+#define CMD_FLASH_WR				"fwr"
+#define CMD_FLASH_RD				"frd"
+#define CMD_FLASH_ERASE				"fer"
 
 // *************************** TEST PROGRAM ********************************
 #define CMD_DEEP_HALT "dh"
@@ -230,6 +237,143 @@ static void gpio_set(uint8_t** pparam,SUBGHZ_MAC_PARAM* mac) {
 	Print.l((long)portNum,DEC);
 	Print.p(",");
 	Print.p(pparam[2]);
+	Print.ln();
+	if(mac==NULL)
+	{
+		Serial.print(obuf);
+	} else {
+		uint16_t rx_addr;
+		rx_addr = *((uint16_t *)mac->tx_addr);
+		digitalWrite(TXLED,LOW);
+		SubGHz.send(mac->rx_panid,rx_addr,obuf,Print.len(),NULL);
+		digitalWrite(TXLED,HIGH);
+	}	
+}
+
+/*
+Flash.write(sector,address,data);
+Flash.read(sector,address);
+Flash.erase(sector);
+*/
+static void fwr(uint8_t** pparam,SUBGHZ_MAC_PARAM* mac) {
+	char* en;
+	unsigned char sector;
+	unsigned short address;
+	unsigned short data;
+	int i=0;
+	bool result=true;
+	
+	// command sprit
+	do {			
+		i++;
+	} while((pparam[i] = strtok(NULL,", \r\n"))!=NULL);
+
+	// command process
+	sector = (unsigned char)strtol(pparam[1],&en,0);
+	if(*en != NULL) return;
+	address = (unsigned short)strtol(pparam[2],&en,0);
+	if(*en != NULL) return;
+	data = (unsigned short)strtol(pparam[3],&en,0);
+	if(*en != NULL) return;
+	
+	if(sector > 2) return;
+	if(address > 0x03FF) return;
+	
+	Flash.write(sector,address,data);
+	
+	Print.init(obuf,sizeof(obuf));
+	Print.p(CMD_FLASH_WR);
+	Print.p(",");
+	Print.l((long)sector,DEC);
+	Print.p(",");
+	Print.p(pparam[1]);
+	Print.p(",");
+	Print.p(pparam[2]);
+	Print.p(",");
+	Print.p(pparam[3]);
+	Print.ln();
+	if(mac==NULL)
+	{
+		Serial.print(obuf);
+	} else {
+		uint16_t rx_addr;
+		rx_addr = *((uint16_t *)mac->tx_addr);
+		digitalWrite(TXLED,LOW);
+		SubGHz.send(mac->rx_panid,rx_addr,obuf,Print.len(),NULL);
+		digitalWrite(TXLED,HIGH);
+	}	
+}
+
+static void frd(uint8_t** pparam,SUBGHZ_MAC_PARAM* mac) {
+	char* en;
+	unsigned char sector;
+	unsigned short address;
+	unsigned short data;
+	int i=0;
+	bool result=true;
+	
+	// command sprit
+	do {			
+		i++;
+	} while((pparam[i] = strtok(NULL,", \r\n"))!=NULL);
+
+	// command process
+	sector = (unsigned char)strtol(pparam[1],&en,0);
+	if(*en != NULL) return;
+	address = (unsigned char)strtol(pparam[2],&en,0);
+	if(*en != NULL) return;
+	
+	if(sector > 2) return;
+	if(address > 0x03FF) return;
+	
+	data=Flash.read(sector,address);
+	
+	Print.init(obuf,sizeof(obuf));
+	Print.p(CMD_FLASH_RD);
+	Print.p(",");
+	Print.l((long)sector,DEC);
+	Print.p(",");
+	Print.p(pparam[1]);
+	Print.p(",0x");
+	Print.l(data,HEX);
+	Print.ln();
+	if(mac==NULL)
+	{
+		Serial.print(obuf);
+	} else {
+		uint16_t rx_addr;
+		rx_addr = *((uint16_t *)mac->tx_addr);
+		digitalWrite(TXLED,LOW);
+		SubGHz.send(mac->rx_panid,rx_addr,obuf,Print.len(),NULL);
+		digitalWrite(TXLED,HIGH);
+	}	
+}
+
+static void fer(uint8_t** pparam,SUBGHZ_MAC_PARAM* mac) {
+	char* en;
+	unsigned char sector;
+	int i=0;
+	bool result=true;
+	
+	// command sprit
+	do {			
+		i++;
+	} while((pparam[i] = strtok(NULL,", \r\n"))!=NULL);
+
+	// command process
+	sector = (unsigned char)strtol(pparam[1],&en,0);
+	if(*en != NULL) return;
+	
+	if(sector > 2) return;
+	
+	Flash.erase(sector);
+	
+	Print.init(obuf,sizeof(obuf));
+	Print.p(CMD_FLASH_ERASE);
+	Print.p(",");
+	Print.l((long)sector,DEC);
+	Print.p(",");
+	Print.p(pparam[1]);
 	Print.ln();
 	if(mac==NULL)
 	{
@@ -440,9 +584,18 @@ static void rxCallback(uint8_t *data, uint8_t rssi, int status)
 	}
 }
 
+static void sgra(uint8_t** pparam)
+{
+	SubGHz.rxEnable(rxCallback);
+	sgRxAuto = true;
+	Serial.println("sgra");
+
+}
+
 static void sgre(uint8_t** pparam)
 {
 	SubGHz.rxEnable(rxCallback);
+	sgRxAuto = false;
 
 	Serial.println("sgre");
 
@@ -451,6 +604,7 @@ static void sgre(uint8_t** pparam)
 static void sgrd(uint8_t** pparam)
 {
 	SubGHz.rxDisable();
+	sgRxAuto = false;
 
 	Serial.println("sgrd");
 
@@ -602,6 +756,50 @@ static void sggs(uint8_t** pparam)
 	Serial.print_long(rxStatus.rssi,DEC);
 	Serial.print(",");
 	Serial.println_long(rxStatus.status,DEC);
+}
+
+static void sgout()
+{
+	int i=0;
+	short result;
+	char* en;
+	SUBGHZ_MAC_PARAM mac;
+	SUBGHZ_STATUS rx;
+	uint16_t addr;
+	
+	// command process
+	result = SubGHz.readData(rbuf,sizeof(rbuf));
+#ifdef DEBUG_SERIAL
+	Serial.print("sgout,");
+#endif	
+	Serial.print_long(result,DEC);
+	Serial.print(",");
+	if(pinRecv) digitalWrite(pinRecv,LOW);
+	digitalWrite(RXLED,HIGH);
+	if(result > 0)
+	{
+		SubGHz.getStatus(NULL,&rx);
+		SubGHz.decMac(&mac,rbuf,result);
+		Serial.print("0x");
+		Serial.print_long(mac.mac_header.header,HEX);
+		Serial.print(",0x");
+		Serial.print_long(mac.seq_num,HEX);
+		Serial.print(",0x");
+		Serial.print_long(mac.rx_panid,HEX);
+		Serial.print(",0x");
+		addr=mac.rx_addr[1];
+		addr = (addr << 8) + mac.rx_addr[0];
+		Serial.print_long(addr,HEX);
+		Serial.print(",0x");
+		Serial.print_long(mac.tx_panid,HEX);
+		Serial.print(",0x");
+		addr=mac.tx_addr[1];
+		addr = (addr << 8) + mac.tx_addr[0];
+		Serial.print_long(addr,HEX);
+		Serial.print(",");
+		Serial.write(mac.payload,result);
+		Serial.println("");
+	}
 }
 
 static void sgr(uint8_t** pparam)
@@ -1478,6 +1676,7 @@ void command_decoder(uint8_t* pcmd,uint8_t** pparam,SUBGHZ_MAC_PARAM* mac)
 	else if(strncmp(pparam[0],CMD_WRITE_DATA,16)== 0) write_data(pparam,mac);
 	else if(strncmp(pparam[0],CMD_WRITE_BINARY,16)== 0) write_binary(pparam,mac);
 	else if(strncmp(pparam[0],CMD_SUBGHZ_RXENABLE,16)== 0) sgre(pparam);
+	else if(strncmp(pparam[0],CMD_SUBGHZ_RX_AUTO,16)== 0) sgra(pparam);
 	else if(strncmp(pparam[0],CMD_SUBGHZ_RXDISABLE,16)== 0) sgrd(pparam);
 	else if(strncmp(pparam[0],CMD_SUBGHZ_SET_SEND_MODE,16)== 0) sgssm(pparam);
 	else if(strncmp(pparam[0],CMD_SUBGHZ_GET_SEND_MODE,16)== 0) sggsm(pparam);
@@ -1504,6 +1703,9 @@ void command_decoder(uint8_t* pcmd,uint8_t** pparam,SUBGHZ_MAC_PARAM* mac)
 	else if(strncmp(pparam[0],CMD_SPI_END,16)== 0) spie(pparam,mac);
 	else if(strncmp(pparam[0],CMD_BIND_SLEEP_PIN,16)== 0) bindslp(pparam,mac);
 	else if(strncmp(pparam[0],CMD_BIND_RECV_PIN,16)== 0) bindrcv(pparam,mac);
+	else if(strncmp(pparam[0],CMD_FLASH_WR,16)== 0) fwr(pparam,mac);
+	else if(strncmp(pparam[0],CMD_FLASH_RD,16)== 0) frd(pparam,mac);
+	else if(strncmp(pparam[0],CMD_FLASH_ERASE,16)== 0) fer(pparam,mac);
 // *************************** TEST PROGRAM ********************************
 	else if(strncmp(pparam[0],CMD_DEEP_HALT,16)==0) deepHALT(pparam,mac);
 	else if(strncmp(pparam[0],CMD_EEPROM_WPB,16)==0) eeprom_wpb(pparam,mac);
@@ -1575,4 +1777,8 @@ void loop() {
 	if(pinRecv) digitalWrite(pinRecv,LOW);
   	digitalWrite(RXLED,HIGH);
   }
+	if((sgRxAuto)&&(digitalRead(RXLED)==LOW))
+	{
+		sgout();
+	}
 }
