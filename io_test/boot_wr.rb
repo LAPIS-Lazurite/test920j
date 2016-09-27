@@ -13,7 +13,7 @@ Signal.trap(:INT){
 }
 
 test = Lazurite::Test.new
-result = test.boot_write("LAZURITE mini series","bin/ML620Q504_000RA.bin")
+result = test.boot_write("LAZURITE mini series","../bin/ML620Q504_000RA.bin")
 p result
 if(result != "OK") then
 	p result[0],result[1],result[3]

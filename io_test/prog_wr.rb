@@ -1,58 +1,26 @@
 #! /usr/bin/ruby
+#
+# Halt process when CTRL+C is pushed.
 
 require 'serialport'
+require '../lib/Lazurite'
 
-devName ="LAZURITE Sub-GHz Rev2"
-program = "bin/blue_led.bin"
+@finish_flag=0
+Signal.trap(:INT){
+	@finish_flag=1
+	test.set_halt()
+}
 
-kern = `uname -r`
-kernel = "/lib/modules/"+kern.chomp
-p kernel
-
-cmd = "sudo rmmod ftdi_sio"
-system(cmd)
-p $?.exitstatus
-
-cmd = "sudo rmmod usbserial"
-system(cmd)
-p $?.exitstatus
-
-cmd = sprintf("sudo lib/cpp/bootmode/bootmode \"%s\"",devName);
-system(cmd)
-p $?.exitstatus
-
-cmd = "sudo insmod "+kernel+"/kernel/drivers/usb/serial/usbserial.ko"
-system(cmd)
-p $?.exitstatus
-
-cmd = "sudo insmod "+kernel+"/kernel/drivers/usb/serial/ftdi_sio.ko"
-system(cmd)
-p $?.exitstatus
-
-cmd = "sudo stty -F /dev/ttyUSB0 115200"
-system(cmd)
-p $?.exitstatus
-
-cmd = sprintf("sudo sx -b %s > /dev/ttyUSB0 < /dev/ttyUSB0",program)
-system(cmd)
-p $?.exitstatus
-
-cmd = "sudo rmmod ftdi_sio"
-system(cmd)
-p $?.exitstatus
-
-cmd = "sudo rmmod usbserial"
-system(cmd)
-p $?.exitstatus
-
-cmd = sprintf("sudo lib/cpp/reset/reset \"%s\"",devName);
-system(cmd)
-p $?.exitstatus
-
-cmd = "sudo insmod "+kernel+"/kernel/drivers/usb/serial/usbserial.ko"
-system(cmd)
-p $?.exitstatus
-
-cmd = "sudo insmod " + kernel + "/kernel/drivers/usb/serial/ftdi_sio.ko"
-system(cmd)
-p $?.exitstatus
+test = Lazurite::Test.new
+result = test.boot_write("LAZURITE mini series","../bin/ML620Q504_000RA.bin")
+p result
+if(result != "OK") then
+	p result[0],result[1],result[3]
+	exit 0
+end
+result = test.prog_write("LAZURITE mini series","../bin/test.bin")
+if(result != "OK") then
+	p result[0],result[1],result[3]
+else
+	p result
+end

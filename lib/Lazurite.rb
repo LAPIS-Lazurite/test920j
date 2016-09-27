@@ -9,4 +9,5 @@ require_relative "./iotest"
 require_relative "./set_bootmode"
 require_relative "./set_reset"
 require_relative "./pwr"
+require_relative "./targetOpen"
 
