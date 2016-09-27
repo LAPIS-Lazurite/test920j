@@ -12,18 +12,18 @@ class Calibration
 	PA_ADJ3_ADDR 	= "9 0x06 "
 	ATT = ARGV[0].to_f.round(2)
 	p "ATT:" + ATT.to_s
+	RATE = 100
+	CH = 42
 
 	pow_param = Struct.new(:mode, :level, :pa_addr, :pa_bit, :pa_max, :ep_addr)
 	p1mW_mode = pow_param.new(1, 0, PA_ADJ1_ADDR, 0x01, 0x0f, "ewr 43 ")
 	p20mW_mode = pow_param.new(20, 1300, PA_ADJ3_ADDR, 0x10, 0xf0, "ewr 41 ")
 	@pow = {1  => p1mW_mode, 20 => p20mW_mode}
+	@max_num=9
+	@sbg = Subghz.new()
 
 	Summary = Struct.new(:frq, :lv20mw, :lv1mw, :myaddr, :macaddr)
-	summary = Summary.new(923100000, 13, 0, 0x0000, 0x0000000000000000)
-
-	@max_num=9
-
-	@sbg = Subghz.new()
+	summary = Summary.new($frq[RATE][CH], 13, 0, 0x0000, 0x0000000000000000)
 
 # TESTER setup ----------------------------------
 	$sock.puts("*RST")
@@ -42,6 +42,8 @@ class Calibration
 
 
 # Frequency adjustment ------------------------
+	@sbg.com("ewp 0")
+
 	def self.frq_adj(rate,ch)
 		begin
 			@sbg.setup(ch, rate, 20)
@@ -101,11 +103,11 @@ class Calibration
 # Power adjustment ------------------------
 	def self.pow_adj(mode)
 		begin
-			@sbg.setup(36, 100, mode.to_s)
+			@sbg.setup(CH, RATE, mode.to_s)
 			@sbg.txon()
 
 			for num in 1..10
-				$sock.puts("cnf " + $frq[100][36].to_s)
+				$sock.puts("cnf " + $frq[RATE][CH].to_s)
 				$sock.puts("*OPC?")
 				$sock.gets
 
@@ -158,11 +160,7 @@ class Calibration
 		return value.chop
 	end
 
-#	frq_adj(50,61)
-#	frq_adj(100,33)
-	summary.frq = frq_adj(100,36)
-#	frq_adj(100,60)
-
+	summary.frq = frq_adj(RATE,CH)
 	summary.lv20mw = pow_adj(20)
 	summary.lv1mw = pow_adj(1)
 
@@ -181,10 +179,13 @@ class Calibration
 		printf("!!!ERROR!!!\n")
 	elsif summary.lv1mw.to_i.between?(-1-ATT,0-ATT) == false then
 		printf("!!!WARNIG!!!\n")
+	elsif summary.myaddr[1].to_i(16) == 0xFFFF then
+		printf("!!!ERROR!!!\n")
 	else
-		printf("!!!SUCCESS!!!\n")
+		printf("!!!PASS!!!\n")
 	end
 	printf("##############################################\n")
 
+	@sbg.com("ewp 1")
 	$sock.close
 end

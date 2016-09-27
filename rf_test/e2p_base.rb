@@ -17,8 +17,12 @@ p sbg.com("ewr 37 0")	#0x00
 
 print("Fly:  0x001D12D00400001E <-> 0x001D12D004003FFF\n")
 print("Mini: 0x001D12D004004000 <-> 0x001D12D004007FFF\n")
-print("Input own addres LSB 16bits (ex:10 0A)= ")
-val = gets().split(" ")
+if ARGV.length == 0 then
+	print("Input own addres LSB 16bits (ex:10 0A)= ")
+	val = gets().split(" ")
+else
+	val = ARGV
+end
 cmd = "ewr 38 0x" + val[0].to_s
 p sbg.com(cmd)	#short addr H
 cmd = "ewr 39 0x" + val[1].to_s
