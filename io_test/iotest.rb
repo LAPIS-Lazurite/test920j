@@ -35,7 +35,7 @@ result = test.boot_write("LAZURITE mini series","../bin/ML620Q504_000RA.bin")
 p result
 if(result != "OK") then
 	p result[0],result[1],result[3]
-	exit 0
+	print(" Fail !! ")
 end
 
 sleep(0.1)
@@ -47,10 +47,28 @@ else
 	p result
 end
 
+result = test.iotest()
+if(result != "OK") then
+	p result[0],result[1],result[3]
+	exit 0
+else
+	p result
+end
+
+result = test.baud(9600)
+if(result != "OK") then
+	p result[0],result[1],result[3]
+else
+	p result
+end
+
 result = test.pwr(false)
 if(result != "OK") then
 	exit
 else
-	p result
+			print("#############################################\n")
+			print("###########      PASS!!           ###########\n")
+			print("###########      End of TEST      ###########\n")
+			print("#############################################\n")
 end
 

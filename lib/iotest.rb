@@ -2,7 +2,12 @@
 require 'serialport'
 
 class Lazurite::Test
-	def iotest(devName)
+	def iotest()
+		print("###############################\n")
+		print("########               ########\n")
+		print("######## START IO test ########\n")
+		print("########               ########\n")
+		print("###############################\n")
 		@@testBin = @@testBin + 1
 		funcNum = 0
 		cmd = "sudo rmmod ftdi_sio"
@@ -15,46 +20,21 @@ class Lazurite::Test
 		ret = $?.exitstatus
 
 		funcNum = funcNum + 1
-		cmd = sprintf("sudo ../lib/cpp/reset/reset \"%s\"",devName);
-		system(cmd)
-		ret = $?.exitstatus
-		print @@testBin,",",funcNum,",",cmd,",",ret,"\n"
-		if ret != 0 then
-			p @@testBin,funcNum,ret
-			return @@testBin,funcNum,ret
-		end
-		funcNum = funcNum + 1
-		cmd = "sudo insmod "+@@kernel+"/kernel/drivers/usb/serial/usbserial.ko"
-		system(cmd)
-		ret = $?.exitstatus
-		print @@testBin,",",funcNum,",",cmd,",",ret,"\n"
-		if ret != 0 then
-			p @@testBin,funcNum,ret
-			return @@testBin,funcNum,ret
-		end
-
-		funcNum = funcNum + 1
-		cmd = "sudo insmod "+@@kernel+"/kernel/drivers/usb/serial/ftdi_sio.ko"
-		system(cmd)
-		ret = $?.exitstatus
-		print @@testBin,",",funcNum,",",cmd,",",ret,"\n"
-		if ret != 0 then
-			p @@testBin,funcNum,ret
-			return @@testBin,funcNum,ret
-		end
-
+		ret = set_reset(@@name_target);
 		sleep(0.1)
-		funcNum = funcNum + 1
-		sp=SerialPort.new(@@com_target,115200)
+		sp=SerialPort.new(@@com_target,@@baud_target)
+		sp.read_timeout=1000 #受信時のタイムアウト（ミリ秒単位）
+		dummy = sp.gets()
+		dummy = sp.gets()
 
 		funcNum = funcNum + 1
 		sp.puts("pm,25,o")
 		dummy = sp.gets()
 		sp.puts("dw,25,0")
 		dummy = sp.gets()
-		puts("赤とオレンジのLEDが点灯していますか？")
-		puts("y または nを入力してください")
 		loop {
+			puts("赤とオレンジのLEDが点灯していますか？")
+			puts("y または nを入力してください")
 			msg = gets.to_s.chop
 			if msg == "y" or msg == "Y" then
 				break
@@ -72,9 +52,9 @@ class Lazurite::Test
 		dummy = sp.gets()
 		sp.puts("dw,26,0")
 		dummy = sp.gets()
-		puts("青のLEDのみが点灯していますか？")
-		puts("y または nを入力してください")
 		loop {
+			puts("青のLEDのみが点灯していますか？")
+			puts("y または nを入力してください")
 			msg = gets.to_s.chop
 			if msg == "y" or msg == "Y" then
 				break
@@ -117,7 +97,7 @@ class Lazurite::Test
 				elsif dummy[2] == "1" then
 					next
 				else
-					return @@testBin,funcNum,ret
+					return @@testBin,funcNum,input_pins[i]
 				end
 			end
 			cmd = sprintf("pm,%d,o",input_pins[i])
@@ -145,7 +125,7 @@ class Lazurite::Test
 				elsif dummy[2] == "0" then
 					next
 				else
-					return @@testBin,funcNum,ret
+					return @@testBin,funcNum,input_pins[i]
 				end
 			end
 			cmd = sprintf("pm,%d,o",input_pins[i])
@@ -153,6 +133,9 @@ class Lazurite::Test
 			dummy = sp.gets()
 		end
 		sp.close()
+		print("###############################\n")
+		print("######## End ofIO test ########\n")
+		print("###############################\n")
 		return "OK"
 	end
 end
