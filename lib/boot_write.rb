@@ -2,6 +2,9 @@ require 'serialport'
 
 class Lazurite::Test
 	def boot_write(devName,program)
+		print("#############################################\n")
+		print("########### Programing Bootloader ###########\n")
+		print("#############################################\n")
 		@@testBin = @@testBin + 1
 		funcNum = 0
 		cmd = "sudo rmmod ftdi_sio"
@@ -17,6 +20,9 @@ class Lazurite::Test
 		if ret == 0 then
 			return "OK"
 		end
+		print("#############################################\n")
+		print("######## End of programing boot loader ######\n")
+		print("#############################################\n")
 		return @@testBin,funcNum,ret
 	end
 end

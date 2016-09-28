@@ -11,6 +11,7 @@ class Lazurite::Test
 	@@name_tester = nil 
 	@@com_target = nil 
 	@name_target =  nil
+	@baud_target =  115200
 
 	def getMiniPortName()
 		return @@miniPortName
@@ -22,5 +23,8 @@ class Lazurite::Test
 
 	def setTarget(comPort)
 		@@com_target = comPort
+	end
+	def setBaud(baud)
+		@@baud_target = baud
 	end
 end
