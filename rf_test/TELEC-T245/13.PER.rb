@@ -4,6 +4,9 @@
 # 12-2.óMŒ±iPER‘ª’èj
 #
 
+print("!!!unsupported test!!!\n")
+exit
+
 require '../socket.rb'
 
 # TESTER SPA section ------------------
