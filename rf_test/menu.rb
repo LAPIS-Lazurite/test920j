@@ -6,6 +6,8 @@ class Top_menu
 	LOAD_FILE = "bin/test.bin mini"
 
 	def self.exe_all_telec
+	    system("./e2p_base.rb")
+		system("./cal.rb " + ATT)
 		Dir.chdir "./TELEC-T245"
 		p = Dir.glob("*")
 		n = p.count
@@ -54,7 +56,7 @@ class Top_menu
 	def self.top_menu
 		while 1
 			system("pwd")
-			print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n")
+			print("~~~~~~~~~~~~~~~~~~~~ Main Menu ~~~~~~~~~~~~~~~~\n")
 			print("1: Load boot loader\n")
 			print("2: Load test program\n")
 			print("3: Write basic parameter for E2P\n")

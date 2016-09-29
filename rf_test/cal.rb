@@ -129,7 +129,8 @@ class Calibration
 				if (diff.to_i) < 0 then
 					i = reg.hex - @pow[mode].pa_bit
 					@sbg.rw(@pow[mode].pa_addr,"0x" + i.to_s(16))
-				elsif (diff.to_i) > 100 then
+			    # 100ー＞150に変更：03空中戦電力Fail回避
+				elsif (diff.to_i) > 150 then
 					i = reg.hex + @pow[mode].pa_bit
 					@sbg.rw(@pow[mode].pa_addr,"0x" + i.to_s(16))
 				else
@@ -175,12 +176,15 @@ class Calibration
 	
 	if summary.frq == 0 then
 		printf("!!!ERROR!!!\n")
+		raise StandardError, "FAIL\n"
 	elsif summary.lv20mw.to_i.between?(12-ATT,13-ATT) == false then
 		printf("!!!ERROR!!!\n")
+		raise StandardError, "FAIL\n"
 	elsif summary.lv1mw.to_i.between?(-1-ATT,0-ATT) == false then
 		printf("!!!WARNIG!!!\n")
 	elsif summary.myaddr[1].to_i(16) == 0xFFFF then
 		printf("!!!ERROR!!!\n")
+		raise StandardError, "FAIL\n"
 	else
 		printf("!!!PASS!!!\n")
 	end
