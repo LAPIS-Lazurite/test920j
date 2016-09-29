@@ -20,10 +20,12 @@ class Career_sense
 			confirm = sbg.com("sgs 0xffff 0xffff")
 			#`split': invalid byte sequence in UTF-8 (ArgumentError) 
 			#str = confirm.split(",")
-			confirm.encode("UTF-8",:invalid => :replace, :undef => :replace, :replace => '?').encode("UTF-8")
-			str = confirm.split(",")
-			p str
-			@status = str[3]
+			if /nil/ !~ confirm
+				confirm.encode("UTF-8",:invalid => :replace, :undef => :replace, :replace => '?') #.encode("UTF-8")
+				str = confirm.split(",")
+				p str
+				@status = str[3]
+			end
 			if @send_flg == 1 then
 				break
 			end

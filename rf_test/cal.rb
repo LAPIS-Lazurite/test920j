@@ -17,7 +17,7 @@ class Calibration
 
 	pow_param = Struct.new(:mode, :level, :pa_addr, :pa_bit, :pa_max, :ep_addr)
 	p1mW_mode = pow_param.new(1, 0, PA_ADJ1_ADDR, 0x01, 0x0f, "ewr 43 ")
-	p20mW_mode = pow_param.new(20, 1300, PA_ADJ3_ADDR, 0x10, 0xf0, "ewr 41 ")
+	p20mW_mode = pow_param.new(20, 13, PA_ADJ3_ADDR, 0x10, 0xf0, "ewr 41 ")
 	@pow = {1  => p1mW_mode, 20 => p20mW_mode}
 	@max_num=9
 	@sbg = Subghz.new()
@@ -120,7 +120,7 @@ class Calibration
 				value = $sock.gets
 				p value
 
-				diff = @pow[mode].level.to_i - (ATT * 100) - (value.to_f * 100)
+				diff = (@pow[mode].level.to_i * 100) - (ATT * 100)  - (value.to_f * 100)
 				printf("diff:%d, base:%d, value:%d, ATT:%d\n",diff,@pow[mode].level.to_i,value.to_i * 100, ATT * 100)
 
 				reg = @sbg.rr(@pow[mode].pa_addr)
@@ -174,10 +174,13 @@ class Calibration
 	printf("My Address: %s",summary.myaddr[1])
 	printf("MAC Address: %s\n",summary.macaddr[3...11])
 	
+	max_pow = @pow[20].level.to_i-ATT
+	min_pow = @pow[20].level.to_i-ATT-2
+
 	if summary.frq == 0 then
 		printf("!!!ERROR!!!\n")
 		raise StandardError, "FAIL\n"
-	elsif summary.lv20mw.to_i.between?(12-ATT,13-ATT) == false then
+	elsif summary.lv20mw.to_i.between?(min_pow,max_pow) == false then
 		printf("!!!ERROR!!!\n")
 		raise StandardError, "FAIL\n"
 	elsif summary.lv1mw.to_i.between?(-1-ATT,0-ATT) == false then
