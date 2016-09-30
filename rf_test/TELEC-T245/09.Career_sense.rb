@@ -7,7 +7,7 @@ require '../socket.rb'
 require '../subghz.rb'
 
 POW = 20
-MOD = "0x03"
+ATT = ARGV[0].to_f.round(2)
 
 class Career_sense
 	#setup method --------------------------------------
@@ -20,8 +20,8 @@ class Career_sense
 			confirm = sbg.com("sgs 0xffff 0xffff")
 			#`split': invalid byte sequence in UTF-8 (ArgumentError) 
 			#str = confirm.split(",")
-			if /nil/ !~ confirm
-				confirm.encode("UTF-8",:invalid => :replace, :undef => :replace, :replace => '?') #.encode("UTF-8")
+			if /ffff/ =~ confirm
+			#	confirm.encode("UTF-8",:invalid => :replace, :undef => :replace, :replace => '?') #.encode("UTF-8")
 				str = confirm.split(",")
 				p str
 				@status = str[3]
@@ -141,7 +141,8 @@ class Career_sense
 		$sock.puts("*OPC?")    
 		$sock.gets
 
-		$sock.puts("POWer -10DBM")                              #SGのレベルを設定する   この例では-10dBmに設定する。
+		lvl = 80 - ATT.to_i
+		$sock.puts("POWer -" + lvl.to_s + "DBM")                              #SGのレベルを設定する   この例では-10dBmに設定する。
 		$sock.puts("*OPC?")  
 		$sock.gets
 
@@ -188,9 +189,9 @@ class Career_sense
 		end
 	end
 
-#	func_thread(50,24)
+	func_thread(50,24)
 	func_thread(100,42)
-#	func_thread(50,61)
+	func_thread(50,61)
 	$sock.close
 	printf("Career sense is PASS!!!\n")
 end

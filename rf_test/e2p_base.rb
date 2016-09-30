@@ -42,7 +42,8 @@ p sbg.com("ewr 46 39")	#PA_ADJ2
 p sbg.com("ewr 47 24")	#PA_REG_FINE_ADJ2
 p sbg.com("ewr 128 8")	#OSC_ADJ2
 p sbg.com("ewr 129 7")	#PA_REG_ADJ3
-p sbg.com("ewr 130 19")	#RF_CNTRL_SET
+#p sbg.com("ewr 130 19")	#RF_CNTRL_SET
+p sbg.com("ewr 130 00")	#RF_CNTRL_SET
 
 sleep 1
 

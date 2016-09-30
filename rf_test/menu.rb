@@ -6,6 +6,7 @@ class Top_menu
 	LOAD_FILE = "bin/test.bin mini"
 
 	def self.exe_all_telec
+		system("./load_prog.rb " + LOAD_FILE)
 	    system("./e2p_base.rb")
 		system("./cal.rb " + $ATT)
 		Dir.chdir "./TELEC-T245"
