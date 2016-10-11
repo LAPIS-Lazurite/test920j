@@ -19,17 +19,19 @@ class Career_sense
 		while 1
 			#`split': invalid byte sequence in UTF-8 (ArgumentError) 
 			confirm = sbg.com("sgs 0xffff 0xffff")
+            #confirm.force_encoding('UTF-8')
+            #confirm = confirm.encode("UTF-16BE", "UTF-8", :invalid => :replace, :undef => :replace, :replace => '?').encode("UTF-8")
 			if /ffff/ =~ confirm
-                confirm.force_encoding('UTF-8')
-                confirm = confirm.encode("UTF-16BE", "UTF-8", :invalid => :replace, :undef => :replace, :replace => '?').encode("UTF-8")
 				str = confirm.split(",")
 				p str
-				@status = str[3]
+				status = str[3]
 			end
 			if @send_flg == 1 then
 				break
 			end
 		end
+
+		return status.to_i
 	end
 
 	def self.tester(ra,ch)
@@ -163,9 +165,9 @@ class Career_sense
 		$sock.puts("*OPC?")    
 		$sock.gets
 		
-		sleep 2
-		@send_flg = 1
 		sleep 3
+		@send_flg = 1
+		sleep 2
 
 		$sock.puts("OUTP OFF")                                   #SG‚ÌM†o—Í‚ğON‚Éİ’è
 		$sock.puts("*OPC?")    
@@ -181,10 +183,9 @@ class Career_sense
 		tester_thread = Thread.new(ra,ch, &method(:tester))
 		snd_thread = Thread.new(ra,ch, &method(:snd))
 		tester_thread.join
-		snd_thread.join
+		result = snd_thread.join
 
-#	printf("Send status : %d\n",@status.to_i)
-		if @status.to_i != 9 then
+		if result == 0 then
 			raise StandardError, "FAIL\n"
 		end
 	end
