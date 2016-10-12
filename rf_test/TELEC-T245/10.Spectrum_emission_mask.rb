@@ -54,7 +54,9 @@ class Spectrum_emission_mask
 		$sock.puts("*OPC?")    
 		$sock.gets
 
-		$sock.puts("SEM:OFFS:LIST:STAR:ABS1 " + pow[POW] + "DBM,-36DBM,0,0,0,0")                           #Limit Startレベルを設定
+#		when useing to 100kbps
+#		$sock.puts("SEM:OFFS:LIST:STAR:ABS1 " + pow[POW] + "DBM,-36DBM,0,0,0,0")                           #Limit Startレベルを設定
+		$sock.puts("SEM:OFFS:LIST:STAR:ABS1 0DBM,-36DBM,0,0,0,0")                           #Limit Startレベルを設定
 		$sock.puts("*OPC?") 
 		$sock.gets
 
@@ -118,7 +120,9 @@ class Spectrum_emission_mask
 		$sock.puts("*OPC?")
 		$sock.gets
 
-		$sock.puts("DISP:WIND:TRAC:Y:RLEV " + pow[POW])                   #Reference Level    この例ではリファレンスレベルを0dBmに設定
+#		when useing to 100kbps
+#		$sock.puts("DISP:WIND:TRAC:Y:RLEV " + pow[POW])         #Reference Level    この例ではリファレンスレベルを0dBmに設定
+		$sock.puts("DISP:WIND:TRAC:Y:RLEV 0")                   #Reference Level    この例ではリファレンスレベルを0dBmに設定
 		$sock.puts("*OPC?") 
 		$sock.gets
 
@@ -137,7 +141,7 @@ class Spectrum_emission_mask
 		$sock.puts("*OPC?")
 		r = $sock.gets.split(",")
 
-		sleep 3
+		sleep 2
 		sbg.trxoff()
 
 		i=0
@@ -155,7 +159,7 @@ class Spectrum_emission_mask
 		end
 	end
 #	mas(50,24)
-	mas(100,42)
-#	mas(50,61)
+#	mas(100,42)
+	mas(50,61)
 	$sock.close
 end

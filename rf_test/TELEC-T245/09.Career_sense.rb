@@ -7,7 +7,7 @@ require '../socket.rb'
 require '../subghz.rb'
 
 POW = 20
-MOD = "0x03"
+ATT = ARGV[0].to_f.round(2)
 
 class Career_sense
 	#setup method --------------------------------------
@@ -17,14 +17,21 @@ class Career_sense
 		sbg.wf()
 
 		while 1
+			#`split': invalid byte sequence in UTF-8 (ArgumentError) 
 			confirm = sbg.com("sgs 0xffff 0xffff")
-			str = confirm.split(",")
-			p str
-			@status = str[3]
+            #confirm.force_encoding('UTF-8')
+            #confirm = confirm.encode("UTF-16BE", "UTF-8", :invalid => :replace, :undef => :replace, :replace => '?').encode("UTF-8")
+			if /ffff/ =~ confirm
+				str = confirm.split(",")
+				p str
+				status = str[3]
+			end
 			if @send_flg == 1 then
 				break
 			end
 		end
+
+		return status.to_i
 	end
 
 	def self.tester(ra,ch)
@@ -136,7 +143,8 @@ class Career_sense
 		$sock.puts("*OPC?")    
 		$sock.gets
 
-		$sock.puts("POWer -10DBM")                              #SGのレベルを設定する   この例では-10dBmに設定する。
+		lvl = 80 - ATT.to_i
+		$sock.puts("POWer -" + lvl.to_s + "DBM")                              #SGのレベルを設定する   この例では-10dBmに設定する。
 		$sock.puts("*OPC?")  
 		$sock.gets
 
@@ -157,9 +165,9 @@ class Career_sense
 		$sock.puts("*OPC?")    
 		$sock.gets
 		
-		sleep 2
-		@send_flg = 1
 		sleep 3
+		@send_flg = 1
+		sleep 2
 
 		$sock.puts("OUTP OFF")                                   #SGの信号出力をONに設定
 		$sock.puts("*OPC?")    
@@ -175,17 +183,16 @@ class Career_sense
 		tester_thread = Thread.new(ra,ch, &method(:tester))
 		snd_thread = Thread.new(ra,ch, &method(:snd))
 		tester_thread.join
-		snd_thread.join
+		result = snd_thread.join
 
-#	printf("Send status : %d\n",@status.to_i)
-		if @status.to_i != 9 then
+		if result == 0 then
 			raise StandardError, "FAIL\n"
 		end
 	end
 
-#	func_thread(50,24)
+	func_thread(50,24)
 	func_thread(100,42)
-#	func_thread(50,61)
+	func_thread(50,61)
 	$sock.close
 	printf("Career sense is PASS!!!\n")
 end

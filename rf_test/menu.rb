@@ -2,15 +2,18 @@
 
 class Top_menu
 
-	ATT = "7"
+	$ATT = "6"
 	LOAD_FILE = "bin/test.bin mini"
 
 	def self.exe_all_telec
+		system("./load_prog.rb " + LOAD_FILE)
+	    system("./e2p_base.rb")
+		system("./cal.rb " + $ATT)
 		Dir.chdir "./TELEC-T245"
 		p = Dir.glob("*")
 		n = p.count
 		for i in 0 ..(n-1)
-			com = "./" + p.sort[i]
+			com = "./" + p.sort[i] + " " + $ATT
 			print("---------------------------------------------\n")
 			p com
 			ret = system(com)
@@ -20,11 +23,11 @@ class Top_menu
 				break
 			end
 		end
-		if (i == n-1) then
-			system("./get_addr.rb")
-			printf("!!!Verification for TELEC-T245 was normalend\n")
-		end
 		Dir.chdir "./.."
+		if (i == n-1) then
+			printf("!!!Verification for TELEC-T245 was normalend\n")
+			system("./get_addr.rb")
+		end
 	end
 
 	def self.telec_menu
@@ -45,7 +48,7 @@ class Top_menu
 				p "ignore input"
 			else
 				p p.sort[input.to_i]
-				com = "./" + p.sort[input.to_i]
+				com = "./" + p.sort[input.to_i] + " " + $ATT
 				system(com)
 			end
 		end
@@ -54,7 +57,7 @@ class Top_menu
 	def self.top_menu
 		while 1
 			system("pwd")
-			print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n")
+			print("~~~~~~~~~~~~~~~~~~~~ Main Menu ~~~~~~~~~~~~~~~~\n")
 			print("1: Load boot loader\n")
 			print("2: Load test program\n")
 			print("3: Write basic parameter for E2P\n")
@@ -81,7 +84,7 @@ class Top_menu
 			when 3
 				system("./e2p_base.rb")
 			when 4
-				system("./cal.rb " + ATT)
+				system("./cal.rb " + $ATT)
 			when 5
 				print("Input own addres LSB 16bits (ex:10 0A)= ")
 				addr = gets()
@@ -89,7 +92,7 @@ class Top_menu
 				system("./load_prog.rb " + LOAD_FILE)
 				sleep 1
 				system("./e2p_base.rb " + addr.to_s)
-				system("./cal.rb " + ATT)
+				system("./cal.rb " + $ATT)
 			when 10
 				telec_menu()
 			when 11

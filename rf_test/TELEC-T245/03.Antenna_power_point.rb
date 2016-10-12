@@ -20,10 +20,10 @@ sbg.rw("8 0x0c ",MOD)
 sbg.txon()
 
 #setup TESTER --------------------------------------
-ATT = 7
+ATT = ARGV[0].to_f.round(2)
 MAKER = "DELTA" # NORM(mW) or DELTA(dBm) When using ATT, set DELTA
-normal = {"lower" => 19, "upper" => 20, "unit" => "mW"}
-delta  = {"lower" => 12, "upper" => 13, "unit" => "dBm"}
+normal = {"lower" => 18, "upper" => 20, "unit" => "mW"}
+delta  = {"lower" => 11, "upper" => 13, "unit" => "dBm"}
 range  = {"NORM" => normal, "DELTA" => delta}
 
 $sock.puts("INST SPECT")                                #SAモードでは下記のコマンドを使用  INST SIGANA"

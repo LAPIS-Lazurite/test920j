@@ -17,7 +17,7 @@ sbg.setup(CH, RATE, POW)
 sbg.wf()
 
 #setup TESTER --------------------------------------
-ATT = 7
+ATT = ARGV[0].to_f.round(2)
 $sock.puts("INST SPECT")                                #SAモードでは下記のコマンドを使用   INST SIGANA"
 $sock.puts("*OPC?")
 $sock.gets
@@ -146,7 +146,7 @@ printf("+++++++++++ SUMMARY ++++++++++\n")
 printf("Subject: Antenna power average\n")
 printf("Attenuate: %d dB\n",ATT)
 printf("Result: %3.2f dBm\n",result)
-if result.between?(10,13) == false then
+if result.between?(9,13) == false then
 	printf("Judgement: %s\n", "FAIL")
 	raise StandardError, "FAIL\n"
 else
