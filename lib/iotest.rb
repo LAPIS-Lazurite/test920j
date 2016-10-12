@@ -28,19 +28,35 @@ class Lazurite::Test
 		dummy = sp.gets()
 
 		funcNum = funcNum + 1
-		sp.puts("pm,25,o")
-		dummy = sp.gets()
-		sp.puts("dw,25,0")
-		dummy = sp.gets()
 		loop {
-			puts("赤とオレンジのLEDが点灯していますか？")
+			puts("赤のLEDが点灯していますか？")
 			puts("y または nを入力してください")
 			msg = gets.to_s.chop
 			if msg == "y" or msg == "Y" then
 				break
 			end
 			if msg == "n" or msg == "N" then
-				return @@testBin,funcNum,ret
+				sp.close()
+				return @@testBin,funcNum,20
+			end
+		}
+		funcNum = funcNum + 1
+		sp.puts("pm,25,o")
+		dummy = sp.gets()
+		sp.puts("dw,25,0")
+		dummy = sp.gets()
+		sp.puts("dw,20,1")
+		dummy = sp.gets()
+		loop {
+			puts("オレンジのLEDが点灯していますか？")
+			puts("y または nを入力してください")
+			msg = gets.to_s.chop
+			if msg == "y" or msg == "Y" then
+				break
+			end
+			if msg == "n" or msg == "N" then
+				sp.close()
+				return @@testBin,funcNum,25
 			end
 		}
 		funcNum = funcNum + 1
@@ -53,14 +69,15 @@ class Lazurite::Test
 		sp.puts("dw,26,0")
 		dummy = sp.gets()
 		loop {
-			puts("青のLEDのみが点灯していますか？")
+			puts("青のLEDが点灯していますか？")
 			puts("y または nを入力してください")
 			msg = gets.to_s.chop
 			if msg == "y" or msg == "Y" then
 				break
 			end
 			if msg == "n" or msg == "N" then
-				return @@testBin,funcNum,ret
+				sp.close()
+				return @@testBin,funcNum,26
 			end
 		}
 
@@ -97,6 +114,7 @@ class Lazurite::Test
 				elsif dummy[2] == "1" then
 					next
 				else
+					sp.close()
 					return @@testBin,funcNum,input_pins[i]
 				end
 			end
@@ -125,6 +143,7 @@ class Lazurite::Test
 				elsif dummy[2] == "0" then
 					next
 				else
+					sp.close()
 					return @@testBin,funcNum,input_pins[i]
 				end
 			end

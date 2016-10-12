@@ -14,6 +14,7 @@ Signal.trap(:INT){
 $test = Lazurite::Test.new
 
 def iotest()
+	$test.setTestBin(0)
 	result = $test.pwr(true)
 	if(result != "OK") then
 		print(" Power on fail%d %d %d!!\n",result[0],result[1],result[2])
@@ -61,6 +62,7 @@ def iotest()
 	end
 end
 def alltest()
+	$test.setTestBin(0)
 	result = $test.pwr(true)
 	if(result != "OK") then
 		print(" Power on fail%d %d %d!!\n",result[0],result[1],result[2])

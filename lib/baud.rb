@@ -11,7 +11,7 @@ class Lazurite::Test
 
 		set_reset(@@name_target)
 
-		sleep(0.01)
+		sleep(0.02)
 
 		sp=SerialPort.new(@@com_target,@@baud_target)
 		sp.read_timeout=1000 #受信時のタイムアウト（ミリ秒単位）
