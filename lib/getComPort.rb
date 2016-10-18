@@ -49,12 +49,13 @@ class Lazurite::Test
 		if i == 0 then
 			@@com_tester = spName[0]
 			@@com_target = spName[1]
-			return spName[0],spName[1]
+#			return spName[0],spName[1]
 		else
 			@@com_tester = spName[1]
 			@@com_target = spName[0]
-			return spName[1],spName[0]
+#			return spName[1],spName[0]
 		end
+		return @@com_tester,@@com_target 
 	end
 end
 
