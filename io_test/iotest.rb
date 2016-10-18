@@ -13,7 +13,7 @@ Signal.trap(:INT){
 
 $test = Lazurite::Test.new
 
-class IoTest
+class Iotest
 
 	def alltest()
 		$test.setTestBin(0)

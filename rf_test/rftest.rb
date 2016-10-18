@@ -8,27 +8,29 @@ require './Telectp.rb'
 
 class Rftest
 
-	ATT = "6"
+	@@ATT = "6"
 
-	def self.alltest
+	def alltest(typ)
 		@@rftp.e2p_base()
-		@@rftp.calibration(ATT)
+		@@rftp.calibration(@@ATT)
 		@@telectp._00_MS2830A_init()
-		@@telectp._01_Tolerance_of_occupied_bandwidth_Frequency_range()
-		@@telectp._02_Tolerance_of_frequency()
-		@@telectp._03_Antenna_power_point(ATT)
-		@@telectp._04_Antenna_power_ave(ATT)
-		@@telectp._05_Tolerance_of_spurious_unwanted_emission_intensity_far()
-		@@telectp._06_Tolerance_of_spurious_unwanted_emission_intensity_near()
-		@@telectp._07_Tolerance_off_adjacent_channel_leakage_power()
-		@@telectp._08_Limit_of_secondary_radiated_emissions()
-		@@telectp._09_Career_sense(ATT)
+		if typ == 1 then
+			@@telectp._01_Tolerance_of_occupied_bandwidth_Frequency_range()
+			@@telectp._02_Tolerance_of_frequency()
+			@@telectp._03_Antenna_power_point(@@ATT)
+			@@telectp._04_Antenna_power_ave(@@ATT)
+			@@telectp._05_Tolerance_of_spurious_unwanted_emission_intensity_far()
+			@@telectp._06_Tolerance_of_spurious_unwanted_emission_intensity_near()
+			@@telectp._07_Tolerance_off_adjacent_channel_leakage_power()
+			@@telectp._08_Limit_of_secondary_radiated_emissions()
+		end
+		@@telectp._09_Career_sense(@@ATT)
 		@@telectp._10_Spectrum_emission_mask()
-		printf("!!!Verification for TELEC-T245 was normalend\n")
 		@@rftp.get_addr()
+		printf("!!!Verification for TELEC-T245 was normalend\n")
 	end
 
-	def self.telec_menu
+	def telec_menu
 		Dir.chdir "./TelecLib"
 		while 1
 			print("====================== TELEC MENU =======================\n")
@@ -47,9 +49,9 @@ class Rftest
 			when 2
 				@@telectp._02_Tolerance_of_frequency()
 			when 3
-				@@telectp._03_Antenna_power_point(ATT)
+				@@telectp._03_Antenna_power_point(@@ATT)
 			when 4
-				@@telectp._04_Antenna_power_ave(ATT)
+				@@telectp._04_Antenna_power_ave(@@ATT)
 			when 5
 				@@telectp._05_Tolerance_of_spurious_unwanted_emission_intensity_far()
 			when 6
@@ -59,7 +61,7 @@ class Rftest
 			when 8
 				@@telectp._08_Limit_of_secondary_radiated_emissions()
 			when 9
-				@@telectp._09_Career_sense(ATT)
+				@@telectp._09_Career_sense(@@ATT)
 			when 10
 				@@telectp._10_Spectrum_emission_mask()
 			when 99
@@ -68,7 +70,7 @@ class Rftest
 		end
 	end
 
-	def self.top_menu
+	def menu
 		while 1
 			system("pwd")
 			print("~~~~~~~~~~~~~~~~~~~~ Main Menu ~~~~~~~~~~~~~~~~\n")
@@ -97,11 +99,11 @@ class Rftest
 			when 3
 				@@rftp.e2p_base()
 			when 4
-				@@rftp.calibration(ATT)
+				@@rftp.calibration(@@ATT)
 			when 10
 				telec_menu()
 			when 11
-				alltest()
+				alltest(1)
 			when 20
 				@@rftp.cw()
 			when 21
@@ -120,5 +122,4 @@ class Rftest
 		end
 	end
 
-	top_menu()
 end
