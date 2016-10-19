@@ -8,9 +8,9 @@ require './subghz.rb'
 #setup DUT --------------------------------------
 class Telectp::Test
 	def _01_Tolerance_of_occupied_bandwidth_Frequency_range
-	#	mas(50,24)
+	#	_01_mas(50,24)
 		_01_mas(100,42)
-	#	mas(50,61)
+	#	_01_mas(50,61)
 #		$sock.close
 	end
 

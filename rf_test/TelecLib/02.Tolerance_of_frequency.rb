@@ -10,9 +10,9 @@ require './subghz.rb'
 
 class Telectp::Test
 	def _02_Tolerance_of_frequency
-	#	mas(50,24)
+		_02_mas(50,24)
 		_02_mas(100,42)
-	#	mas(50,61)
+		_02_mas(50,61)
 	#	$sock.close
 	end
 
