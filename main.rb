@@ -8,20 +8,20 @@ p $SERIAL_PORT
 
 
 while 1
-    print("Do you continue test? y or n :")
-    rep = gets().to_s
-    if rep =~ /n/ then
+    print("Please choose the next action Continue(0),Exit(1) :")
+    rep = gets().to_i
+    if rep == 1 then
         exit
     end
 
-    print("Please choose a execute form of Production[0] or Complete[1] :")
-    typ = gets().to_i
+    print("Please choose the verification level of number 0(Light), 1(Middle), 2(Heavy) :")
+    level = gets().to_i
 
     iotest = iotest.alltest()
     Dir.chdir "../."
     Dir.chdir "./rf_test"
     require "./rftest.rb"
     rftest = Rftest.new()
-    rftest.alltest(typ)
+    rftest.alltest(level)
     Dir.chdir "../."
 end

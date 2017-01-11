@@ -10,23 +10,27 @@ class Rftest
 
 	@@ATT = "6"
 
-	def alltest(typ)
+	def alltest(level)
 		@@rftp.e2p_base()
-		@@rftp.calibration(@@ATT)
-		@@telectp._00_MS2830A_init()
-		@@telectp._01_Tolerance_of_occupied_bandwidth_Frequency_range()
-		@@telectp._02_Tolerance_of_frequency()
-		@@telectp._03_Antenna_power_point(@@ATT)
-		@@telectp._04_Antenna_power_ave(@@ATT)
-		if typ == 1 then
+		if level >= 1 then
+			@@rftp.calibration(@@ATT)
+			@@telectp._00_MS2830A_init()
+			@@telectp._01_Tolerance_of_occupied_bandwidth_Frequency_range()
+			@@telectp._02_Tolerance_of_frequency()
+			@@telectp._03_Antenna_power_point(@@ATT)
+			@@telectp._04_Antenna_power_ave(@@ATT)
+		end
+		if level >= 2 then
 			@@telectp._05_Tolerance_of_spurious_unwanted_emission_intensity_far()
 			@@telectp._06_Tolerance_of_spurious_unwanted_emission_intensity_near()
 			@@telectp._07_Tolerance_off_adjacent_channel_leakage_power()
 			@@telectp._08_Limit_of_secondary_radiated_emissions()
 		end
-		@@telectp._09_Career_sense(@@ATT)
-		@@telectp._10_Spectrum_emission_mask()
-		@@rftp.get_addr()
+		if level >= 1 then
+			@@telectp._09_Career_sense(@@ATT)
+			@@telectp._10_Spectrum_emission_mask()
+		end
+		@@rftp.set_addr()
 		printf("++++++++++++++++++++++++++++++++++++++++++++\n")
 		printf("!!!Verification for TELEC-T245 was normalend\n")
 		printf("++++++++++++++++++++++++++++++++++++++++++++\n")
