@@ -15,7 +15,7 @@ $test = Lazurite::Test.new
 
 class Iotest
 
-	def alltest()
+	def alltest(level)
 		$test.setTestBin(0)
 		result = $test.pwr(true)
 		if(result != "OK") then
@@ -26,6 +26,10 @@ class Iotest
 		end
 		
 		sleep(1)
+
+		if level == 0 then
+			return
+		end
 		
 		result = $test.boot_write("LAZURITE mini series","../bin/ML620Q504_000RA.bin")
 		p result

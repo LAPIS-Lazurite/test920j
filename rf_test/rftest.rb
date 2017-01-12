@@ -11,28 +11,28 @@ class Rftest
 	@@ATT = "6"
 
 	def alltest(level)
-		@@rftp.e2p_base()
-		if level >= 1 then
-			@@rftp.calibration(@@ATT)
-			@@telectp._00_MS2830A_init()
-			@@telectp._01_Tolerance_of_occupied_bandwidth_Frequency_range()
-			@@telectp._02_Tolerance_of_frequency()
-			@@telectp._03_Antenna_power_point(@@ATT)
-			@@telectp._04_Antenna_power_ave(@@ATT)
-		end
-		if level >= 2 then
+        @@rftp.e2p_base()
+        @@rftp.calibration(@@ATT)
+        if level >= 2 then
+            @@telectp._00_MS2830A_init()
+            @@telectp._01_Tolerance_of_occupied_bandwidth_Frequency_range()
+            @@telectp._02_Tolerance_of_frequency()
+            @@telectp._03_Antenna_power_point(@@ATT)
+            @@telectp._04_Antenna_power_ave(@@ATT)
+        end
+		if level >= 3 then
 			@@telectp._05_Tolerance_of_spurious_unwanted_emission_intensity_far()
 			@@telectp._06_Tolerance_of_spurious_unwanted_emission_intensity_near()
 			@@telectp._07_Tolerance_off_adjacent_channel_leakage_power()
 			@@telectp._08_Limit_of_secondary_radiated_emissions()
-		end
-		if level >= 1 then
-			@@telectp._09_Career_sense(@@ATT)
-			@@telectp._10_Spectrum_emission_mask()
-		end
+        end
+        if level >= 2 then
+		    @@telectp._09_Career_sense(@@ATT)
+		    @@telectp._10_Spectrum_emission_mask()
+        end
 		@@rftp.set_addr()
 		printf("++++++++++++++++++++++++++++++++++++++++++++\n")
-		printf("!!!Verification for TELEC-T245 was normalend\n")
+		printf("!!!    All the verification was pass     !!!\n")
 		printf("++++++++++++++++++++++++++++++++++++++++++++\n")
 	end
 
@@ -77,7 +77,7 @@ class Rftest
 	end
 
 	def menu
-		while 1
+#		while 1
 			system("pwd")
 			print("~~~~~~~~~~~~~~~~~~~~ Main Menu ~~~~~~~~~~~~~~~~\n")
 			print("1: Load boot loader\n")
@@ -92,7 +92,7 @@ class Rftest
 			print("30: Set my address\n")
 			print("31: Get my address\n")
 			print("32: Direct Command\n")
-			print("99: Exit\n")
+#			print("99: Exit\n")
 			print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n")
 			print("input number => ")
 			input = gets().to_i
@@ -123,9 +123,9 @@ class Rftest
 			when 32
 				@@rftp.command()
 			when 99
-				break
+#				break
 			end
-		end
+#		end
 	end
 
 end

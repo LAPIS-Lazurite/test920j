@@ -5,23 +5,29 @@ require "./iotest.rb"
 iotest = Iotest.new()
 $SERIAL_PORT = iotest.setCom()
 p $SERIAL_PORT
+Dir.chdir "../rf_test"
+require "./rftest.rb"
+rftest = Rftest.new()
 
 
 while 1
-    print("Please choose the next action Continue(0),Exit(1) :")
-    rep = gets().to_i
-    if rep == 1 then
+    print("Please choose the next action Continue(Enter),Exit(x) :")
+    rep = gets().to_s
+    if rep =~ /x/ then
         exit
     end
 
-    print("Please choose the verification level of number 0(Light), 1(Middle), 2(Heavy) :")
+    print("Please choose the verification level of number 0(Menu), 1(Default:1minute), 2(Half:3.5minute), 3(All:over 5 minute) :")
     level = gets().to_i
 
-    iotest = iotest.alltest()
-    Dir.chdir "../."
-    Dir.chdir "./rf_test"
-    require "./rftest.rb"
-    rftest = Rftest.new()
-    rftest.alltest(level)
-    Dir.chdir "../."
+    Dir.chdir "../io_test"
+    iotest.alltest(level)
+
+    Dir.chdir "../rf_test"
+	case level
+	when 0
+    	rftest.menu()
+	else
+		rftest.alltest(level)
+	end
 end

@@ -8,6 +8,7 @@ class Rftp::Test
 
         sbg.com("ewp 0")
 
+		print("\n")
 #       print("Fly:  0x001D12D00400001E <-> 0x001D12D004003FFF\n")
 #       print("Mini: 0x001D12D004004000 <-> 0x001D12D004007FFF\n")
 		print("Please input an address using a bar-code reader:")
