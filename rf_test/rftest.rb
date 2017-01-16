@@ -11,26 +11,31 @@ class Rftest
 	@@ATT = "6"
 
 	def alltest(level)
+
         @@rftp.e2p_base()
         @@rftp.calibration(@@ATT)
-        if level >= 2 then
-            @@telectp._00_MS2830A_init()
+        @@telectp._00_MS2830A_init()
+
+        case level
+        when 1
+            @@telectp._03_Antenna_power_point(@@ATT)
+            @@telectp._04_Antenna_power_ave(@@ATT)
+            @@telectp._09_Career_sense(@@ATT)
+        when 2
             @@telectp._01_Tolerance_of_occupied_bandwidth_Frequency_range()
             @@telectp._02_Tolerance_of_frequency()
             @@telectp._03_Antenna_power_point(@@ATT)
             @@telectp._04_Antenna_power_ave(@@ATT)
+            @@telectp._05_Tolerance_of_spurious_unwanted_emission_intensity_far()
+            @@telectp._06_Tolerance_of_spurious_unwanted_emission_intensity_near()
+            @@telectp._07_Tolerance_off_adjacent_channel_leakage_power()
+            @@telectp._08_Limit_of_secondary_radiated_emissions()
+            @@telectp._09_Career_sense(@@ATT)
+            @@telectp._10_Spectrum_emission_mask()
+            @@rftp.set_addr()
         end
-		if level >= 3 then
-			@@telectp._05_Tolerance_of_spurious_unwanted_emission_intensity_far()
-			@@telectp._06_Tolerance_of_spurious_unwanted_emission_intensity_near()
-			@@telectp._07_Tolerance_off_adjacent_channel_leakage_power()
-			@@telectp._08_Limit_of_secondary_radiated_emissions()
-        end
-        if level >= 2 then
-		    @@telectp._09_Career_sense(@@ATT)
-		    @@telectp._10_Spectrum_emission_mask()
-        end
-		@@rftp.set_addr()
+
+        @@rftp.led("blue");
 		printf("++++++++++++++++++++++++++++++++++++++++++++\n")
 		printf("!!!    All the verification was pass     !!!\n")
 		printf("++++++++++++++++++++++++++++++++++++++++++++\n")
@@ -38,11 +43,11 @@ class Rftest
 
 	def telec_menu
 		Dir.chdir "./TelecLib"
-		while 1
+#		while 1
 			print("====================== TELEC MENU =======================\n")
 			p = Dir.glob("*")
 			p.sort.each{|d| puts "" + d + "\n" }
-			print("99.Exit\n")
+#			print("99.Exit\n")
 			print("=========================================================\n")
 			print("input number => ")
 			input = gets().to_i
@@ -70,10 +75,10 @@ class Rftest
 				@@telectp._09_Career_sense(@@ATT)
 			when 10
 				@@telectp._10_Spectrum_emission_mask()
-			when 99
-				break
+#			when 99
+#				break
 			end
-		end
+#		end
 	end
 
 	def menu

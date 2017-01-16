@@ -27,26 +27,24 @@ class Iotest
 		
 		sleep(1)
 
-		if level == 0 then
-			return
-		end
-		
-		result = $test.boot_write("LAZURITE mini series","../bin/ML620Q504_000RA.bin")
-		p result
-		if(result != "OK") then
-			printf(" Bootloader program Fail %d %d %d!!\n",result[0],result[1],result[2])
-			return
-		end
-		
-		sleep(0.1)
-		
-		result = $test.prog_write("LAZURITE mini series","../bin/test.bin")
-		if(result != "OK") then
-			printf(" Program write Fail %d %d %d!!\n",result[0],result[1],result[2])
-			return
-		else
-			p result
-		end
+		if level == 1 then
+            result = $test.boot_write("LAZURITE mini series","../bin/ML620Q504_000RA.bin")
+            p result
+            if(result != "OK") then
+                printf(" Bootloader program Fail %d %d %d!!\n",result[0],result[1],result[2])
+                return
+            end
+            
+            sleep(0.1)
+            
+            result = $test.prog_write("LAZURITE mini series","../bin/test.bin")
+            if(result != "OK") then
+                printf(" Program write Fail %d %d %d!!\n",result[0],result[1],result[2])
+                return
+            else
+                p result
+            end
+        end
 		
 		result = $test.iotest()
 		if(result != "OK") then

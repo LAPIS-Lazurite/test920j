@@ -150,6 +150,10 @@ class Rftp::Test
 
         $sock.puts("INST SPECT")
 
+		$sock.puts("SYST:LANG nat")
+		$sock.puts("*OPC?")
+		$sock.gets
+
         $sock.puts("spf 500khz")
         $sock.puts("*OPC?")
         $sock.gets

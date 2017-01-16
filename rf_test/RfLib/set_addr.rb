@@ -11,7 +11,8 @@ class Rftp::Test
 		print("\n")
 #       print("Fly:  0x001D12D00400001E <-> 0x001D12D004003FFF\n")
 #       print("Mini: 0x001D12D004004000 <-> 0x001D12D004007FFF\n")
-		print("Please input an address using a bar-code reader:")
+#		print("Please input an address using a bar-code reader:")
+		print("個体識別コードをバーコードリーダーで読み取って下さい：")
         val = gets()
         cmd = "ewr 32 0x" + val[0,2]
         p sbg.com(cmd)
@@ -46,6 +47,10 @@ class Rftp::Test
         p sbg.com("erd 192 32")
         p sbg.com("erd 224 32")
         p sbg.com("erd 256 32")
+
+		printf("++++++++++++++++++++++++++++++++++++++++++++\n")
+		printf("  下6桁が %s のシールを貼ってください \n",val[10,6])
+		printf("++++++++++++++++++++++++++++++++++++++++++++\n")
 
         sbg.com("ewp 1")
     end

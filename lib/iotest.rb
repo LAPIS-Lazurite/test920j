@@ -30,9 +30,9 @@ class Lazurite::Test
 		funcNum = funcNum + 1
 		loop {
 			puts("赤のLEDが点灯していますか？")
-			puts("y または nを入力してください")
+			puts("yes場合は[Enter] noの場合は[n]を入力してください")
 			msg = gets.to_s.chop
-			if msg == "y" or msg == "Y" then
+			if msg == "y" or msg == "Y" or msg == "" then
 				break
 			end
 			if msg == "n" or msg == "N" then
@@ -49,9 +49,9 @@ class Lazurite::Test
 		dummy = sp.gets()
 		loop {
 			puts("オレンジのLEDが点灯していますか？")
-			puts("y または nを入力してください")
+			puts("yes場合は[Enter] noの場合は[n]を入力してください")
 			msg = gets.to_s.chop
-			if msg == "y" or msg == "Y" then
+			if msg == "y" or msg == "Y" or msg == "" then
 				break
 			end
 			if msg == "n" or msg == "N" then
@@ -70,9 +70,9 @@ class Lazurite::Test
 		dummy = sp.gets()
 		loop {
 			puts("青のLEDが点灯していますか？")
-			puts("y または nを入力してください")
+			puts("yes場合は[Enter] noの場合は[n]を入力してください")
 			msg = gets.to_s.chop
-			if msg == "y" or msg == "Y" then
+			if msg == "y" or msg == "Y" or msg == "" then
 				break
 			end
 			if msg == "n" or msg == "N" then
