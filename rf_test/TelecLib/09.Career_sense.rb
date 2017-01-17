@@ -11,23 +11,33 @@ class Telectp::Test
 		@@ATT = att.to_f.round(2)
 		func_thread(50,24)
 		func_thread(100,42)
-		func_thread(50,61)
+        func_thread(50,61)
 #		$sock.close
-		$log.info("Career sense is PASS!!!\n")
 	end
 
 	#setup THREAD --------------------------------------
-	def func_thread(ra,ch)
-		tester_thread = Thread.new(ra,ch, &method(:tester))
-		snd_thread = Thread.new(ra,ch, &method(:snd))
+	def func_thread(rate,ch)
+		tester_thread = Thread.new(rate,ch, &method(:tester))
+		snd_thread = Thread.new(rate,ch, &method(:snd))
 		tester_thread.join
 		snd_thread.join
+
+		$log.info("+++++++++++ SUMMARY ++++++++++\n")
+		$log.info("Subject: 09 Career sense\n")
+        $log.info(sprintf("Frequency: %s\n", $frq[rate][ch]))
+		if @result !~ /9/ then
+		    $log.info("Judgement: FAIL")
+		    raise StandardError, "FAIL\n"
+		else
+		    $log.info("Judgement: PASS")
+		end
+        
 	end
 
 	#setup method --------------------------------------
-	def snd(ra,ch)
+	def snd(rate,ch)
 		sbg = Subghz.new()
-		sbg.setup(ch, ra, POW)
+		sbg.setup(ch, rate, POW)
 		sbg.wf()
 
 		while 1
@@ -38,20 +48,16 @@ class Telectp::Test
 			if /ffff/ =~ confirm
 				str = confirm.split(",")
 				p str
-				status = str[3]
+				@result = str[3]
 			end
 			if @send_flg == 1 then
 				break
 			end
 		end
-
-		if status !~ /9/ then
-			raise StandardError, "FAIL\n"
-		end
 	end
 
 	#tester method --------------------------------------
-	def tester(ra,ch)
+	def tester(rate,ch)
 		@send_flg = 0
 		$sock.puts("INST SPECT")                                #SAモードでは下記のコマンドを使用   INST SIGANA"
 		$sock.puts("*OPC?")
@@ -89,7 +95,7 @@ class Telectp::Test
 		$sock.puts("*OPC?")
 		$sock.gets
 
-		$sock.puts("FREQ:CENT " + $frq[ra][ch])                          #中心周波数設定 この例では中心周波数を920MHzに設定
+		$sock.puts("FREQ:CENT " + $frq[rate][ch])                          #中心周波数設定 この例では中心周波数を920MHzに設定
 		$sock.puts("*OPC?")
 		$sock.gets
 		
@@ -137,7 +143,7 @@ class Telectp::Test
 		$sock.puts("*OPC?") 
 		$sock.gets
 
-		$sock.puts("FREQ:CENT " + $frq[ra][ch])                          #中心周波数を設定
+		$sock.puts("FREQ:CENT " + $frq[rate][ch])                          #中心周波数を設定
 		$sock.puts("*OPC?") 
 		$sock.gets
 
@@ -156,7 +162,7 @@ class Telectp::Test
 		$sock.puts("*OPC?")  
 		$sock.gets
 
-		$sock.puts("FREQ " + $frq[ra][ch])                               #SGの中心周波数を設定する   この例では中心周波数を920MHzに設定
+		$sock.puts("FREQ " + $frq[rate][ch])                               #SGの中心周波数を設定する   この例では中心周波数を920MHzに設定
 		$sock.puts("*OPC?")    
 		$sock.gets
 
