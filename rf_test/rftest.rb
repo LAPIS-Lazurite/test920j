@@ -10,6 +10,10 @@ class Rftest
 
 	@@ATT = "6"
 
+    def led
+        @@rftp.led("blue");
+    end
+
 	def alltest(level)
 
         @@rftp.e2p_base()
@@ -35,10 +39,18 @@ class Rftest
             @@rftp.set_addr()
         end
 
-        @@rftp.led("blue");
-		printf("++++++++++++++++++++++++++++++++++++++++++++\n")
-		printf("!!!    All the verification was pass     !!!\n")
-		printf("++++++++++++++++++++++++++++++++++++++++++++\n")
+        led_thread = Thread.new(&method(:led))
+        endmsg = Thread.new do
+            printf("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
+#		    printf("!!! All the verification was pass                       !!!\n")
+		    printf("!!! 正常に終了しました                                  !!!\n")
+            printf("!!! 青色LEDが点滅していることを確認しEnterしてください  !!!\n")
+            printf("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
+            gets()
+            Thread.kill(led_thread)
+        end
+        led_thread.join
+        endmsg.join
 	end
 
 	def telec_menu
