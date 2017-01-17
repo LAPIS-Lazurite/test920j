@@ -150,17 +150,17 @@ class Telectp::Test
         sbg.trxoff()
 #		$sock.close
 
-        printf("+++++++++++ SUMMARY ++++++++++\n")
-        printf("Subject: 03 Antenna power pointn\n")
-        printf("Frequency: %s\n", $frq[rate][ch])
-        printf("Makeer mode: %s\n",@@MAKER)
-        printf("Attenuate: %d dB\n",@@att)
-        printf("Result: %3.2f%s\n",result,range[@@MAKER]["unit"])
+        $log.info("+++++++++++ SUMMARY ++++++++++\n")
+        $log.info("Subject: 03 Antenna power pointn\n")
+        $log.info(sprintf("Frequency: %s\n", $frq[rate][ch]))
+        $log.info(sprintf("Makeer mode: %s\n",@@MAKER))
+        $log.info(sprintf("Attenuate: %d dB\n",@@att))
+        $log.info(sprintf("Result: %3.2f%s\n",result,range[@@MAKER]["unit"]))
         if result.between?(range[@@MAKER]["lower"].to_i,range[@@MAKER]["upper"].to_i) == false then
-            printf("Judgement: %s\n", "FAIL")
+            $log.info("Judgement: FAIL")
             raise StandardError, "FAIL\n"
         else
-            printf("Judgement: %s\n", "PASS")
+            $log.info("Judgement: PASS")
         end
 	end
 end

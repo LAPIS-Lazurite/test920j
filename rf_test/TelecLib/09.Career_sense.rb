@@ -13,7 +13,15 @@ class Telectp::Test
 		func_thread(100,42)
 		func_thread(50,61)
 #		$sock.close
-		printf("Career sense is PASS!!!\n")
+		$log.info("Career sense is PASS!!!\n")
+	end
+
+	#setup THREAD --------------------------------------
+	def func_thread(ra,ch)
+		tester_thread = Thread.new(ra,ch, &method(:tester))
+		snd_thread = Thread.new(ra,ch, &method(:snd))
+		tester_thread.join
+		snd_thread.join
 	end
 
 	#setup method --------------------------------------
@@ -37,9 +45,12 @@ class Telectp::Test
 			end
 		end
 
-		return status.to_i
+		if status !~ /9/ then
+			raise StandardError, "FAIL\n"
+		end
 	end
 
+	#tester method --------------------------------------
 	def tester(ra,ch)
 		@send_flg = 0
 		$sock.puts("INST SPECT")                                #SAモードでは下記のコマンドを使用   INST SIGANA"
@@ -182,17 +193,5 @@ class Telectp::Test
 		$sock.puts("INST SPECT")                                #アクティブなアプリケーションをスペアナに設定   SAモードでは下記のコマンドを使用    INST SIGANA"
 		$sock.puts("*OPC")   
 #		$sock.gets
-	end
-
-	#setup THREAD --------------------------------------
-	def func_thread(ra,ch)
-		tester_thread = Thread.new(ra,ch, &method(:tester))
-		snd_thread = Thread.new(ra,ch, &method(:snd))
-		tester_thread.join
-		result = snd_thread.join
-
-		if result == 0 then
-			raise StandardError, "FAIL\n"
-		end
 	end
 end

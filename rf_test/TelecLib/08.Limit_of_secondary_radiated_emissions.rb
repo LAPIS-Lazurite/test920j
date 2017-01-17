@@ -135,20 +135,20 @@ class Telectp::Test
 		sbg.trxoff()
 
 		i=0
-		printf("+++++++++++ SUMMARY ++++++++++\n")
-		printf("Subject: 08 Limit of secondary radiated emissionsn\n")
-		printf("%-3s %-7s %-15s %-10s %-10s %-10s %-10s\n", "No","Segment","frequency","peak","margin","limit","jude")
-		printf("%-3s %-7s %-15s %-10s %-10s %-10s %-10s\n", r[i+=1],r[i+=1],r[i+=1],r[i+=1],r[i+=1],r[i+=1],r[i+=1])
-		printf("%-3s %-7s %-15s %-10s %-10s %-10s %-10s\n", r[i+=1],r[i+=1],r[i+=1],r[i+=1],r[i+=1],r[i+=1],r[i+=1])
-		printf("%-3s %-7s %-15s %-10s %-10s %-10s %-10s\n", r[i+=1],r[i+=1],r[i+=1],r[i+=1],r[i+=1],r[i+=1],r[i+=1])
-		printf("%-3s %-7s %-15s %-10s %-10s %-10s %-10s\n", r[i+=1],r[i+=1],r[i+=1],r[i+=1],r[i+=1],r[i+=1],r[i+=1])
-		printf("%-3s %-7s %-15s %-10s %-10s %-10s %-10s\n", r[i+=1],r[i+=1],r[i+=1],r[i+=1],r[i+=1],r[i+=1],r[i+=1])
-		printf("%-3s %-7s %-15s %-10s %-10s %-10s %-10s\n", r[i+=1],r[i+=1],r[i+=1],r[i+=1],r[i+=1],r[i+=1],r[i+=1])
+		$log.info("+++++++++++ SUMMARY ++++++++++\n")
+		$log.info("Subject: 08 Limit of secondary radiated emissionsn\n")
+		$log.info(sprintf("%-3s %-7s %-15s %-10s %-10s %-10s %-10s\n", "No","Segment","frequency","peak","margin","limit","jude"))
+		$log.info(sprintf("%-3s %-7s %-15s %-10s %-10s %-10s %-10s\n", r[i+=1],r[i+=1],r[i+=1],r[i+=1],r[i+=1],r[i+=1],r[i+=1]))
+		$log.info(sprintf("%-3s %-7s %-15s %-10s %-10s %-10s %-10s\n", r[i+=1],r[i+=1],r[i+=1],r[i+=1],r[i+=1],r[i+=1],r[i+=1]))
+		$log.info(sprintf("%-3s %-7s %-15s %-10s %-10s %-10s %-10s\n", r[i+=1],r[i+=1],r[i+=1],r[i+=1],r[i+=1],r[i+=1],r[i+=1]))
+		$log.info(sprintf("%-3s %-7s %-15s %-10s %-10s %-10s %-10s\n", r[i+=1],r[i+=1],r[i+=1],r[i+=1],r[i+=1],r[i+=1],r[i+=1]))
+		$log.info(sprintf("%-3s %-7s %-15s %-10s %-10s %-10s %-10s\n", r[i+=1],r[i+=1],r[i+=1],r[i+=1],r[i+=1],r[i+=1],r[i+=1]))
+		$log.info(sprintf("%-3s %-7s %-15s %-10s %-10s %-10s %-10s\n", r[i+=1],r[i+=1],r[i+=1],r[i+=1],r[i+=1],r[i+=1],r[i+=1]))
 		if r[0].to_i == 1 then
-		printf("Judgement: %s\n", "FAIL")
+		$log.info("Judgement: FAIL")
 		raise StandardError, "FAIL\n"
 		else
-		printf("Judgement: %s\n", "PASS")
+		$log.info("Judgement: PASS")
 		end
 	end
 end

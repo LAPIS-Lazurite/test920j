@@ -37,21 +37,24 @@ class Rftp::Test
 #       cmd = "ewr 39 0x" + val[1].to_s
 #       p sbg.com(cmd)	#short addr L
 
-# eeprom read -------------------
-        p sbg.com("erd 0 32")
-        p sbg.com("erd 32 32")
-        p sbg.com("erd 64 32")
-        p sbg.com("erd 96 32")
-        p sbg.com("erd 128 32")
-        p sbg.com("erd 160 32")
-        p sbg.com("erd 192 32")
-        p sbg.com("erd 224 32")
-        p sbg.com("erd 256 32")
+		$log.info("+++++++++++ SUMMARY ++++++++++\n")
+		$log.info("Subject: read eeprom\n")
+        $log.info(sbg.com("erd 0 32"))
+        $log.info(sbg.com("erd 32 32"))
+        $log.info(sbg.com("erd 64 32"))
+        $log.info(sbg.com("erd 96 32"))
+        $log.info(sbg.com("erd 128 32"))
+        $log.info(sbg.com("erd 160 32"))
+        $log.info(sbg.com("erd 192 32"))
+        $log.info(sbg.com("erd 224 32"))
+        $log.info(sbg.com("erd 256 32"))
 
 		printf("++++++++++++++++++++++++++++++++++++++++++++\n")
 		printf("  下6桁が %s のシールを貼ってください \n",val[10,6])
 		printf("++++++++++++++++++++++++++++++++++++++++++++\n")
 
         sbg.com("ewp 1")
+
+        return val[10,6] 
     end
 end

@@ -147,16 +147,16 @@ class Telectp::Test
 
 #		$sock.close
 
-        printf("+++++++++++ SUMMARY ++++++++++\n")
-        printf("Subject: 04 Antenna power average\n")
-        printf("Frequency: %s\n", $frq[rate][ch])
-        printf("Attenuate: %d dB\n",@@ATT)
-        printf("Result: %3.2f dBm\n",result)
+        $log.info("+++++++++++ SUMMARY ++++++++++\n")
+        $log.info("Subject: 04 Antenna power average\n")
+        $log.info(sprintf("Frequency: %s\n", $frq[rate][ch]))
+        $log.info(sprintf("Attenuate: %d dB\n",@@ATT))
+        $log.info(sprintf("Result: %3.2f dBm\n",result))
         if result.between?(9,13) == false then
-            printf("Judgement: %s\n", "FAIL")
+            $log.info("Judgement: FAIL")
             raise StandardError, "FAIL\n"
         else
-            printf("Judgement: %s\n", "PASS")
+            $log.info("Judgement: PASS")
         end
 	end
 end

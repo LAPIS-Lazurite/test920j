@@ -2,6 +2,8 @@
 
 require './Rftp.rb'
 require './Telectp.rb'
+require 'logger'
+require 'fileutils'
 
 @@rftp = Rftp::Test.new
 @@telectp = Telectp::Test.new
@@ -15,6 +17,13 @@ class Rftest
     end
 
 	def alltest(level)
+
+        if File.exist?("temp.log") == true then
+            File.delete("temp.log")
+        end
+        $log = Logger.new("| tee temp.log")
+#       $log = Logger.new(STDOUT)
+#       $log.level = Logger::INFO
 
         @@rftp.e2p_base()
         @@rftp.calibration(@@ATT)
@@ -36,7 +45,11 @@ class Rftest
             @@telectp._08_Limit_of_secondary_radiated_emissions()
             @@telectp._09_Career_sense(@@ATT)
             @@telectp._10_Spectrum_emission_mask()
-            @@rftp.set_addr()
+            t = Time.now
+            date = sprintf("%s%s%s%s%s_",t.year,t.mon,t.mday,t.hour,t.min)
+            logfilename = @@rftp.set_addr()
+            logfilename = "Log/" + date + logfilename + ".log"
+            File.rename('temp.log',logfilename)
         end
 
         led_thread = Thread.new(&method(:led))
@@ -94,6 +107,12 @@ class Rftest
 	end
 
 	def menu
+
+        if File.exist?("temp.log") == true then
+            File.delete("temp.log")
+        end
+        $log = Logger.new("| tee temp.log")
+
 #		while 1
 			system("pwd")
 			print("~~~~~~~~~~~~~~~~~~~~ Main Menu ~~~~~~~~~~~~~~~~\n")

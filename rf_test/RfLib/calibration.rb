@@ -171,30 +171,31 @@ class Rftp::Test
         summary.myaddr = @sbg.ra
         summary.macaddr = @sbg.com("erd 32 8").split(",")
 
-        printf("############ Calibration Summary #############\n")
-        printf("Frequency: %s\n",summary.frq)
-        printf("Output level: 20mW=%s, 1mW=%s\n",summary.lv20mw,summary.lv1mw)
-        printf("My Address: %s",summary.myaddr[1])
-        printf("MAC Address: %s\n",summary.macaddr[3...11])
+        $log.info("############ Calibration Summary #############\n")
+        $log.info(sprintf("Frequency: %s\n",summary.frq))
+        $log.info(sprintf("Output level: 20mW=%s, 1mW=%s\n",summary.lv20mw,summary.lv1mw))
+        $log.info(sprintf("Attenuate: %d dB\n",@@att))
+#       $log.info(sprintf("My Address: %s",summary.myaddr[1]))
+#       $log.info(sprintf("MAC Address: %s\n",summary.macaddr[3...11]))
         
         max_pow = @pow[20].level.to_i-@@att
         min_pow = @pow[20].level.to_i-@@att-2
 
         if summary.frq == 0 then
-            printf("!!!ERROR!!!\n")
+            $log.info("!!!ERROR!!!\n")
             raise StandardError, "FAIL\n"
         elsif summary.lv20mw.to_i.between?(min_pow,max_pow) == false then
-            printf("!!!ERROR!!!\n")
+            $log.info("!!!ERROR!!!\n")
             raise StandardError, "FAIL\n"
         elsif summary.lv1mw.to_i.between?(-1-@@att,0-@@att) == false then
-            printf("!!!WARNIG!!!\n")
+            $log.info("!!!WARNIG!!!\n")
         elsif summary.myaddr[1].to_i(16) == 0xFFFF then
-            printf("!!!ERROR!!!\n")
+            $log.info("!!!ERROR!!!\n")
             raise StandardError, "FAIL\n"
         else
-            printf("!!!PASS!!!\n")
+            $log.info("!!!PASS!!!\n")
         end
-        printf("##############################################\n")
+        $log.info("##############################################\n")
 
         @sbg.com("ewp 1")
 #       $sock.close

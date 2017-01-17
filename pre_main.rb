@@ -23,6 +23,6 @@ while 1
     iotest.alltest(level)
 
     Dir.chdir "../rf_test"
-    #rftest.menu()
+#   rftest.menu()
 	rftest.alltest(level)
 end

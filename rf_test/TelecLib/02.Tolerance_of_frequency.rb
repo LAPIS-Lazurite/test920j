@@ -111,15 +111,15 @@ class Telectp::Test
 
 		sbg.trxoff()
 
-		printf("+++++++++++ SUMMARY ++++++++++\n")
-		printf("Subject: 02 Tolerance of frequency\n")
-		printf("Center Frequencey: %d\n",frequency)
-		printf("Frequency counter: %d\n",result)
+		$log.info("+++++++++++ SUMMARY ++++++++++\n")
+		$log.info("Subject: 02 Tolerance of frequency\n")
+		$log.info(sprintf("Center Frequencey: %d\n",frequency))
+		$log.info(sprintf("Frequency counter: %d\n",result))
 		if (frequency - result).abs > (DEV * frequency) then
-			printf("Judgement: %s\n", "FAIL")
+			$log.info("Judgement: FAIL")
 			raise StandardError, "FAIL\n"
 		else
-			printf("Judgement: %s\n", "PASS")
+			$log.info("Judgement: PASS")
 		end
 	end
 end

@@ -11,7 +11,7 @@ rftest = Rftest.new()
 
 
 while 1
-#    print("Please choose the next action Continue(Enter),Exit(x) :")
+#   print("Please choose the next action Continue(Enter),Exit(x) :")
     print("続ける場合は[Enter]を終了する場合[x]を入力してください：")
     rep = gets().to_s
     if rep =~ /x/ then
@@ -19,10 +19,11 @@ while 1
     end
 
     level = 2
+#   level = 3 # for debug
     Dir.chdir "../io_test"
     iotest.alltest(level)
 
     Dir.chdir "../rf_test"
-    #rftest.menu()
+#   rftest.menu()
 	rftest.alltest(level)
 end

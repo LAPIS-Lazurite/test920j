@@ -120,18 +120,18 @@ class Telectp::Test
 
 		sbg.trxoff()
 
-		printf("+++++++++++ SUMMARY ++++++++++\n")
-		printf("Subject: 01 Tolerance of occupied bandwidth Frequency rangen\n")
-		printf("Center Frequencey: %d\n",frequency)
-		printf("OBW Center: %d\n",center)
-		printf("OBW Lower: %d\n",lower)
-		printf("OBW Upper: %d\n",upper)
-		printf("Deviation: %d\n",DEV * $frq[ra][ch].to_i)
+		$log.info("+++++++++++ SUMMARY ++++++++++\n")
+		$log.info("Subject: 01 Tolerance of occupied bandwidth Frequency rangen\n")
+		$log.info(sprintf("Center Frequencey: %d\n",frequency))
+		$log.info(sprintf("OBW Center: %d\n",center))
+		$log.info(sprintf("OBW Lower: %d\n",lower))
+		$log.info(sprintf("OBW Upper: %d\n",upper))
+		$log.info(sprintf("Deviation: %d\n",DEV * $frq[ra][ch].to_i))
 		if (frequency - center).abs > (DEV * frequency) then
-			printf("Judgement: %s\n", "FAIL")
+			$log.info("Judgement: FAIL")
 			raise StandardError, "FAIL\n"
 		else
-			printf("Judgement: %s\n", "PASS")
+			$log.info("Judgement: PASS")
 		end
 	end
 end

@@ -148,15 +148,15 @@ class Telectp::Test
 
 		sbg.trxoff()
 
-		printf("+++++++++++ SUMMARY ++++++++++\n")
-		printf("Subject: 07 Tolerance off adjacent channel leakage power\n")
-		printf("Specification: %ddBm less\n",spec)
-		printf("Upper: %3.2fdBm, Lower: %3.2fdBm\n",upper,lower)
+		$log.info("+++++++++++ SUMMARY ++++++++++\n")
+		$log.info("Subject: 07 Tolerance off adjacent channel leakage power\n")
+		$log.info(sprintf("Specification: %ddBm less\n",spec))
+		$log.info(sprintf("Upper: %3.2fdBm, Lower: %3.2fdBm\n",upper,lower))
 		if upper > spec || lower > spec then
-			printf("Judgement: %s\n", "FAIL")
+			$log.info("Judgement: FAIL")
 			raise StandardError, "FAIL\n"
 		else
-			printf("Judgement: %s\n", "PASS")
+			$log.info("Judgement: PASS")
 		end
 	end
 end
