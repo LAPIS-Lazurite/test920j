@@ -1720,7 +1720,7 @@ static char* param[16];
 void setup() {
   // put your setup code here, to run once:
   unsigned long baud;
-  SubGHz.init();
+//  SubGHz.init();
   baud = Flash.read(0,0);
   baud = (baud << 16) + Flash.read(0,1);
   Serial.begin(115200);
