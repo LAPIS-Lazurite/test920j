@@ -140,7 +140,9 @@ class Certification
 			print("6: Write register\n")
 			print("10: Send packet\n")
 			print("11: Send continue\n")
-			print("12: Load basic E2P param\n")
+            print("20: Load boot loader\n")
+			print("21: Load test program\n")
+			print("22: Load basic E2P param\n")
 			print("99: exit\n")
 			print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n")
 			print("input number => ")
@@ -163,7 +165,11 @@ class Certification
 				snd()
 			when 11
                 fast()
-			when 12
+			when 20
+				system("./boot_wr.rb")
+			when 21
+				system("./load_prog.rb " + "bin/test.bin mini")
+			when 22
                 e2p_base()
 			when 99
 				break
