@@ -1,14 +1,56 @@
 #! /usr/bin/ruby
 
 require './subghz.rb'
+require './Rftp_serial.rb'
+@@rftp = Rftp::Test.new
+
 class Certification
 
     @sbg = Subghz.new()
 
-    def self.addr
-        myaddr = @sbg.ra()
-        printf("My address:%s", myaddr[1])
-        p @sbg.com("erd,32,8")
+    def self.set_addr
+        @sbg.com("ewp 0")
+
+		print("\n")
+#       print("Fly:  0x001D12D00400001E <-> 0x001D12D004003FFF\n")
+#       print("Mini: 0x001D12D004004000 <-> 0x001D12D004007FFF\n")
+#		print("Please input an address using a bar-code reader:")
+##		print("¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿")
+##      val = gets()
+##      cmd = "ewr 32 0x" + val[0,2]
+##      p sbg.com(cmd)
+##      cmd = "ewr 33 0x" + val[2,2]
+##      p sbg.com(cmd)
+##      cmd = "ewr 34 0x" + val[4,2]
+##      p sbg.com(cmd)
+##      cmd = "ewr 35 0x" + val[6,2]
+##      p sbg.com(cmd)
+##      cmd = "ewr 36 0x" + val[8,2]
+##      p sbg.com(cmd)
+##      cmd = "ewr 37 0x" + val[10,2]
+##      p sbg.com(cmd)
+##      cmd = "ewr 38 0x" + val[12,2]
+##      p sbg.com(cmd)
+##      cmd = "ewr 39 0x" + val[14,2]
+##      p sbg.com(cmd)
+        print("Input own addres LSB 16bits (ex:10 0A)= ")
+        val = gets().split(" ")
+        cmd = "ewr 38 0x" + val[0].to_s
+        p @sbg.com(cmd)	#short addr H
+        cmd = "ewr 39 0x" + val[1].to_s
+        p @sbg.com(cmd)	#short addr L
+
+        p @sbg.com("erd 0 32")
+        p @sbg.com("erd 32 32")
+        p @sbg.com("erd 64 32")
+        p @sbg.com("erd 96 32")
+        p @sbg.com("erd 128 32")
+        p @sbg.com("erd 160 32")
+        p @sbg.com("erd 192 32")
+        p @sbg.com("erd 224 32")
+        p @sbg.com("erd 256 32")
+
+        @sbg.com("ewp 1")
     end
 
     def self.setup
@@ -68,110 +110,105 @@ class Certification
 	    @sbg.com("sgcs 230 10000")
     end
 
-    def self.e2p_base
-        @sbg = Subghz.new()
+    def self.adj_frq
+        while 1
+            sleep 1
+            p @sbg.rr("8 0x0a")
+			print("input val [00-ff] :")
+			val = gets().to_s
+            p @sbg.rw("8 0x0a"," 0x" + val)
 
-        @sbg.com("ewp 0")
+			print("complete ? [y/n] :")
+			input = gets().to_s
+            if /^[yY]/ =~ input then
+                p val[0,1]
+                @sbg.com("ewp 0")
+                p @sbg.com("ewr 128 " + val)	#OSC_ADJ2_ADDR
+                p @sbg.com("erd 128 1")
+                @sbg.com("ewp 1")
+                break
+            end
+        end
+    end
 
-# eeprom write :My addrress-------
-        p @sbg.com("ewr 32 0")	#0x00
-        p @sbg.com("ewr 33 29")	#0x1D
-        p @sbg.com("ewr 34 18")	#0x12
-        p @sbg.com("ewr 35 208")	#0xD0
-        p @sbg.com("ewr 36 4")	#0x04
-        p @sbg.com("ewr 37 0")	#0x00
+    def self.adj_pow
+        while 1
+            sleep 1
+            p @sbg.rr("9 0x06")
+			print("input val [00-ff] :")
+			val = gets().to_s
+            p @sbg.rw("9 0x06"," 0x" + val)
 
-#-----------------------------------------------------
-#print("Fly:  0x001D12D00400001E <-> 0x001D12D004003FFF\n")
-#print("Mini: 0x001D12D004004000 <-> 0x001D12D004007FFF\n")
-#if ARGV.length == 0 then
-#	print("Input own addres LSB 16bits (ex:10 0A)= ")
-#	val = gets().split(" ")
-#else
-#	val = ARGV
-#end
-#cmd = "ewr 38 0x" + val[0].to_s
-#p sbg.com(cmd)	#short addr H
-#cmd = "ewr 39 0x" + val[1].to_s
-#p sbg.com(cmd)	#short addr L
-#
-#sleep 1
-#-----------------------------------------------------
-
-# eeprom write :power & Frequencey ---------
-#p @sbg.com("ewr 41 167")	#PA_ADJ3
-        p @sbg.com("ewr 41 119")	#PA_ADJ3
-        p @sbg.com("ewr 42 24")	#PA_REG_FINE_ADJ3
-#p @sbg.com("ewr 43 123")	#PA_ADJ1
-        p @sbg.com("ewr 43 119")	#PA_ADJ1
-        p @sbg.com("ewr 44 27")	#PA_REG_FINE_ADJ1
-        p @sbg.com("ewr 45 48")	#OSC_ADJ
-        p @sbg.com("ewr 46 39")	#PA_ADJ2
-        p @sbg.com("ewr 47 24")	#PA_REG_FINE_ADJ2
-        p @sbg.com("ewr 128 8")	#OSC_ADJ2
-        p @sbg.com("ewr 129 7")	#PA_REG_ADJ3
-#p @sbg.com("ewr 130 19")	#RF_CNTRL_SET
-        p @sbg.com("ewr 130 00")	#RF_CNTRL_SET
-
-        sleep 1
-
-# eeprom read -------------------
-        p @sbg.com("erd 0 32")
-        p @sbg.com("erd 32 32")
-        p @sbg.com("erd 64 32")
-        p @sbg.com("erd 96 32")
-        p @sbg.com("erd 128 32")
-        p @sbg.com("erd 160 32")
-        p @sbg.com("erd 192 32")
-        p @sbg.com("erd 224 32")
-        p @sbg.com("erd 256 32")
-
-        @sbg.com("ewp 1")
+			print("complete ? [y/n] :")
+			input = gets().to_s
+            if /^[yY]/ =~ input then
+                p val[0,1]
+                @sbg.com("ewp 0")
+                p @sbg.com("ewr 41 0x" + val)	#PA_ADJ3
+                p @sbg.com("erd 41 1")
+                @sbg.com("ewp 1")
+                break
+            end
+        end
     end
 
 	def self.top_menu
         while 1
 			print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n")
-			print("1: Get my address\n")
-			print("2: Setup SubGHz\n")
-			print("3: Continuous Wave\n")
-			print("4: RxOn\n")
-			print("5: Read register\n")
-			print("6: Write register\n")
-			print("10: Send packet\n")
-			print("11: Send continue\n")
+			print("                   TOP Menu                    \n")
+			print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n")
+			print("1: Setup SubGHz\n")
+			print("2: TxOn (Wave option)\n")
+			print("3: RxOn\n")
+			print("5: Send packet\n")
+			print("6: Send continue\n")
+			print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n")
+			print("10: Read register\n")
+			print("11: Write register\n")
+			print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n")
             print("20: Load boot loader\n")
 			print("21: Load test program\n")
 			print("22: Load basic E2P param\n")
-			print("99: exit\n")
+			print("23: Set my address\n")
+			print("24: Get my address\n")
+			print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n")
+			print("30: Adjust Frequency\n")
+			print("31: Adjust Power\n")
 			print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n")
 			print("input number => ")
 			input = gets().to_i
 
 			case input
 			when 1
-                addr()
-			when 2
                 setup()
-			when 3
+			when 2
 				txon()
-			when 4
+			when 3
 				rxon()
 			when 5
-				rr()
-			when 6
-				rw()
-			when 10
 				snd()
-			when 11
+			when 6
                 fast()
+			when 10
+				rr()
+			when 11
+				rw()
 			when 20
 				system("./boot_wr.rb")
 			when 21
 				system("./load_prog.rb " + "bin/test.bin mini")
 			when 22
-                e2p_base()
-			when 99
+				@@rftp.e2p_base()
+			when 23
+#               @@rftp.set_addr()
+                set_addr()
+			when 24
+                @@rftp.get_addr()
+			when 30
+                adj_frq()
+			when 31
+                adj_pow()
+            else
 				break
             end
         end
