@@ -56,7 +56,7 @@ class Certification
     def self.setup
 		print("Data Rate [100,50] => ")
 		rate = gets().to_i
-		print("CH [100kbps: 24/42/60, 50kbps:24/43/61 => ")
+		print("CH [100kbps: 24/36/42/60, 50kbps:24//36/43/61 => ")
 		ch = gets().to_i
         pa = 20
         p @sbg.setup(ch,rate,pa)
