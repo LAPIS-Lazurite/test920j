@@ -44,7 +44,7 @@ class Rftest
             @@telectp._05_Tolerance_of_spurious_unwanted_emission_intensity_far()
             @@telectp._06_Tolerance_of_spurious_unwanted_emission_intensity_near()
             @@telectp._07_Tolerance_off_adjacent_channel_leakage_power()
-            @@telectp._08_Limit_of_secondary_radiated_emissions()
+#           @@telectp._08_Limit_of_secondary_radiated_emissions()
             @@telectp._09_Career_sense(@@ATT)
             @@telectp._10_Spectrum_emission_mask()
             t = Time.now

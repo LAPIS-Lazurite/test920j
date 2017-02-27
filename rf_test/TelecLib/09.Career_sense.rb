@@ -188,9 +188,9 @@ class Telectp::Test
 		$sock.puts("*OPC?")    
 		$sock.gets
 		
-		sleep 3
-		@send_flg = 1
 		sleep 2
+		@send_flg = 1
+		sleep 1
 
 		$sock.puts("OUTP OFF")                                   #SG‚ÌM†o—Í‚ğON‚Éİ’è
 		$sock.puts("*OPC?")    
