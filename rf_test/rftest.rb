@@ -26,7 +26,9 @@ class Rftest
 #       $log.level = Logger::INFO
 
         @@rftp.e2p_base()
-        @@rftp.calibration(@@ATT)
+        if level != 3 then
+            @@rftp.calibration(@@ATT)
+        end
         @@telectp._00_MS2830A_init()
 
         case level
@@ -34,7 +36,7 @@ class Rftest
 #           @@telectp._03_Antenna_power_point(@@ATT)
             @@telectp._04_Antenna_power_ave(@@ATT)
             @@telectp._09_Career_sense(@@ATT)
-        when 2
+        when 2,3
             @@telectp._01_Tolerance_of_occupied_bandwidth_Frequency_range()
             @@telectp._02_Tolerance_of_frequency()
             @@telectp._03_Antenna_power_point(@@ATT)

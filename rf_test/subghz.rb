@@ -4,7 +4,11 @@ if RUBY_PLATFORM ==  "x64-mingw32" then
     require 'rubygems'
     require 'serialport'
 
-    $SERIAL_PORT ='COM38'
+	print("input COM number => ")
+    com = gets().to_i
+    com = "COM" + com.to_s
+
+    $SERIAL_PORT =com
     $SERIAL_BAUDRATE=115200
 #   sp = SerialPort.new(SERIAL_PORT, SERIAL_BAUDRATE)
 #   sp.read_timeout=500
