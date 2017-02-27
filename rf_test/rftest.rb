@@ -31,7 +31,7 @@ class Rftest
 
         case level
         when 1
-            @@telectp._03_Antenna_power_point(@@ATT)
+#           @@telectp._03_Antenna_power_point(@@ATT)
             @@telectp._04_Antenna_power_ave(@@ATT)
             @@telectp._09_Career_sense(@@ATT)
         when 2
@@ -54,11 +54,12 @@ class Rftest
 
         led_thread = Thread.new(&method(:led))
         endmsg = Thread.new do
-            printf("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
-#		    printf("!!! All the verification was pass                       !!!\n")
-		    printf("!!! 正常に終了しました                                  !!!\n")
-            printf("!!! 青色LEDが点滅していることを確認しEnterしてください  !!!\n")
-            printf("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
+            printf("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
+#		    printf("!!! All the verification was pass                                !!!\n")
+		    printf("!!! 正常に終了しました                                           !!!\n")
+            printf("!!! 基盤上のリセットスイッチを押して赤色LED点灯を確認して下さい。!!!\n")
+            printf("!!! 青色LEDが点滅していることを確認しEnterしてください           !!!\n")
+            printf("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
             gets()
             Thread.kill(led_thread)
         end
