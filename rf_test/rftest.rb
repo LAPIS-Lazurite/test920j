@@ -54,6 +54,7 @@ class Rftest
             File.rename('temp.log',logfilename)
         end
 
+        sysytem("../mp3/beep.mp3")
 #       led_thread = Thread.new(&method(:led))
 #       endmsg = Thread.new do
             printf("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
