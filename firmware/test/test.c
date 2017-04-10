@@ -1508,7 +1508,9 @@ void eeprom_write(uint8_t** pparam,SUBGHZ_MAC_PARAM* mac) {
 		goto error;
 	} else {
 		Wire0.beginTransmission(0x50);
+#ifdef LAZURITE_MINI
 		Wire0.write_byte(addr.addr8[1]);		// address upper byte
+#endif
 		Wire0.write_byte(addr.addr8[0]);		// address lower byte
 		Wire0.write_byte((uint8_t) data);		// data write
 		Wire0.endTransmission(true);
@@ -1553,7 +1555,9 @@ void eeprom_read(uint8_t** pparam,SUBGHZ_MAC_PARAM* mac) {
 		goto error;
 	}
 	Wire0.beginTransmission(0x50);
+#ifdef LAZURITE_MINI
 	Wire0.write_byte(addr.addr8[1]);
+#endif
 	Wire0.write_byte(addr.addr8[0]);
 	Wire0.endTransmission(false);
 	Print.init(obuf,sizeof(obuf));
