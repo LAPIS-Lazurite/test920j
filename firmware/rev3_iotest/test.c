@@ -3,11 +3,12 @@
 #include "driver_gpio.h"
 #include "lp_manage.h"
 #include "ml7396_reg.h"
+//#include "C:\LazuriteIDE_0.10.x_develop_rev2\hardware\lazurite_subghz\sub_ghz\phy\phy_ml7396.h"
 #include "hal.h"
 #include "wire0.h"
 #include "spi0.h"
 
-#include <string.h>
+//#include <string.h>
 
 #define DEBUG_SERIAL
 static uint8_t pinSleep=0;
