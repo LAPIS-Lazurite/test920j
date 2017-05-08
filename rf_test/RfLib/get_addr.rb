@@ -7,7 +7,7 @@ class Rftp::Test
         sbg = Subghz.new()
 
         myaddr = sbg.ra()
-        printf("My address:%s", myaddr[1])
+        printf("My address:%#10.4x\n", myaddr[1])
         sleep(1)
 
         # eeprom read -------------------
