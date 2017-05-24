@@ -12,9 +12,9 @@ require './subghz.rb'
 class Telectp::Test
 
 	def _03_Antenna_power_point(att)
-        _03_mas(100,24,att)
+#       _03_mas(100,24,att)
         _03_mas(100,42,att)
-        _03_mas(100,60,att)
+#       _03_mas(100,60,att)
    end
 
     def _03_mas(rate,ch,att) 

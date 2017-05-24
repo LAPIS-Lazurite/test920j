@@ -41,7 +41,7 @@ class Rftest
             @@telectp._02_Tolerance_of_frequency()
             @@telectp._03_Antenna_power_point(@@ATT)
             @@telectp._04_Antenna_power_ave(@@ATT)
-            @@telectp._05_Tolerance_of_spurious_unwanted_emission_intensity_far()
+#           @@telectp._05_Tolerance_of_spurious_unwanted_emission_intensity_far()
             @@telectp._06_Tolerance_of_spurious_unwanted_emission_intensity_near()
             @@telectp._07_Tolerance_off_adjacent_channel_leakage_power()
 #           @@telectp._08_Limit_of_secondary_radiated_emissions()
