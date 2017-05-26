@@ -5,8 +5,8 @@ require './Rftp_serial.rb'
 #require './Telectp.rb'
 require 'logger'
 require 'fileutils'
-require 'easy-google-drive'
-#require_relative '../../easy-google-drive/lib/easy-google-drive'
+#require 'easy-google-drive'
+require_relative '../../easy-google-drive/lib/easy-google-drive'
 
 @@rftp = Rftp::Test.new
 #@@telectp = Telectp::Test.new
@@ -20,31 +20,46 @@ $log = Logger.new("| tee temp.log")
 
 
 t = Time.now
-date = sprintf("%04d%02d%02d%02d%02d_",t.year,t.mon,t.mday,t.hour,t.min)
-logfilename = @@rftp.set_addr()
-logfilename = "Log/" + date + logfilename + ".log"
-File.rename('temp.log',logfilename)
-
+date    = sprintf("%04d%02d%02d%02d%02d_",t.year,t.mon,t.mday,t.hour,t.min)
+address = @@rftp.set_addr()
+#sleep(2)
+#address = "ABCDEF"
+logfilename = date + address + ".log"
+File.rename('temp.log',"Log/" + logfilename)
 gFolder = sprintf("%04d%02d%02d_LOG",t.year,t.mon,t.mday)
+printf("Folder name :   %s\n",gFolder)
+printf("Log file name : %s\n",logfilename)
 
+
+# ------------ Search folder
 myDrive.cd("Lazurite920j_log")
 list = myDrive.ls()
-list.each {|file|
-    p file.name
-    if file.name.to_s.match(gFolder) != nil then
-        break
+detect = 0
+if list != nil
+    list.each do |file|
+        if file.name.to_s.match(gFolder) != nil then
+            detect = 1
+            break
+        end
     end
-}
+end
 
-if list.to_s.match(gFolder) == nil then
+if detect == 0 then
     myDrive.mkdir(gFolder)
-else
-   printf("%s is alread.",gFolder)
 end
 
 
-#@@myDrive.cd("~")
-#@@myDrive.cd("test")
-#@@myDrive.rm("test/test.log")
-#@@myDrive.send("Log/test.log","test/test.log")
-#@@myDrive.get("~/gdrive.dat","./gdrive.dat")
+# ------------ Search logfile
+myDrive.cd(gFolder)
+list = myDrive.ls()
+
+if list != nil
+    list.each do |file|
+        if file.name.to_s.match(logfilename) != nil then
+            @@myDrive.rm(logfilename)
+            break
+        end
+    end
+end
+
+myDrive.send("Log/" + logfilename,logfilename)
