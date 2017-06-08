@@ -16,4 +16,5 @@ require_relative "./TelecLib/12.BER"
 require_relative "./TelecLib/13.PER"
 POW = 20
 #DEV = 20 * (10**-6)
-DEV = 17 * (10**-6)
+#DEV = 17 * (10**-6)
+DEV = 5 * (10**-6)
