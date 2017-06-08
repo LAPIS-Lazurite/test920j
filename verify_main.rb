@@ -27,4 +27,7 @@ while 1
     Dir.chdir "../rf_test"
 #   rftest.menu()
 	rftest.alltest(level)
+
+    Dir.chdir "../io_test"
+	iotest.shutdown()
 end
