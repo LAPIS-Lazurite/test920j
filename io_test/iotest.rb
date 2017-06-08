@@ -15,6 +15,10 @@ $test = Lazurite::Test.new
 
 class Iotest
 
+	def shutdown()
+		result = $test.pwr(false)
+	end
+
 	def alltest(level)
 		$test.setTestBin(0)
 		result = $test.pwr(true)
@@ -46,7 +50,7 @@ class Iotest
             end
         end
 		
-        sysytem("../mp3/beep.mp3")
+        system("../mp3/beep.mp3")
 		result = $test.iotest()
 		if(result != "OK") then
 			printf(" IO Test Fail %d pin error!!\n",result[2])
