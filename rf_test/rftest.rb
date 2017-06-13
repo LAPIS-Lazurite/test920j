@@ -16,7 +16,8 @@ class Rftest
         @@rftp.led("blue");
     end
 
-	def alltest(level)
+
+	def pretest
 
         if File.exist?("temp.log") == true then
             File.delete("temp.log")
@@ -26,45 +27,66 @@ class Rftest
 #       $log.level = Logger::INFO
 
         @@rftp.e2p_base()
-        if level != 3 then
-            @@rftp.calibration(@@ATT)
-        end
+        @@rftp.calibration(@@ATT)
         @@telectp._00_MS2830A_init()
-
-        case level
-        when 1
-#           @@telectp._03_Antenna_power_point(@@ATT)
-#           @@telectp._04_Antenna_power_ave(@@ATT)
-            @@telectp._09_Career_sense(@@ATT)
-        when 2,3
-            @@telectp._01_Tolerance_of_occupied_bandwidth_Frequency_range()
-            @@telectp._02_Tolerance_of_frequency()
-            @@telectp._03_Antenna_power_point(@@ATT)
-            @@telectp._04_Antenna_power_ave(@@ATT)
-#           @@telectp._05_Tolerance_of_spurious_unwanted_emission_intensity_far()
-            @@telectp._06_Tolerance_of_spurious_unwanted_emission_intensity_near()
-            @@telectp._07_Tolerance_off_adjacent_channel_leakage_power()
-#           @@telectp._08_Limit_of_secondary_radiated_emissions()
-            @@telectp._09_Career_sense(@@ATT)
-            @@telectp._10_Spectrum_emission_mask()
-            t = Time.now
-            date = sprintf("%s%s%s%s%s_",t.year,t.mon,t.mday,t.hour,t.min)
-            logfilename = @@rftp.set_addr()
-            logfilename = "Log/" + date + logfilename + ".log"
-            File.rename('temp.log',logfilename)
-        end
+        @@telectp._09_Career_sense(@@ATT)
 
         system("mpg321 ../mp3/beep.mp3")
 #       led_thread = Thread.new(&method(:led))
 #       endmsg = Thread.new do
-            printf("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
-#		    printf("!!! All the verification was pass                                !!!\n")
-		    printf("!!! 正常に終了しました                                           !!!\n")
-            printf("!!! 基盤上のリセットスイッチを押して赤色LED点灯を確認して下さい。!!!\n")
-#           printf("!!! 青色LEDが点滅していることを確認しEnterしてください           !!!\n")
-            printf("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
-#           gets()
-#           Thread.kill(led_thread)
+        printf("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
+#	    printf("!!! All the verification was pass                                !!!\n")
+	    printf("!!! 正常に終了しました                                           !!!\n")
+        printf("!!! 基盤上のリセットスイッチを押して赤色LED点灯を確認して下さい。!!!\n")
+#       printf("!!! 青色LEDが点滅していることを確認しEnterしてください           !!!\n")
+        printf("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
+#       gets()
+#       Thread.kill(led_thread)
+#       end
+#       led_thread.join
+#       endmsg.join
+	end
+    
+
+	def posttest(cal_flg)
+
+        if File.exist?("temp.log") == true then
+            File.delete("temp.log")
+        end
+        $log = Logger.new("| tee temp.log")
+#       $log = Logger.new(STDOUT)
+#       $log.level = Logger::INFO
+
+        @@rftp.e2p_base()
+        if cal_flg == 1 then @@rftp.calibration(@@ATT) end
+        @@telectp._00_MS2830A_init()
+        @@telectp._01_Tolerance_of_occupied_bandwidth_Frequency_range()
+        @@telectp._02_Tolerance_of_frequency()
+        @@telectp._03_Antenna_power_point(@@ATT)
+        @@telectp._04_Antenna_power_ave(@@ATT)
+#       @@telectp._05_Tolerance_of_spurious_unwanted_emission_intensity_far()
+        @@telectp._06_Tolerance_of_spurious_unwanted_emission_intensity_near()
+        @@telectp._07_Tolerance_off_adjacent_channel_leakage_power()
+#       @@telectp._08_Limit_of_secondary_radiated_emissions()
+        @@telectp._09_Career_sense(@@ATT)
+        @@telectp._10_Spectrum_emission_mask()
+        t = Time.now
+        date = sprintf("%s%s%s%s%s_",t.year,t.mon,t.mday,t.hour,t.min)
+        logfilename = @@rftp.set_addr()
+        logfilename = "Log/" + date + logfilename + ".log"
+        File.rename('temp.log',logfilename)
+
+        system("mpg321 ../mp3/beep.mp3")
+#       led_thread = Thread.new(&method(:led))
+#       endmsg = Thread.new do
+        printf("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
+#	    printf("!!! All the verification was pass                                !!!\n")
+	    printf("!!! 正常に終了しました                                           !!!\n")
+        printf("!!! 基盤上のリセットスイッチを押して赤色LED点灯を確認して下さい。!!!\n")
+#       printf("!!! 青色LEDが点滅していることを確認しEnterしてください           !!!\n")
+        printf("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
+#       gets()
+#       Thread.kill(led_thread)
 #       end
 #       led_thread.join
 #       endmsg.join

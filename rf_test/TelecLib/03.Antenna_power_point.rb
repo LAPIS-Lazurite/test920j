@@ -15,8 +15,14 @@ class Telectp::Test
 #       _03_mas(100,24,att)
         _03_mas(100,42,att)
 #       _03_mas(100,60,att)
-   end
+    end
 
+	def _03_Antenna_power_point_full(att)
+        _03_mas(100,24,att)
+        _03_mas(100,42,att)
+        _03_mas(100,60,att)
+    end
+    
     def _03_mas(rate,ch,att) 
         sbg = Subghz.new()
         sbg.setup(ch, rate, POW)

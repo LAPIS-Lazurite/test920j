@@ -18,9 +18,8 @@ while 1
         exit
     end
 
-    level = 3 # for debug
     Dir.chdir "../io_test"
-    iotest.alltest(level)
+    iotest.alltest(0)
 
     Dir.chdir "../rf_test"
     rftest.menu()

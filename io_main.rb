@@ -15,9 +15,8 @@ while 1
         exit
     end
 
-    level = 1
     Dir.chdir "../io_test"
-    iotest.alltest(level)
+    iotest.alltest(1)
 
 	iotest.shutdown()
 

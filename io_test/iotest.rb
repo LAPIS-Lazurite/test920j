@@ -19,7 +19,7 @@ class Iotest
 		result = $test.pwr(false)
 	end
 
-	def alltest(level)
+	def alltest(prog_wr_flg)
 		$test.setTestBin(0)
 		result = $test.pwr(true)
 		if(result != "OK") then
@@ -31,7 +31,7 @@ class Iotest
 		
 		sleep(1)
 
-		if level == 1 then
+		if prog_wr_flg == 1 then
             result = $test.boot_write("LAZURITE mini series","../bin/ML620Q504_000RA.bin")
             p result
             if(result != "OK") then

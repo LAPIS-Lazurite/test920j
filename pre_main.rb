@@ -18,13 +18,11 @@ while 1
         exit
     end
 
-    level = 1
     Dir.chdir "../io_test"
-    iotest.alltest(level)
+    iotest.alltest(1)
 
     Dir.chdir "../rf_test"
-#   rftest.menu()
-	rftest.alltest(level)
+	rftest.pretest()
 
     Dir.chdir "../io_test"
 	iotest.shutdown()
