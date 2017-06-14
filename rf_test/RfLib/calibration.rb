@@ -8,6 +8,8 @@ class Rftp::Test
 	RATE = 100
 	CH = 42
     Summary = Struct.new(:frq, :lv20mw, :lv1mw, :myaddr, :macaddr)
+    FRQ_RENGE_MIN = -5   # version 1.0 is -10
+    FRQ_RENGE_MAX = 5    # version 1.0 is 10
 
     # Frequency adjustment ------------------------
     def frq_adj(rate,ch)
@@ -36,10 +38,10 @@ class Rftp::Test
                 reg = @sbg.rr(OSC_ADJ2_ADDR)
                 p reg
 
-                if (diff) < -10 then
+                if (diff) < FRQ_RENGE_MIN then
                     i = reg.hex + 1
                     @sbg.rw(OSC_ADJ2_ADDR,"0x0" + i.to_s)
-                elsif (diff) > 10 then
+                elsif (diff) > FRQ_RENGE_MAX then
                     i = reg.hex - 1
                     @sbg.rw(OSC_ADJ2_ADDR,"0x0" + i.to_s)
                 else

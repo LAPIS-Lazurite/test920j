@@ -188,7 +188,7 @@ class Telectp::Test
 		$sock.puts("*OPC?")    
 		$sock.gets
 		
-		sleep 2
+		sleep 1
 		@send_flg = 1
 		sleep 1
 

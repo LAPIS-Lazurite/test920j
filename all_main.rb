@@ -25,8 +25,7 @@ while 1
     iotest.alltest(1)
 
     Dir.chdir "../rf_test"
-#   rftest.menu()
-	rftest.posttest(1)
+	rftest.alltest(1)
 
     Dir.chdir "../io_test"
 	iotest.shutdown()

@@ -22,7 +22,7 @@ while 1
     iotest.alltest(0)
 
     Dir.chdir "../rf_test"
-	rftest.posttest(1)
+	rftest.postest(1)
 
     Dir.chdir "../io_test"
 	iotest.shutdown()

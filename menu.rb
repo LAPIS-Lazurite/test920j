@@ -24,6 +24,6 @@ while 1
     Dir.chdir "../rf_test"
     rftest.menu()
 
-    Dir.chdir "../io_test"
-	iotest.shutdown()
+#   Dir.chdir "../io_test"
+#	iotest.shutdown()
 end
