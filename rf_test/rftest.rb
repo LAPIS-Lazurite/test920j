@@ -70,7 +70,7 @@ class Rftest
         @@telectp._09_Career_sense(@@ATT)
         @@telectp._10_Spectrum_emission_mask()
         t = Time.now
-        date = sprintf("%s%s%s%s%s_",t.year,t.mon,t.mday,t.hour,t.min)
+        date = sprintf("%04d%02d%02d%02d%02d_",t.year,t.mon,t.mday,t.hour,t.min)
         logfilename = @@rftp.set_addr()
         logfilename = "Log/" + date + logfilename + ".log"
         File.rename('temp.log',logfilename)
@@ -114,7 +114,7 @@ class Rftest
         @@telectp._09_Career_sense(@@ATT)
         @@telectp._10_Spectrum_emission_mask()
         t = Time.now
-        date = sprintf("%s%s%s%s%s_",t.year,t.mon,t.mday,t.hour,t.min)
+        date = sprintf("%04d%02d%02d%02d%02d_",t.year,t.mon,t.mday,t.hour,t.min)
         logfilename = @@rftp.set_addr()
         logfilename = "Log/" + date + logfilename + ".log"
         File.rename('temp.log',logfilename)
