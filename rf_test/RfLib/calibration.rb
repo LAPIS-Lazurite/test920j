@@ -177,7 +177,7 @@ class Rftp::Test
         $log.info("############ Calibration Summary #############\n")
         $log.info(sprintf("Frequency: %s\n",summary.frq))
         $log.info(sprintf("Output level: 20mW=%s, 1mW=%s\n",summary.lv20mw,summary.lv1mw))
-        $log.info(sprintf("Attenuate: %d dB\n",@@att))
+        $log.info(sprintf("Attenuate: %2.2f dB\n",@@att))
 #       $log.info(sprintf("My Address: %s",summary.myaddr[1]))
 #       $log.info(sprintf("MAC Address: %s\n",summary.macaddr[3...11]))
         

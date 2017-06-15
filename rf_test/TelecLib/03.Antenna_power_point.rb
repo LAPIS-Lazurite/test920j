@@ -160,7 +160,7 @@ class Telectp::Test
         $log.info("Subject: 03 Antenna power pointn\n")
         $log.info(sprintf("Frequency: %s\n", $frq[rate][ch]))
         $log.info(sprintf("Makeer mode: %s\n",@@MAKER))
-        $log.info(sprintf("Attenuate: %d dB\n",@@att))
+        $log.info(sprintf("Attenuate: %2.2f dB\n",@@att))
         $log.info(sprintf("Result: %3.2f%s\n",result,range[@@MAKER]["unit"]))
         if result.between?(range[@@MAKER]["lower"].to_i,range[@@MAKER]["upper"].to_i) == false then
             $log.info("Judgement: FAIL")
