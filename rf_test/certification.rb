@@ -167,6 +167,7 @@ class Certification
 			print("11: Write register\n")
 			print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n")
             print("20: Load boot loader\n")
+			print("19: Load test old program\n")
 			print("21: Load test program\n")
 			print("22: Load basic E2P param\n")
 			print("23: Set my address\n")
@@ -193,10 +194,12 @@ class Certification
 				rr()
 			when 11
 				rw()
+			when 19
+				system("./load_prog.rb " + "bin/test_160927.bin mini")
 			when 20
 				system("./boot_wr.rb")
 			when 21
-				system("./load_prog.rb " + "bin/test.bin mini")
+			     system("./load_prog.rb " + "bin/test.bin mini")
 			when 22
 				@@rftp.e2p_base()
 			when 23

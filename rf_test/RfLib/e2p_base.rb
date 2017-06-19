@@ -6,6 +6,8 @@ class Rftp::Test
     def e2p_base
         sbg = Subghz.new()
 
+        # it's dummy, for wakeup
+#       sbg.setup(24,100,20)
         sbg.com("ewp 0")
 
 # eeprom write :My addrress-------
