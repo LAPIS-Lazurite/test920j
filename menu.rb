@@ -6,6 +6,7 @@ iotest = Iotest.new()
 $SERIAL_PORT = iotest.setCom()
 p $SERIAL_PORT
 Dir.chdir "../rf_test"
+#require "./rftest_no_telec.rb"
 require "./rftest.rb"
 rftest = Rftest.new()
 
