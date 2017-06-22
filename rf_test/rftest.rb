@@ -10,7 +10,7 @@ require 'fileutils'
 
 class Rftest
 
-	@@ATT = "6"
+	@@ATT = "6.1"
 
     def led
         @@rftp.led("blue");
