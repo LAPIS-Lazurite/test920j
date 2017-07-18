@@ -45,6 +45,7 @@ class Telectp::Test
 			confirm = sbg.com("sgs 0xffff 0xffff")
             #confirm.force_encoding('UTF-8')
             #confirm = confirm.encode("UTF-16BE", "UTF-8", :invalid => :replace, :undef => :replace, :replace => '?').encode("UTF-8")
+            begin
 			if /ffff/ =~ confirm
 				str = confirm.split(",")
 				p str
@@ -53,6 +54,9 @@ class Telectp::Test
 			if @send_flg == 1 then
 				break
 			end
+            rescue ArgumentError => e
+                p e
+            end
 		end
 	end
 

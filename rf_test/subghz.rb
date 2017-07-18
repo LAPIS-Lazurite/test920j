@@ -36,6 +36,8 @@ class Subghz
 		sp.read_timeout=500
 		sp.puts("sgi")
 		p sp.gets()
+		sp.puts("sgsma,0")
+		p sp.gets()
 		sp.puts("sgb," + ch.to_s + ",0xabcd," + rate.to_s + "," + mode.to_s)
 		p sp.gets()
 		sp.close
