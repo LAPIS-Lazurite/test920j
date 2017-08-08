@@ -34,7 +34,11 @@ class Subghz
 	def setup(len, ch, rate, mode)
 		sp = SerialPort.new($SERIAL_PORT,$SERIAL_BAUDRATE)
 		sp.read_timeout=500
-		sp.puts("sgi,1," + len.to_s)
+        if rate == 200 then
+		    sp.puts("sgi,1," + len.to_s)
+        else
+		    sp.puts("sgi,0," + len.to_s)
+        end
 		p sp.gets()
 		sp.puts("sgb," + ch.to_s + ",0xabcd," + rate.to_s + "," + mode.to_s)
 		p sp.gets()
