@@ -196,12 +196,16 @@ class Certification
     def self.setup
 		print("Data Rate [50,100,200] => ")
 		@rate = gets().to_i
-		print("CH [100kbps: 24/36/42/60, 50kbps:24//36/43/61 => ")
+		print("CH [24 - 61] => ")
 		ch = gets().to_i
 		print("Power [1,20] => ")
 		pa = gets().to_i
-		print("Data length => ")
-		len = gets().to_i
+        if @rate == 200 then
+		    print("Data length => ")
+		    len = gets().to_i
+        else
+            len = 0
+        end
         p @sbg.setup(len,ch,@rate,pa)
     end
 
@@ -218,13 +222,13 @@ class Certification
     end
 
     def self.rr
-		print("Read addr[8 0x6c] => ")
+		print("Read addr[0 0x0b] => ")
 		addr = gets()
         p @sbg.rr(addr)
     end
 
     def self.rw
-		print("Write addr[8 0x6c, 0x09] => ")
+		print("Write addr[0 0x0b, 0x09] => ")
 		data = gets().split(",")
         p @sbg.rw(data[0],data[1])
     end
