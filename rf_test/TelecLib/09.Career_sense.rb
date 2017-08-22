@@ -170,7 +170,8 @@ class Telectp::Test
 		$sock.puts("*OPC?")    
 		$sock.gets
 
-		lvl = 80 - @@ATT.to_i
+#		lvl = 80 - @@ATT.to_i
+		lvl = 79 - @@ATT.to_i
 		$sock.puts("POWer -" + lvl.to_s + "DBM")                              #SG‚ÌƒŒƒxƒ‹‚ğİ’è‚·‚é   ‚±‚Ì—á‚Å‚Í-10dBm‚Éİ’è‚·‚éB
 		$sock.puts("*OPC?")  
 		$sock.gets
