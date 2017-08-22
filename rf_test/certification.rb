@@ -58,7 +58,9 @@ class Certification
 		rate = gets().to_i
 		print("CH [100kbps: 24/36/42/60, 50kbps:24//36/43/61 => ")
 		ch = gets().to_i
-        pa = 20
+		print("Power [1,20] => ")
+		pa = gets().to_i
+    #   pa = 20
         p @sbg.setup(ch,rate,pa)
     end
 
