@@ -11,7 +11,8 @@ class Telectp::Test
 		@@ATT = att.to_f.round(2)
 		func_thread(50,24)
 		func_thread(100,42)
-        func_thread(50,61)
+        func_thread(100,60)
+#       func_thread(50,61)
 #		$sock.close
 	end
 
