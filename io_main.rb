@@ -16,7 +16,8 @@ while 1
     end
 
     Dir.chdir "../io_test"
-    iotest.alltest(1)
+#   iotest.alltest(1)
+    iotest.alltest(0)
 
 	iotest.shutdown()
 
