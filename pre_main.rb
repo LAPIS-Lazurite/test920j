@@ -9,6 +9,11 @@ Dir.chdir "../rf_test"
 require "./rftest.rb"
 rftest = Rftest.new()
 
+if ARGV[0] == nil then
+    io_mode = 1
+else
+    io_mode = ARGV[0]
+end
 
 while 1
 #   print("Please choose the next action Continue(Enter),Exit(x) :")
@@ -19,7 +24,8 @@ while 1
     end
 
     Dir.chdir "../io_test"
-    iotest.alltest(1)
+#   iotest.alltest(1)
+    iotest.alltest(io_mode)
 
     Dir.chdir "../rf_test"
 	rftest.pretest()
