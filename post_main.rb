@@ -17,6 +17,7 @@ while 1
     if rep =~ /x/ then
         exit
     end
+    sleep(0.3)
 
     Dir.chdir "../io_test"
     iotest.alltest(0)

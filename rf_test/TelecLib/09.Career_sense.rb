@@ -11,8 +11,8 @@ class Telectp::Test
 		@@ATT = att.to_f.round(2)
 		func_thread(50,24)
 		func_thread(100,42)
-        func_thread(100,60)
-#       func_thread(50,61)
+#       func_thread(100,60)
+        func_thread(50,61)
 #		$sock.close
 	end
 
@@ -39,6 +39,8 @@ class Telectp::Test
 	def snd(rate,ch)
 		sbg = Subghz.new()
 		sbg.setup(ch, rate, POW)
+        sbg.rw("8 0x13"," 0x25") # cca level 0x30 ｿ> 0x25
+
 		sbg.wf()
 
 		while 1
@@ -171,9 +173,9 @@ class Telectp::Test
 		$sock.puts("*OPC?")    
 		$sock.gets
 
-#		lvl = 80 - @@ATT.to_i
-		lvl = 79 - @@ATT.to_i
-		$sock.puts("POWer -" + lvl.to_s + "DBM")                              #SGのレベルを設定する   この例では-10dBmに設定する。
+		$lvl = 80 - @@ATT.to_i
+#		$lvl = 79 - @@ATT.to_i
+		$sock.puts("POWer -" + $lvl.to_s + "DBM")                              #SGのレベルを設定する   この例では-10dBmに設定する。
 		$sock.puts("*OPC?")  
 		$sock.gets
 
