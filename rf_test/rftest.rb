@@ -21,10 +21,6 @@ class Rftest
         if File.exist?("temp.log") == true then
             File.delete("temp.log")
         end
-        printf("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
-        printf("!!! 基盤上のリセットスイッチを押して赤色LED点灯を確認して下さい。!!!\n")
-        printf("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
-        gets()
         $log = Logger.new("| tee temp.log")
 #       $log = Logger.new(STDOUT)
 #       $log.level = Logger::INFO
@@ -54,10 +50,6 @@ class Rftest
         if File.exist?("temp.log") == true then
             File.delete("temp.log")
         end
-        printf("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
-        printf("!!! 基盤上のリセットスイッチを押して赤色LED点灯を確認して下さい。!!!\n")
-        printf("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
-        gets()
         $log = Logger.new("| tee temp.log")
 #       $log = Logger.new(STDOUT)
 #       $log.level = Logger::INFO
