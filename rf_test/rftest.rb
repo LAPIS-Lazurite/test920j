@@ -10,7 +10,8 @@ require 'fileutils'
 
 class Rftest
 
-	@@ATT = "6.1"
+    # 2017.10.4  6.1->7.9
+	@@ATT = "7.9"
 
     def led
         @@rftp.led("blue");
@@ -65,7 +66,8 @@ class Rftest
         @@telectp._06_Tolerance_of_spurious_unwanted_emission_intensity_near()
         @@telectp._07_Tolerance_off_adjacent_channel_leakage_power()
 #       @@telectp._08_Limit_of_secondary_radiated_emissions()
-        @@telectp._09_Career_sense(@@ATT)
+        # 2017.10.4  @@ATT -> 6.5
+        @@telectp._09_Career_sense(6.5)
         @@telectp._10_Spectrum_emission_mask()
         t = Time.now
         date = sprintf("%04d%02d%02d%02d%02d_",t.year,t.mon,t.mday,t.hour,t.min)
