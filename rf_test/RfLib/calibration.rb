@@ -94,7 +94,7 @@ class Rftp::Test
                 reg = @sbg.rr(@pow[mode].pa_addr)
                 p reg
 
-                if (diff.to_i) < 0 then
+                if (diff.to_i) < -30 then
                     i = reg.hex - @pow[mode].pa_bit
                     @sbg.rw(@pow[mode].pa_addr,"0x" + i.to_s(16))
                 # 100ー＞150に変更：03空中戦電力Fail回避
@@ -140,6 +140,7 @@ class Rftp::Test
         p1mW_mode = pow_param.new(1, -1, PA_ADJ1_ADDR, 0x01, 0x0f, "ewr 43 ")
         p20mW_mode = pow_param.new(20, 13, PA_ADJ3_ADDR, 0x10, 0xf0, "ewr 41 ")
 #       p20mW_mode = pow_param.new(20, 12, PA_ADJ3_ADDR, 0x10, 0xf0, "ewr 41 ")
+#       p20mW_mode = pow_param.new(20, 12.5, PA_ADJ3_ADDR, 0x10, 0xf0, "ewr 41 ")
         @pow = {1  => p1mW_mode, 20 => p20mW_mode}
         @max_num=9
         @sbg = Subghz.new()
