@@ -3,6 +3,12 @@
 require './subghz.rb'
 
 class Rftp::Test
+    def begin_subghz
+        sbg = Subghz.new()
+        # it's dummy, for wakeup
+        sbg.setup(24,100,20)
+    end
+
     def e2p_base
         sbg = Subghz.new()
         # it's dummy, for wakeup

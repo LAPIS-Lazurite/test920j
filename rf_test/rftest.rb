@@ -98,8 +98,12 @@ class Rftest
 #       $log = Logger.new(STDOUT)
 #       $log.level = Logger::INFO
 
-        @@rftp.e2p_base()
-        if cal_flg == 1 then @@rftp.calibration(@@ATT) end
+        if cal_flg == 1 then
+            @@rftp.e2p_base()
+            @@rftp.calibration(@@ATT)
+        else
+            @@rftp.begin_subghz()
+        end
         @@telectp._00_MS2830A_init()
         @@telectp._01_Tolerance_of_occupied_bandwidth_Frequency_range()
         @@telectp._02_Tolerance_of_frequency_full()
