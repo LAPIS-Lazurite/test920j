@@ -3,6 +3,8 @@
 *.lo
 *.o
 *.obj
+*.log
+*.swp
 tags
 # Precompiled Headers
 *.gch
