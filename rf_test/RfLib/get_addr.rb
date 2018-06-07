@@ -6,6 +6,9 @@ class Rftp::Test
 	def get_addr
         sbg = Subghz.new()
 
+        # it's dummy, for wakeup
+        sbg.setup(24,100,20)
+
         myaddr = sbg.ra()
         printf("My address:%#10.4x\n", myaddr[1])
         sleep(1)

@@ -31,6 +31,7 @@ printf("Folder name :   %s\n",gFolder)
 printf("Log file name : %s\n",logfilename)
 
 
+system("sudo if down eth0")
 # ------------ Search folder
 myDrive.cd("Lazurite920j_log")
 list = myDrive.ls()
@@ -63,3 +64,4 @@ if list != nil
 end
 
 myDrive.send("Log/" + logfilename,logfilename)
+system("sudo if up eth0")

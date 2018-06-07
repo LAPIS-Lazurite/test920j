@@ -8,6 +8,8 @@ class Rftp::Test
 	RATE = 100
 	CH = 42
     Summary = Struct.new(:frq, :lv20mw, :lv1mw, :myaddr, :macaddr)
+    FRQ_RENGE_MIN = -5   # version 1.0 is -10
+    FRQ_RENGE_MAX = 5    # version 1.0 is 10
 
     # Frequency adjustment ------------------------
     def frq_adj(rate,ch)
@@ -36,10 +38,10 @@ class Rftp::Test
                 reg = @sbg.rr(OSC_ADJ2_ADDR)
                 p reg
 
-                if (diff) < -10 then
+                if (diff) < FRQ_RENGE_MIN then
                     i = reg.hex + 1
                     @sbg.rw(OSC_ADJ2_ADDR,"0x0" + i.to_s)
-                elsif (diff) > 10 then
+                elsif (diff) > FRQ_RENGE_MAX then
                     i = reg.hex - 1
                     @sbg.rw(OSC_ADJ2_ADDR,"0x0" + i.to_s)
                 else
@@ -136,8 +138,9 @@ class Rftp::Test
         # DUT setup ------------------------------------
         pow_param = Struct.new(:mode, :level, :pa_addr, :pa_bit, :pa_max, :ep_addr)
         p1mW_mode = pow_param.new(1, -1, PA_ADJ1_ADDR, 0x01, 0x0f, "ewr 43 ")
-        p20mW_mode = pow_param.new(20, 13, PA_ADJ3_ADDR, 0x10, 0xf0, "ewr 41 ")
+#       p20mW_mode = pow_param.new(20, 13, PA_ADJ3_ADDR, 0x10, 0xf0, "ewr 41 ")
 #       p20mW_mode = pow_param.new(20, 12, PA_ADJ3_ADDR, 0x10, 0xf0, "ewr 41 ")
+        p20mW_mode = pow_param.new(20, 12.5, PA_ADJ3_ADDR, 0x10, 0xf0, "ewr 41 ")
         @pow = {1  => p1mW_mode, 20 => p20mW_mode}
         @max_num=9
         @sbg = Subghz.new()
@@ -175,7 +178,7 @@ class Rftp::Test
         $log.info("############ Calibration Summary #############\n")
         $log.info(sprintf("Frequency: %s\n",summary.frq))
         $log.info(sprintf("Output level: 20mW=%s, 1mW=%s\n",summary.lv20mw,summary.lv1mw))
-        $log.info(sprintf("Attenuate: %d dB\n",@@att))
+        $log.info(sprintf("Attenuate: %2.2f dB\n",@@att))
 #       $log.info(sprintf("My Address: %s",summary.myaddr[1]))
 #       $log.info(sprintf("MAC Address: %s\n",summary.macaddr[3...11]))
         

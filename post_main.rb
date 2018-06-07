@@ -17,15 +17,13 @@ while 1
     if rep =~ /x/ then
         exit
     end
+    sleep(0.3)
 
-    level = 2
-#   level = 3 # for debug
     Dir.chdir "../io_test"
-    iotest.alltest(level)
+    iotest.alltest(0)
 
     Dir.chdir "../rf_test"
-#   rftest.menu()
-	rftest.alltest(level)
+	rftest.postest(1)
 
     Dir.chdir "../io_test"
 	iotest.shutdown()

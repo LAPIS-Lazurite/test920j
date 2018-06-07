@@ -6,6 +6,7 @@ iotest = Iotest.new()
 $SERIAL_PORT = iotest.setCom()
 p $SERIAL_PORT
 Dir.chdir "../rf_test"
+#require "./rftest_no_telec.rb"
 require "./rftest.rb"
 rftest = Rftest.new()
 
@@ -18,13 +19,12 @@ while 1
         exit
     end
 
-    level = 3 # for debug
     Dir.chdir "../io_test"
-    iotest.alltest(level)
+    iotest.alltest(0)
 
     Dir.chdir "../rf_test"
     rftest.menu()
 
-    Dir.chdir "../io_test"
-	iotest.shutdown()
+#   Dir.chdir "../io_test"
+#	iotest.shutdown()
 end

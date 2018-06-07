@@ -19,7 +19,8 @@ class Iotest
 		result = $test.pwr(false)
 	end
 
-	def alltest(level)
+
+	def writeprog
 		$test.setTestBin(0)
 		result = $test.pwr(true)
 		if(result != "OK") then
@@ -31,7 +32,50 @@ class Iotest
 		
 		sleep(1)
 
-		if level == 1 then
+        result = $test.boot_write("LAZURITE mini series","../bin/ML620Q504_000RA.bin")
+        p result
+        if(result != "OK") then
+            printf(" Bootloader program Fail %d %d %d!!\n",result[0],result[1],result[2])
+            return
+        end
+        
+        sleep(0.1)
+        
+        result = $test.prog_write("LAZURITE mini series","../bin/test.bin")
+        if(result != "OK") then
+            printf(" Program write Fail %d %d %d!!\n",result[0],result[1],result[2])
+            return
+        else
+            p result
+        end
+		
+        system("mpg321 ../mp3/beep.mp3")
+		
+		if(result != "OK") then
+			printf(" Power off fail %d %d %d!!\n",result[0],result[1],result[2])
+			return
+		else
+					printf("#############################################\n")
+					printf("###########      PASS!!           ###########\n")
+					printf("###########      End of TEST      ###########\n")
+					printf("#############################################\n")
+		end
+	end
+
+
+	def alltest(prog_wr_flg)
+		$test.setTestBin(0)
+		result = $test.pwr(true)
+		if(result != "OK") then
+			print(" Power on fail%d %d %d!!\n",result[0],result[1],result[2])
+			return
+		else
+			p result
+		end
+		
+		sleep(1)
+
+		if prog_wr_flg == 1 then
             result = $test.boot_write("LAZURITE mini series","../bin/ML620Q504_000RA.bin")
             p result
             if(result != "OK") then
@@ -50,7 +94,7 @@ class Iotest
             end
         end
 		
-        system("mpg321 ../mp3/beep.mp3")
+#       system("mpg321 ../mp3/beep.mp3")
 		result = $test.iotest()
 		if(result != "OK") then
 			printf(" IO Test Fail %d pin error!!\n",result[2])
@@ -59,6 +103,11 @@ class Iotest
 			p result
 		end
 		
+        printf("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
+        printf("!!! 基盤上のリセットスイッチを押して赤色LED点灯を確認して下さい。!!!\n")
+        printf("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
+        gets()
+
 		result = $test.baud(115200)
 		if(result != "OK") then
 			p result[0],result[1],result[3]
