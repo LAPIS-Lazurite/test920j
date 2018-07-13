@@ -18,49 +18,30 @@ class Rftest
     end
 
 
-	def pretest
+    def calib
         if File.exist?("temp.log") == true then
             File.delete("temp.log")
         end
         $log = Logger.new("| tee temp.log")
 #       $log = Logger.new(STDOUT)
 #       $log.level = Logger::INFO
-
         @@rftp.e2p_base()
         @@rftp.calibration(@@ATT)
+    end
+
+	def pretest
         @@telectp._00_MS2830A_init()
         @@telectp._09_Career_sense(@@ATT)
-
         system("mpg321 ../mp3/beep.mp3")
-#       led_thread = Thread.new(&method(:led))
-#       endmsg = Thread.new do
-#       printf("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
-#       printf("!!! 正常に終了しました                                           !!!\n")
-#       printf("!!! 基盤上のリセットスイッチを押して赤色LED点灯を確認して下さい。!!!\n")
-#       printf("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
-#       gets()
-#       Thread.kill(led_thread)
-#       end
-#       led_thread.join
-#       endmsg.join
 	end
     
 
-	def postest(cal_flg)
-
+	def postest
         if File.exist?("temp.log") == true then
             File.delete("temp.log")
         end
         $log = Logger.new("| tee temp.log")
-#       $log = Logger.new(STDOUT)
-#       $log.level = Logger::INFO
-
-        if cal_flg == 1 then
-            @@rftp.e2p_base()
-            @@rftp.calibration(@@ATT)
-        else
-            @@rftp.begin_subghz()
-        end
+#       @@rftp.begin_subghz()
         @@telectp._00_MS2830A_init()
         @@telectp._01_Tolerance_of_occupied_bandwidth_Frequency_range()
         @@telectp._02_Tolerance_of_frequency()
@@ -71,12 +52,16 @@ class Rftest
         @@telectp._07_Tolerance_off_adjacent_channel_leakage_power()
 #       @@telectp._08_Limit_of_secondary_radiated_emissions()
         # 2017.10.4  @@ATT -> 6.5
+#       @@telectp._09_Career_sense(@@ATT)
         @@telectp._09_Career_sense(6.5)
         @@telectp._10_Spectrum_emission_mask()
+    end
+
+	def setbarcode
         t = Time.now
         date = sprintf("%04d%02d%02d%02d%02d_",t.year,t.mon,t.mday,t.hour,t.min)
         logfilename = @@rftp.set_addr()
-        logfilename = "Log/" + date + logfilename + ".log"
+        logfilename = "/home/pi/test920j/Log/" + date + logfilename + ".log"
         File.rename('temp.log',logfilename)
 
         system("mpg321 ../mp3/beep.mp3")
@@ -94,57 +79,18 @@ class Rftest
 	end
 
 
-	def alltest(cal_flg)
+
+	def telec
         if File.exist?("temp.log") == true then
             File.delete("temp.log")
         end
         $log = Logger.new("| tee temp.log")
-#       $log = Logger.new(STDOUT)
-#       $log.level = Logger::INFO
-
-        @@rftp.e2p_base()
-        if cal_flg == 1 then @@rftp.calibration(@@ATT) end
-        @@telectp._00_MS2830A_init()
-        @@telectp._01_Tolerance_of_occupied_bandwidth_Frequency_range()
-        @@telectp._02_Tolerance_of_frequency_full()
-        @@telectp._03_Antenna_power_point_full(@@ATT)
-        @@telectp._04_Antenna_power_ave(@@ATT)
-#       @@telectp._05_Tolerance_of_spurious_unwanted_emission_intensity_far()
-        @@telectp._06_Tolerance_of_spurious_unwanted_emission_intensity_near()
-        @@telectp._07_Tolerance_off_adjacent_channel_leakage_power()
-#       @@telectp._08_Limit_of_secondary_radiated_emissions()
-        @@telectp._09_Career_sense(@@ATT)
-        @@telectp._10_Spectrum_emission_mask()
-        t = Time.now
-        date = sprintf("%04d%02d%02d%02d%02d_",t.year,t.mon,t.mday,t.hour,t.min)
-        logfilename = @@rftp.set_addr()
-        logfilename = "Log/" + date + logfilename + ".log"
-        File.rename('temp.log',logfilename)
-
-        system("mpg321 ../mp3/beep.mp3")
-#       led_thread = Thread.new(&method(:led))
-#       endmsg = Thread.new do
-        printf("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
-#	    printf("!!! All the verification was pass                                !!!\n")
-	    printf("!!! 正常に終了しました                                           !!!\n")
-        printf("!!! 基盤上のリセットスイッチを押して赤色LED点灯を確認して下さい。!!!\n")
-#       printf("!!! 青色LEDが点滅していることを確認しEnterしてください           !!!\n")
-        printf("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
-#       gets()
-#       Thread.kill(led_thread)
-#       end
-#       led_thread.join
-#       endmsg.join
-	end
-
-
-	def telec_menu
 		Dir.chdir "./TelecLib"
-#		while 1
+		while 1
 			print("====================== TELEC MENU =======================\n")
 			p = Dir.glob("*")
 			p.sort.each{|d| puts "" + d + "\n" }
-#			print("99.Exit\n")
+			print("99.Exit\n")
 			print("=========================================================\n")
 			print("input number => ")
 			input = gets().to_i
@@ -172,10 +118,11 @@ class Rftest
 				@@telectp._09_Career_sense(@@ATT)
 			when 10
 				@@telectp._10_Spectrum_emission_mask()
-#			when 99
-#				break
+            else
+				break
 			end
-#		end
+		end
+		Dir.chdir "../"
 	end
 
 	def menu
@@ -185,55 +132,43 @@ class Rftest
         end
         $log = Logger.new("| tee temp.log")
 
-#		while 1
+		while 1
 			system("pwd")
 			print("~~~~~~~~~~~~~~~~~~~~ Main Menu ~~~~~~~~~~~~~~~~\n")
-			print("1: Load boot loader\n")
-			print("2: Load test program\n")
-			print("3: Write basic parameter for E2P\n")
-			print("4: Execute calibration\n")
-			print("10: Sub menu for TELEC-T245 certification\n")
-			print("11: Execute all test\n")
-			print("20: Continuous Wave\n")
-			print("21: Send packet\n")
-			print("22: Carrier Sense\n")
-			print("30: Set my address\n")
-			print("31: Get my address\n")
-			print("32: Direct Command\n")
-#			print("99: Exit\n")
+			print("1: Write basic parameter for E2P\n")
+			print("2: Execute calibration\n")
+			print("3: Continuous Wave\n")
+			print("4: Send packet\n")
+			print("5: Carrier Sense\n")
+			print("10: Set my address\n")
+			print("11: Get my address\n")
+			print("20: Direct Command\n")
+			print("99: Exit\n")
 			print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n")
 			print("input number => ")
 			input = gets().to_i
 
 			case input
 			when 1
-				system("./boot_wr.rb")
-			when 2
-				system("./load_prog.rb " + "bin/test.bin mini")
-			when 3
 				@@rftp.e2p_base()
-			when 4
+			when 2
 				@@rftp.calibration(@@ATT)
-			when 10
-				telec_menu()
-			when 11
-				alltest(1)
-			when 20
+			when 3
 				@@rftp.cw()
-			when 21
+			when 4
 				@@rftp.snd()
-			when 22
+			when 5
 				@@rftp.cca()
-			when 30
+			when 10
 				@@rftp.set_addr()
-			when 31
+			when 11
 				@@rftp.get_addr()
-			when 32
+			when 20
 				@@rftp.command()
-			when 99
-#				break
+            else
+				break
 			end
-#		end
+		end
 	end
 
 end
