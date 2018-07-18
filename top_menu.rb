@@ -1,5 +1,7 @@
 #! /usr/bin/ruby
 
+
+
 Dir.chdir "./io_test"
 require "./iotest.rb"
 iotest = Iotest.new()
@@ -16,14 +18,14 @@ rftest = Rftest.new()
 while 1
     system("pwd")
     print("+++++++++++ Top Menu ++++++++++\n")
-    print("1: pre_test\n")
-    print("2: post_test\n")
-    print("3: verify\n")
-    print("4: write program\n")
-    print("5: rf command\n")
-    print("6: telec nemu\n")
-    print("10: post_test for LazuriteFly\n")
-    print("99: Exit\n")
+    print("1:   pre-test\n")
+    print("2:   post-test\n")
+    print("3:   verify\n")
+    print("4:   write program\n")
+    print("5:   rf command\n")
+    print("6:   telec nemu\n")
+    print("10:  post-test for LazuriteFly\n")
+    print("99:  exit\n")
     print("+++++++++++++++++++++++++++++++\n")
 #   print("Please choose the next action Continue(Enter),Exit(x) :")
 #   print("続ける場合は[Enter]を終了する場合[x]を入力してください：")
@@ -46,7 +48,7 @@ while 1
         Dir.chdir "../rf_test"
         rftest.calib()
         rftest.postest()
-        rftest.barcode()
+        rftest.setbarcode()
     when 3
         Dir.chdir "../io_test"
         iotest.alltest()

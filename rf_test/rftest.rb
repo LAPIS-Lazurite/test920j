@@ -118,6 +118,12 @@ class Rftest
 				@@telectp._09_Career_sense(@@ATT)
 			when 10
 				@@telectp._10_Spectrum_emission_mask()
+			when 11
+			    print("unsupported\n")
+			when 12
+			    print("unsupported\n")
+			when 13
+			    print("unsupported\n")
             else
 				break
 			end
@@ -134,16 +140,16 @@ class Rftest
 
 		while 1
 			system("pwd")
-			print("~~~~~~~~~~~~~~~~~~~~ Main Menu ~~~~~~~~~~~~~~~~\n")
-			print("1: Write basic parameter for E2P\n")
-			print("2: Execute calibration\n")
-			print("3: Continuous Wave\n")
-			print("4: Send packet\n")
-			print("5: Carrier Sense\n")
-			print("10: Set my address\n")
-			print("11: Get my address\n")
-			print("20: Direct Command\n")
-			print("99: Exit\n")
+			print("~~~~~~~~~~~~~~~~~~~ rf command ~~~~~~~~~~~~~~~~\n")
+			print("1:   Write basic parameter to E2P\n")
+			print("2:   Calibration\n")
+			print("3:   Continuous Wave\n")
+			print("4:   Send packet\n")
+			print("5:   Carrier Sense\n")
+			print("10:  Set my address\n")
+			print("11:  Get my address\n")
+			print("20:  Direct Command\n")
+			print("99:  Exit\n")
 			print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n")
 			print("input number => ")
 			input = gets().to_i
