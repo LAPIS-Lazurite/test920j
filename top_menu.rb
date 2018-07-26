@@ -1,7 +1,5 @@
 #! /usr/bin/ruby
 
-
-
 Dir.chdir "./io_test"
 require "./iotest.rb"
 iotest = Iotest.new()
@@ -16,19 +14,20 @@ rftest = Rftest.new()
 #system("amixer cset numid=1 -- 80%")
 
 while 1
+    Dir.chdir "../io_test"
+    iotest.startup()
+
     system("pwd")
-    print("+++++++++++ Top Menu ++++++++++\n")
-    print("1:   pre-test\n")
-    print("2:   post-test\n")
-    print("3:   verify\n")
-    print("4:   write program\n")
-    print("5:   rf command\n")
-    print("6:   telec nemu\n")
-    print("10:  post-test for LazuriteFly\n")
-    print("99:  exit\n")
-    print("+++++++++++++++++++++++++++++++\n")
-#   print("Please choose the next action Continue(Enter),Exit(x) :")
-#   print("続ける場合は[Enter]を終了する場合[x]を入力してください：")
+    print("~~~~~~~~~~~ TOP MENU ~~~~~~~~~~~\n")
+    print("[1]  Pre-test\n")
+    print("[2]  Post-test\n")
+    print("[3]  Verify\n")
+    print("[4]  Write program\n")
+    print("[5]  Rf command\n")
+    print("[6]  Telec nemu\n")
+    print("[10] Post-test for LazuriteFly\n")
+    print("[99] Exit\n")
+    print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n")
     print("番号を入力してください：")
     input = gets().to_i
 
@@ -36,19 +35,33 @@ while 1
 
     case input
     when 1
-        Dir.chdir "../io_test"
-        iotest.writeprog()
-        iotest.alltest()
-        Dir.chdir "../rf_test"
-        rftest.calib()
-        rftest.pretest()
+        while 1
+            Dir.chdir "../io_test"
+            iotest.writeprog()
+            iotest.alltest()
+            Dir.chdir "../rf_test"
+            rftest.calib()
+            rftest.pretest()
+            print("\n続ける場合は[Enter]を終了する場合[x]を入力してください：")
+            rep = gets().to_s
+            if rep =~ /x/ then
+                break
+            end
+        end
     when 2
-        Dir.chdir "../io_test"
-        iotest.alltest()
-        Dir.chdir "../rf_test"
-        rftest.calib()
-        rftest.postest()
-        rftest.setbarcode()
+        while 1
+            Dir.chdir "../io_test"
+            iotest.alltest()
+            Dir.chdir "../rf_test"
+            rftest.calib()
+            rftest.postest()
+            rftest.setbarcode()
+            print("\n続ける場合は[Enter]を終了する場合[x]を入力してください：")
+            rep = gets().to_s
+            if rep =~ /x/ then
+                break
+            end
+        end
     when 3
         Dir.chdir "../io_test"
         iotest.alltest()
@@ -71,9 +84,9 @@ while 1
         rftest.postest()
         rftest.barcode()
     else
+        Dir.chdir "../io_test"
+        iotest.shutdown()
         break
     end
     
-    Dir.chdir "../io_test"
-	iotest.shutdown()
 end

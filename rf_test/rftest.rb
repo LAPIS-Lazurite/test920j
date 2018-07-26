@@ -37,10 +37,6 @@ class Rftest
     
 
 	def postest
-        if File.exist?("temp.log") == true then
-            File.delete("temp.log")
-        end
-        $log = Logger.new("| tee temp.log")
 #       @@rftp.begin_subghz()
         @@telectp._00_MS2830A_init()
         @@telectp._01_Tolerance_of_occupied_bandwidth_Frequency_range()
@@ -132,25 +128,23 @@ class Rftest
 	end
 
 	def menu
-
         if File.exist?("temp.log") == true then
             File.delete("temp.log")
         end
         $log = Logger.new("| tee temp.log")
-
 		while 1
 			system("pwd")
-			print("~~~~~~~~~~~~~~~~~~~ rf command ~~~~~~~~~~~~~~~~\n")
-			print("1:   Write basic parameter to E2P\n")
-			print("2:   Calibration\n")
-			print("3:   Continuous Wave\n")
-			print("4:   Send packet\n")
-			print("5:   Carrier Sense\n")
-			print("10:  Set my address\n")
-			print("11:  Get my address\n")
-			print("20:  Direct Command\n")
-			print("99:  Exit\n")
-			print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n")
+			print("~~~~~~~~~~~~~~ RF COMMAND ~~~~~~~~~~~\n")
+			print("[1]  Write basic parameter to E2P\n")
+			print("[2]  Calibration\n")
+			print("[3]  Continuous Wave\n")
+			print("[4]  Send packet\n")
+			print("[5]  Carrier Sense\n")
+			print("[10] Set my address\n")
+			print("[11] Get my address\n")
+			print("[20] Direct Command\n")
+			print("[99] Exit\n")
+			print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n")
 			print("input number => ")
 			input = gets().to_i
 

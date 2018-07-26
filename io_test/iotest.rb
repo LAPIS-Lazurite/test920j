@@ -19,8 +19,7 @@ class Iotest
 		result = $test.pwr(false)
 	end
 
-
-	def writeprog
+	def startup()
 		$test.setTestBin(0)
 		result = $test.pwr(true)
 		if(result != "OK") then
@@ -29,9 +28,9 @@ class Iotest
 		else
 			p result
 		end
-		
-		sleep(1)
+	end
 
+	def writeprog
         result = $test.boot_write("LAZURITE mini series","../bin/ML620Q504_000RA.bin")
         p result
         if(result != "OK") then
@@ -74,11 +73,11 @@ class Iotest
 			p result
 		end
 		
-        system('zenity --info --text="基盤上のリセットスイッチを押して赤色LED点灯を確認して下さい。!"')
-#       printf("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
-#       printf("!!! 基盤上のリセットスイッチを押して赤色LED点灯を確認して下さい。!!!\n")
-#       printf("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
-#       gets()
+#       system('zenity --info --text="基盤上のリセットスイッチを押して赤色LED点灯を確認して下さい。!"')
+        printf("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
+        printf("!!! 基盤上のリセットスイッチを押して赤色LED点灯を確認して下さい。!!!\n")
+        printf("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
+        gets()
 
 		result = $test.baud(115200)
 		if(result != "OK") then

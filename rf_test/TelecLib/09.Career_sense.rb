@@ -23,9 +23,9 @@ class Telectp::Test
 		tester_thread.join
 		snd_thread.join
 
-		$log.info("+++++++++++ SUMMARY ++++++++++\n")
-		$log.info("Subject: 09 Career sense\n")
-        $log.info(sprintf("Frequency: %s\n", $frq[rate][ch]))
+		$log.info("+++++++++++ SUMMARY ++++++++++")
+		$log.info("Subject: 09 Career sense")
+        $log.info(sprintf("Frequency: %s", $frq[rate][ch]))
 		if @result !~ /9/ then
 		    $log.info("Judgement: FAIL")
 		    raise StandardError, "FAIL\n"
