@@ -8,8 +8,8 @@ class Rftp::Test
 	RATE = 100
 	CH = 42
     Summary = Struct.new(:frq, :lv20mw, :lv1mw, :myaddr, :macaddr)
-    FRQ_RENGE_MIN = -5   # version 1.0 is -10
-    FRQ_RENGE_MAX = 5    # version 1.0 is 10
+    FRQ_RENGE_MIN = -3   # version 1.0 is -10
+    FRQ_RENGE_MAX = 3    # version 1.0 is 10
 
     # Frequency adjustment ------------------------
     def frq_adj(rate,ch)
@@ -32,8 +32,9 @@ class Rftp::Test
                 p value
 
                 diff = $frq[rate][ch].to_i - value.to_i
+                printf("Frequency adjustment: diff:%s, tartget:%d, current:%d\n",
+                       diff,$frq[rate][ch].to_i,value.to_i)
                 diff = diff/1000
-                printf("Frequency adjustment: diff:%s\n",diff)
 
                 reg = @sbg.rr(OSC_ADJ2_ADDR)
                 p reg
