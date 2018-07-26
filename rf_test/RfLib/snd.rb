@@ -84,6 +84,6 @@ class Rftp::Test
             p sbg.com("sgs 0xffff 0xffff")
         end
 
-        $sock.close
+#       $sock.close
     end
 end

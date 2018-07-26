@@ -99,7 +99,6 @@ class Rftp::Test
             end
         end
 
-
-        $sock.close
+#       $sock.close
     end
 end

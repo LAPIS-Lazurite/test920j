@@ -57,6 +57,6 @@ class Rftp::Test
         value = $sock.gets
         p value
 
-        $sock.close
+#       $sock.close
     end
 end
