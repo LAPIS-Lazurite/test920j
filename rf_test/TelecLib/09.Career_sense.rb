@@ -8,7 +8,7 @@ require './subghz.rb'
 
 class Telectp::Test
 	def _09_Career_sense(att)
-		@@ATT = att.to_f.round(2)
+		@@att = att.to_f.round(2)
 		func_thread(50,24)
 		func_thread(100,42)
 #       func_thread(100,60)
@@ -173,8 +173,8 @@ class Telectp::Test
 		$sock.puts("*OPC?")    
 		$sock.gets
 
-		$lvl = 80 - @@ATT.to_i
-#		$lvl = 79 - @@ATT.to_i
+		$lvl = 80 - @@att.to_i
+#		$lvl = 79 - @@att.to_i
 		$sock.puts("POWer -" + $lvl.to_s + "DBM")                              #SG‚ÌƒŒƒxƒ‹‚ğİ’è‚·‚é   ‚±‚Ì—á‚Å‚Í-10dBm‚Éİ’è‚·‚éB
 		$sock.puts("*OPC?")  
 		$sock.gets

@@ -23,7 +23,7 @@ class Telectp::Test
             sbg.wf()
 
     #setup TESTER --------------------------------------
-            @@ATT = att.to_f.round(2)
+            @@att = att.to_f.round(2)
             $sock.puts("INST SPECT")                                #SAモードでは下記のコマンドを使用   INST SIGANA"
             $sock.puts("*OPC?")
             $sock.gets
@@ -139,7 +139,7 @@ class Telectp::Test
 
             $sock.puts("FETC:BPOW?")                                #BurstAveragePowerの測定結果を読み取る
             $sock.puts("*OPC?")
-            result = $sock.gets.to_f + @@ATT
+            result = $sock.gets.to_f + @@att
             p result
 
             $sock.puts("TRIG OFF")
@@ -151,7 +151,7 @@ class Telectp::Test
             $log.info("+++++++++++ SUMMARY ++++++++++")
             $log.info("Subject: 04 Antenna power average")
             $log.info(sprintf("Frequency: %s", $frq[rate][ch]))
-            $log.info(sprintf("Attenuate: %d dB",@@ATT))
+            $log.info(sprintf("Attenuate: %2.2f dB",@@att))
             $log.info(sprintf("Result: %3.2f dBm",result))
             if result.between?(9,13) == false then
                 $log.info("Judgement: FAIL")

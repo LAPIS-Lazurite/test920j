@@ -17,14 +17,16 @@ class Rftest
         @@rftp.led("blue");
     end
 
-
-    def calib
+    def setlog
         if File.exist?("temp.log") == true then
             File.delete("temp.log")
         end
         $log = Logger.new("| tee temp.log")
 #       $log = Logger.new(STDOUT)
 #       $log.level = Logger::INFO
+    end
+
+    def calib
         @@rftp.e2p_base()
         @@rftp.calibration(@@ATT)
     end
@@ -47,9 +49,7 @@ class Rftest
         @@telectp._06_Tolerance_of_spurious_unwanted_emission_intensity_near()
         @@telectp._07_Tolerance_off_adjacent_channel_leakage_power()
 #       @@telectp._08_Limit_of_secondary_radiated_emissions()
-        # 2017.10.4  @@ATT -> 6.5
-#       @@telectp._09_Career_sense(@@ATT)
-        @@telectp._09_Career_sense(6.5)
+        @@telectp._09_Career_sense(@@ATT)
         @@telectp._10_Spectrum_emission_mask()
     end
 

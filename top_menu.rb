@@ -40,6 +40,7 @@ while 1
             iotest.writeprog()
             iotest.alltest()
             Dir.chdir "../rf_test"
+            rftest.setlog()
             rftest.calib()
             rftest.pretest()
             print("\n続ける場合は[Enter]を終了する場合[x]を入力してください：")
@@ -53,6 +54,7 @@ while 1
             Dir.chdir "../io_test"
             iotest.alltest()
             Dir.chdir "../rf_test"
+            rftest.setlog()
             rftest.calib()
             rftest.postest()
             rftest.setbarcode()
@@ -66,6 +68,7 @@ while 1
         Dir.chdir "../io_test"
         iotest.alltest()
         Dir.chdir "../rf_test"
+        rftest.setlog()
         rftest.postest()
     when 4
         Dir.chdir "../io_test"
@@ -80,6 +83,7 @@ while 1
         Dir.chdir "../io_test"
         iotest.writeprog()
         Dir.chdir "../rf_test"
+        rftest.setlog()
         rftest.calib()
         rftest.postest()
         rftest.barcode()
