@@ -174,15 +174,20 @@ class Rftp::Test
             summary.lv20mw = pow_adj(20)
             summary.lv1mw = pow_adj(1)
 
-            summary.myaddr = @sbg.ra
+            summary.myaddr = @sbg.ra()
             summary.macaddr = @sbg.com("erd 32 8").split(",")
 
+            @sbg.trxoff()
+            @sbg.com("ewp 1")
+
+#           $sock.close
+            #
             $log.info("############ Calibration Summary #############")
             $log.info(sprintf("Frequency: %s",summary.frq))
             $log.info(sprintf("Output level: 20mW=%s, 1mW=%s",summary.lv20mw,summary.lv1mw))
             $log.info(sprintf("Attenuate: %2.2f dB",@@att))
-    #       $log.info(sprintf("My Address: %s",summary.myaddr[1]))
-    #       $log.info(sprintf("MAC Address: %s\n",summary.macaddr[3...11]))
+            $log.info(sprintf("My Address: %#2.4x",summary.myaddr[1]))
+            $log.info(sprintf("MAC Address: %s",summary.macaddr[3...11]))
             
             max_pow = @pow[20].level.to_i-@@att
             min_pow = @pow[20].level.to_i-@@att-2
@@ -206,9 +211,5 @@ class Rftp::Test
         rescue StandardError
             printf("Error: stoped adjustment\n")
         end
-
-        @sbg.com("ewp 1")
-#       $sock.close
     end
-
 end

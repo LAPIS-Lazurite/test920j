@@ -10,7 +10,7 @@ class Rftp::Test
         sbg.setup(24,100,20)
 
         myaddr = sbg.ra()
-        printf("My address:%#10.4x\n", myaddr[1])
+        printf("My address: %#2.4x\n", myaddr[1])
         sleep(1)
 
         # eeprom read -------------------
