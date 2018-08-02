@@ -179,16 +179,15 @@ class Rftp::Test
 
             @sbg.trxoff()
             @sbg.com("ewp 1")
-
 #           $sock.close
-            #
+
             $log.info("############ Calibration Summary #############")
-            $log.info(sprintf("Frequency: %s",summary.frq))
-            $log.info(sprintf("Output level: 20mW=%s, 1mW=%s",summary.lv20mw,summary.lv1mw))
+            $log.info(sprintf("Frequency: %s MHz",summary.frq))
+            $log.info(sprintf("Power level: 20mW=%2.2fdBm, 1mW=%2.2fdBm",summary.lv20mw.to_i + @@att, summary.lv1mw.to_i + @@att))
             $log.info(sprintf("Attenuate: %2.2f dB",@@att))
             $log.info(sprintf("My Address: %#2.4x",summary.myaddr[1]))
             $log.info(sprintf("MAC Address: %s",summary.macaddr[3...11]))
-            
+
             max_pow = @pow[20].level.to_i-@@att
             min_pow = @pow[20].level.to_i-@@att-2
 
