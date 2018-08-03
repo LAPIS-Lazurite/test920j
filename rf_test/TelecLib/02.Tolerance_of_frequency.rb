@@ -10,14 +10,24 @@ require './subghz.rb'
 
 class Telectp::Test
 	def _02_Tolerance_of_frequency
-		_02_mas(100,42)
+		val = _02_mas(100,42)
+        return val
 	end
 
 	def _02_Tolerance_of_frequency_full
-		_02_mas(50,24)
-		_02_mas(100,42)
-		_02_mas(50,61)
-	#	$sock.close
+		val = _02_mas(50,24)
+        if val != nil then
+            return val
+        end
+		val = _02_mas(100,42)
+        if val != nil then
+            return val
+        end
+		val = _02_mas(50,61)
+        if val != nil then
+            return val
+        end
+        return
 	end
 
 	def _02_mas(ra, ch)
@@ -128,6 +138,8 @@ class Telectp::Test
             end
         rescue StandardError
             printf("Error: program stop\n")
+            return "Error"
         end
+        return nil
 	end
 end

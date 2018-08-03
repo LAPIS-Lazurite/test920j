@@ -12,9 +12,9 @@ class Telectp::Test
 
 	def _08_Limit_of_secondary_radiated_emissions
 #	mas(50,24)
-		_08_mas(100,42)
 #	mas(50,61)
-#		$sock.close
+		val = _08_mas(100,42)
+        return val
 	end
 
 	def _08_mas(ra,ch)
@@ -153,6 +153,8 @@ class Telectp::Test
             end
         rescue StandardError
             printf("Error: program stop\n")
+            return "Error"
         end
+        return nil
 	end
 end

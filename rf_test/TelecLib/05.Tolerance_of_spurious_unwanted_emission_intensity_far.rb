@@ -11,9 +11,9 @@ require './subghz.rb'
 class Telectp::Test
 	def _05_Tolerance_of_spurious_unwanted_emission_intensity_far
 #	mas(50,24)
-		_05_mas(100,42)
 #	mas(50,61)
-#		$sock.close
+		val = _05_mas(100,42)
+        return val
 	end
 
 	def _05_mas(ra,ch)
@@ -158,6 +158,8 @@ class Telectp::Test
             end
         rescue StandardError
             printf("Error: program stop\n")
+            return "Error"
         end
+        return nil
 	end
 end

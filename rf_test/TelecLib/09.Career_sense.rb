@@ -9,30 +9,43 @@ require './subghz.rb'
 class Telectp::Test
 	def _09_Career_sense(att)
 		@@att = att.to_f.round(2)
-		func_thread(50,24)
-		func_thread(100,42)
+		val = func_thread(50,24)
+        if val != nil then
+            return val
+        end
+		val = func_thread(100,42)
+        if val != nil then
+            return val
+        end
+        val = func_thread(50,61)
+        if val != nil then
+            return val
+        end
 #       func_thread(100,60)
-        func_thread(50,61)
-#		$sock.close
+        return
 	end
 
 	#setup THREAD --------------------------------------
 	def func_thread(rate,ch)
-		tester_thread = Thread.new(rate,ch, &method(:tester))
-		snd_thread = Thread.new(rate,ch, &method(:snd))
-		tester_thread.join
-		snd_thread.join
+        begin
+            tester_thread = Thread.new(rate,ch, &method(:tester))
+            snd_thread = Thread.new(rate,ch, &method(:snd))
+            tester_thread.join
+            snd_thread.join
 
-		$log.info("+++++++++++ SUMMARY ++++++++++")
-		$log.info("Subject: 09 Career sense")
-        $log.info(sprintf("Frequency: %s", $frq[rate][ch]))
-		if @result !~ /9/ then
-		    $log.info("Judgement: FAIL")
-		    raise StandardError, "FAIL\n"
-		else
-		    $log.info("Judgement: PASS")
-		end
-        
+            $log.info("+++++++++++ SUMMARY ++++++++++")
+            $log.info("Subject: 09 Career sense")
+            $log.info(sprintf("Frequency: %s", $frq[rate][ch]))
+            if @result !~ /9/ then
+                $log.info("Judgement: FAIL")
+                raise StandardError, "FAIL\n"
+            else
+                $log.info("Judgement: PASS")
+            end
+        rescue StandardError
+            return "Error"
+        end
+        return nil
 	end
 
 	#setup method --------------------------------------

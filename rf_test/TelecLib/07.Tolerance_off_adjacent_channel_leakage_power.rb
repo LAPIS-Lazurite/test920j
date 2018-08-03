@@ -10,9 +10,9 @@ require './subghz.rb'
 class Telectp::Test
 	def _07_Tolerance_off_adjacent_channel_leakage_power
 #	mas(50,24)
-		_07_mas(100,42)
 #	mas(50,61)
-#		$sock.close
+		val = _07_mas(100,42)
+        return val
 	end
 
 	def _07_mas(ra, ch)
@@ -161,6 +161,8 @@ class Telectp::Test
             end
         rescue StandardError
             printf("Error: program stop\n")
+            return "Error"
         end
+        return nil
 	end
 end

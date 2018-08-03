@@ -13,14 +13,25 @@ class Telectp::Test
 
 	def _03_Antenna_power_point(att)
 #       _03_mas(100,24,att)
-        _03_mas(100,42,att)
 #       _03_mas(100,60,att)
+        val = _03_mas(100,42,att)
+        return val
     end
 
 	def _03_Antenna_power_point_full(att)
-        _03_mas(100,24,att)
-        _03_mas(100,42,att)
-        _03_mas(100,60,att)
+        val = _03_mas(100,24,att)
+        if val != nil then
+            return val
+        end
+        val = _03_mas(100,42,att)
+        if val != nil then
+            return val
+        end
+        val = _03_mas(100,60,att)
+        if val != nil then
+            return val
+        end
+        return
     end
     
     def _03_mas(rate,ch,att) 
@@ -172,6 +183,8 @@ class Telectp::Test
 
         rescue StandardError
             printf("Error: program stop\n")
+            return "Error"
         end
+        return nil
 	end
 end

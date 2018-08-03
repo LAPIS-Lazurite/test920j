@@ -9,9 +9,9 @@ require './subghz.rb'
 class Telectp::Test
 	def _01_Tolerance_of_occupied_bandwidth_Frequency_range
 	#	_01_mas(50,24)
-		_01_mas(100,42)
 	#	_01_mas(50,61)
-#		$sock.close
+		val = _01_mas(100,42)
+        return val
 	end
 
 	def _01_mas(ra,ch)
@@ -136,6 +136,8 @@ class Telectp::Test
             end
         rescue StandardError
             printf("Error: program stop\n")
+            return "Error"
         end
+        return nil
 	end
 end

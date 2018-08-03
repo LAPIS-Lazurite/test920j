@@ -11,10 +11,10 @@ require './subghz.rb'
 class Telectp::Test
 
 	def _10_Spectrum_emission_mask
-#	mas(50,24)
-#	mas(100,42)
-		_10_mas(50,61)
-#		$sock.close
+#	    mas(50,24)
+#	m   as(100,42)
+		val = _10_mas(50,61)
+        return val
 	end
 
 	def _10_mas(ra,ch)
@@ -165,6 +165,8 @@ class Telectp::Test
             end
         rescue StandardError
             printf("Error: program stop\n")
+            return "Error"
         end
+        return nil
 	end
 end

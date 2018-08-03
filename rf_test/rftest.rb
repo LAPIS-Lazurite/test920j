@@ -9,10 +9,7 @@ require 'fileutils'
 @@telectp = Telectp::Test.new
 
 class Rftest
-
-    # 2017.10.4  6.1->7.9
-	@@ATT = "7.9"
-
+	@@ATT = "7.9"   #2nd lots was 6.1
     def led
         @@rftp.led("blue");
     end
@@ -28,31 +25,55 @@ class Rftest
 
     def calib
         @@rftp.e2p_base()
-        @@rftp.calibration(@@ATT)
-        return
+        val = @@rftp.calibration(@@ATT)
+        return val
     end
 
 	def pretest
         @@telectp._00_MS2830A_init()
-        @@telectp._09_Career_sense(@@ATT)
+        val = @@telectp._09_Career_sense(@@ATT)
         system("mpg321 ../mp3/beep.mp3")
-        return
+        return val
 	end
     
 
 	def postest
 #       @@rftp.begin_subghz()
         @@telectp._00_MS2830A_init()
-        @@telectp._01_Tolerance_of_occupied_bandwidth_Frequency_range()
-        @@telectp._02_Tolerance_of_frequency()
-        @@telectp._03_Antenna_power_point(@@ATT)
-        @@telectp._04_Antenna_power_ave(@@ATT)
+        val = @@telectp._01_Tolerance_of_occupied_bandwidth_Frequency_range()
+        if val != nil then
+            return val
+        end
+        val = @@telectp._02_Tolerance_of_frequency()
+        if val != nil then
+            return val
+        end
+        val = @@telectp._03_Antenna_power_point(@@ATT)
+        if val != nil then
+            return val
+        end
+        val = @@telectp._04_Antenna_power_ave(@@ATT)
+        if val != nil then
+            return val
+        end
 #       @@telectp._05_Tolerance_of_spurious_unwanted_emission_intensity_far()
-        @@telectp._06_Tolerance_of_spurious_unwanted_emission_intensity_near()
-        @@telectp._07_Tolerance_off_adjacent_channel_leakage_power()
+        val = @@telectp._06_Tolerance_of_spurious_unwanted_emission_intensity_near()
+        if val != nil then
+            return val
+        end
+        val = @@telectp._07_Tolerance_off_adjacent_channel_leakage_power()
+        if val != nil then
+            return val
+        end
 #       @@telectp._08_Limit_of_secondary_radiated_emissions()
-        @@telectp._09_Career_sense(@@ATT)
-        @@telectp._10_Spectrum_emission_mask()
+        val = @@telectp._09_Career_sense(@@ATT)
+        if val != nil then
+            return val
+        end
+        val = @@telectp._10_Spectrum_emission_mask()
+        if val != nil then
+            return val
+        end
         return
     end
 
@@ -62,7 +83,6 @@ class Rftest
         logfilename = @@rftp.set_addr()
         logfilename = "/home/pi/test920j/Log/" + date + logfilename + ".log"
         File.rename('temp.log',logfilename)
-
         system("mpg321 ../mp3/beep.mp3")
 #       led_thread = Thread.new(&method(:led))
 #       endmsg = Thread.new do

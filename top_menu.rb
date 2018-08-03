@@ -23,6 +23,7 @@ while 1
         print("[1]  Pre-test\n")
         print("[2]  Post-test\n")
         print("[3]  Verify\n")
+        print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n")
         print("[4]  Write program\n")
         print("[5]  Rf command\n")
         print("[6]  Telec nemu\n")

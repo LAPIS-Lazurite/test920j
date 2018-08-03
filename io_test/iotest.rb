@@ -24,10 +24,11 @@ class Iotest
 		result = $test.pwr(true)
 		if(result != "OK") then
 			print(" Power on fail%d %d %d!!\n",result[0],result[1],result[2])
-			return
+			return result
 		else
 			p result
 		end
+        return
 	end
 
 	def writeprog
@@ -35,7 +36,7 @@ class Iotest
         p result
         if(result != "OK") then
             printf(" Bootloader program Fail %d %d %d!!\n",result[0],result[1],result[2])
-            return
+            return result
         end
         
         sleep(0.1)
@@ -43,28 +44,15 @@ class Iotest
         result = $test.prog_write("LAZURITE mini series","../bin/test.bin")
         if(result != "OK") then
             printf(" Program write Fail %d %d %d!!\n",result[0],result[1],result[2])
-            return
+            return result
         else
             p result
         end
-		
-        system("mpg321 ../mp3/beep.mp3")
-		
-		if(result != "OK") then
-			printf(" Power off fail %d %d %d!!\n",result[0],result[1],result[2])
-			return
-		else
-					printf("#############################################\n")
-					printf("###########      PASS!!           ###########\n")
-					printf("###########      End of TEST      ###########\n")
-					printf("#############################################\n")
-		end
+        return
 	end
 
 
 	def alltest
-
-#       system("mpg321 ../mp3/beep.mp3")
 		result = $test.iotest()
 		if(result != "OK") then
 			printf(" IO Test Fail %d pin error!!\n",result[2])
@@ -87,16 +75,17 @@ class Iotest
 			p result
 		end
 		
-#	result = $test.pwr(false)
-		if(result != "OK") then
-			printf(" Power off fail %d %d %d!!\n",result[0],result[1],result[2])
-			return
-		else
-					printf("#############################################\n")
-					printf("###########      PASS!!           ###########\n")
-					printf("###########      End of TEST      ###########\n")
-					printf("#############################################\n")
-		end
+#    	result = $test.pwr(false)
+#		if(result != "OK") then
+#			printf(" Power off fail %d %d %d!!\n",result[0],result[1],result[2])
+#			return result
+#		else
+#           printf("#############################################\n")
+#           printf("###########      PASS!!           ###########\n")
+#           printf("###########      End of TEST      ###########\n")
+#           printf("#############################################\n")
+#		end
+        return
 	end
 
 	def setCom

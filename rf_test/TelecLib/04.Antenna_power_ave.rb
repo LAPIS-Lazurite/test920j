@@ -11,9 +11,19 @@ require './subghz.rb'
 class Telectp::Test
 
 	def _04_Antenna_power_ave(att)
-        _04_mas(100,24,att)
-        _04_mas(100,42,att)
-        _04_mas(100,60,att)
+        val = _04_mas(100,24,att)
+        if val != nil then
+            return val
+        end
+        val = _04_mas(100,42,att)
+        if val != nil then
+            return val
+        end
+        val = _04_mas(100,60,att)
+        if val != nil then
+            return val
+        end
+        return
     end
 
     def _04_mas(rate,ch,att)
@@ -161,6 +171,8 @@ class Telectp::Test
             end
         rescue StandardError
             printf("Error: program stop\n")
+            return "Error"
         end
+        return nil
 	end
 end
