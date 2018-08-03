@@ -68,12 +68,11 @@ class Iotest
 		result = $test.iotest()
 		if(result != "OK") then
 			printf(" IO Test Fail %d pin error!!\n",result[2])
-			return
+			return result
 		else
 			p result
 		end
 		
-#       system('zenity --info --text="基盤上のリセットスイッチを押して赤色LED点灯を確認して下さい。!"')
         printf("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
         printf("!!! 基盤上のリセットスイッチを押して赤色LED点灯を確認して下さい。!!!\n")
         printf("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
@@ -83,7 +82,7 @@ class Iotest
 		if(result != "OK") then
 			p result[0],result[1],result[3]
 			printf(" Set baudrate fail %d %d %d!!\n",result[0],result[1],result[2])
-			return
+			return result
 		else
 			p result
 		end

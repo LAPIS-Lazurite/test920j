@@ -210,5 +210,6 @@ class Rftp::Test
         rescue StandardError
             printf("Error: stoped adjustment\n")
         end
+        return
     end
 end

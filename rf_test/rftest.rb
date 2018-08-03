@@ -29,12 +29,14 @@ class Rftest
     def calib
         @@rftp.e2p_base()
         @@rftp.calibration(@@ATT)
+        return
     end
 
 	def pretest
         @@telectp._00_MS2830A_init()
         @@telectp._09_Career_sense(@@ATT)
         system("mpg321 ../mp3/beep.mp3")
+        return
 	end
     
 
@@ -51,6 +53,7 @@ class Rftest
 #       @@telectp._08_Limit_of_secondary_radiated_emissions()
         @@telectp._09_Career_sense(@@ATT)
         @@telectp._10_Spectrum_emission_mask()
+        return
     end
 
 	def setbarcode
@@ -72,6 +75,7 @@ class Rftest
 #       end
 #       led_thread.join
 #       endmsg.join
+        return
 	end
 
 
