@@ -98,7 +98,5 @@ class Rftp::Test
                 break
             end
         end
-
-#       $sock.close
     end
 end

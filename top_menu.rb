@@ -24,10 +24,11 @@ while 1
         print("[2]  Post-test\n")
         print("[3]  Verify\n")
         print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n")
-        print("[4]  Write program\n")
-        print("[5]  Rf command\n")
-        print("[6]  Telec nemu\n")
-        print("[10] Post-test for LazuriteFly\n")
+        print("[10] Write program\n")
+        print("[11] I/O check\n")
+        print("[12] Rf command\n")
+        print("[13] Telec nemu\n")
+        print("[20] Post-test for LazuriteFly\n")
         print("[99] Exit\n")
         print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n")
         print("番号を入力してください：")
@@ -81,27 +82,28 @@ while 1
                 end
             end
         when 3
-            Dir.chdir "../io_test"
-            if iotest.alltest() != nil then
-                raise RuntimeError, "ERRR\n"
-            end
             Dir.chdir "../rf_test"
             rftest.setlog()
             if rftest.postest() != nil then
                 raise RuntimeError, "ERRR\n"
             end
-        when 4
+        when 10
             Dir.chdir "../io_test"
             if iotest.writeprog() != nil then
                 raise RuntimeError, "ERRR\n"
             end
-        when 5
+        when 11
+            Dir.chdir "../io_test"
+            if iotest.alltest() != nil then
+                raise RuntimeError, "ERRR\n"
+            end
+        when 12
             Dir.chdir "../rf_test"
             rftest.menu()
-        when 6
+        when 13
             Dir.chdir "../rf_test"
             rftest.telec()
-        when 10 # for LazuriteFly
+        when 20 # for LazuriteFly
             Dir.chdir "../io_test"
             if iotest.writeprog() != nil then
                 raise RuntimeError, "ERRR\n"
