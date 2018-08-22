@@ -39,7 +39,7 @@ class Iotest
             return result
         end
         
-        sleep(0.1)
+        sleep(0.5)
         
         result = $test.prog_write("LAZURITE mini series","../bin/test.bin")
         if(result != "OK") then
