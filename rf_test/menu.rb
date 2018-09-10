@@ -125,7 +125,7 @@ class Certification
             if /^[yY]/ =~ input then
                 p val[0,1]
                 @sbg.com("ewp 0")
-                p @sbg.com("ewr 128 " + val)	#OSC_ADJ2_ADDR
+                p @sbg.com("ewr 128 0x" + val)	#OSC_ADJ2_ADDR
                 p @sbg.com("erd 128 1")
                 @sbg.com("ewp 1")
                 break
@@ -173,6 +173,7 @@ class Certification
 			print("22: Load basic E2P param\n")
 			print("23: Set my address\n")
 			print("24: Get my address\n")
+			print("25: Read E2P\n")
 			print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n")
 			print("30: Adjust Frequency\n")
 			print("31: Adjust Power\n")
@@ -206,6 +207,8 @@ class Certification
                 set_addr()
 			when 24
                 @@rftp.get_addr()
+			when 25
+				@@rftp.e2p_read()
 			when 30
                 adj_frq()
 			when 31
