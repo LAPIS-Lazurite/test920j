@@ -32,6 +32,9 @@ class Iotest
 	end
 
 	def writeprog
+
+        sleep(0.5)
+
         result = $test.boot_write("LAZURITE mini series","../bin/ML620Q504_000RA.bin")
         p result
         if(result != "OK") then
@@ -39,7 +42,7 @@ class Iotest
             return result
         end
         
-        sleep(0.1)
+        sleep(1)
         
         result = $test.prog_write("LAZURITE mini series","../bin/test.bin")
         if(result != "OK") then
