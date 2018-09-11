@@ -8,8 +8,8 @@ class Rftp::Test
 	RATE = 100
 	CH = 42
     Summary = Struct.new(:frq, :lv20mw, :lv1mw, :myaddr, :macaddr)
-    FRQ_RENGE_MIN = -3   # version 1.0 is -10
-    FRQ_RENGE_MAX = 3    # version 1.0 is 10
+    FRQ_RENGE_MIN = -4   # version 1.0 is -10
+    FRQ_RENGE_MAX = 4    # version 1.0 is 10
 
     # Frequency adjustment ------------------------
     def frq_adj(rate,ch)
