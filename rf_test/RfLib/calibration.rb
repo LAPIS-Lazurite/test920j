@@ -75,7 +75,7 @@ class Rftp::Test
             @sbg.setup(CH, RATE, mode.to_s)
             @sbg.txon()
 
-            for num in 1..10
+            for num in 1..12
                 $sock.puts("cnf " + $frq[RATE][CH].to_s)
                 $sock.puts("*OPC?")
                 $sock.gets
