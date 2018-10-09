@@ -188,7 +188,7 @@ class Rftp::Test
             $log.info(sprintf("My Address: %#2.4x",summary.myaddr[1]))
             $log.info(sprintf("MAC Address: %s",summary.macaddr[3...11]))
 
-            max_pow = @pow[20].level.to_i-@@att+0.5
+            max_pow = @pow[20].level.to_i-@@att+1
             min_pow = @pow[20].level.to_i-@@att-2
 
             if summary.frq == 0 then
