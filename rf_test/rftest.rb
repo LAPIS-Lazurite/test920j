@@ -32,7 +32,7 @@ class Rftest
 	def pretest
         @@telectp._00_MS2830A_init()
         val = @@telectp._09_Career_sense(@@ATT)
-        system("mpg321 ../mp3/beep.mp3")
+#       system("mpg321 ../mp3/beep.mp3")
         return val
 	end
     
@@ -74,6 +74,7 @@ class Rftest
         if val != nil then
             return val
         end
+#       system("mpg321 -q ../mp3/beep.mp3")
         return
     end
 
@@ -83,7 +84,7 @@ class Rftest
         logfilename = @@rftp.set_addr()
         logfilename = "/home/pi/test920j/Log/" + date + logfilename + ".log"
         File.rename('temp.log',logfilename)
-        system("mpg321 ../mp3/beep.mp3")
+#       system("mpg321 ../mp3/beep.mp3")
 #       led_thread = Thread.new(&method(:led))
 #       endmsg = Thread.new do
 #       printf("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
