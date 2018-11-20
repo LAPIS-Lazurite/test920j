@@ -11,6 +11,65 @@ class Rftp::Test
     FRQ_RENGE_MIN = -4   # version 1.0 is -10
     FRQ_RENGE_MAX = 4    # version 1.0 is 10
 
+    FRQ_RENGE_FINE_MIN = -2
+    FRQ_RENGE_FINE_MAX = 2
+    # Frequency adjustment ------------------------
+    def frq_fine_adj(rate,ch)
+        begin
+            @sbg.setup(ch, rate, 20)
+            @sbg.txon()
+
+            for num in 1..10
+                $sock.puts("cnf " + $frq[rate][ch].to_s)
+                $sock.puts("*OPC?")
+                $sock.gets
+
+                $sock.puts("mkpk")
+                $sock.puts("*OPC?")
+                $sock.gets
+
+                $sock.puts("mkf?")
+                $sock.puts("*OPC?")
+                value = $sock.gets
+                p value
+
+                diff = $frq[rate][ch].to_i - value.to_i
+                printf("Frequency adjustment: diff:%s, tartget:%d, current:%d\n",
+                       diff,$frq[rate][ch].to_i,value.to_i)
+                diff = diff/1000
+
+                reg = @sbg.rr(OSC_ADJ_ADDR)
+                p reg
+
+                if (diff) < FRQ_RENGE_FINE_MIN then
+                    i = reg.hex + 1
+                    @sbg.rw(OSC_ADJ_ADDR,"0x" + i.to_s)
+                elsif (diff) > FRQ_RENGE_FINE_MAX then
+                    i = reg.hex - 1
+                    @sbg.rw(OSC_ADJ_ADDR,"0x" + i.to_s)
+                else
+                    i = reg.hex
+                    com = "ewr 45 " + i.to_s
+                    p @sbg.com(com)
+                    print("Frequency adjustment completed\n")
+                    break
+                end
+
+                if num > @max_num then
+                    raise RuntimeError, "ERRR\n"
+                end
+            end
+        rescue RuntimeError
+            print ("Error: stoped adjustment\n")
+            ret_val = 0
+            return ret_val
+        end
+
+        ret_val = (value.to_f/1000000).round(3)
+        printf("Fixed to %s MHz\n",ret_val)
+        return ret_val
+    end
+
     # Frequency adjustment ------------------------
     def frq_adj(rate,ch)
         begin
@@ -171,6 +230,7 @@ class Rftp::Test
             @sbg.com("ewp 0")
 
             summary.frq = frq_adj(RATE,CH)
+            summary.frq = frq_fine_adj(RATE,CH)
             summary.lv20mw = pow_adj(20)
             summary.lv1mw = pow_adj(1)
 

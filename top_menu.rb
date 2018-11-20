@@ -23,6 +23,7 @@ while 1
         print("[1]  Pre-test\n")
         print("[2]  Post-test\n")
         print("[3]  Verify\n")
+        print("[4]  CS 600\n")
         print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n")
         print("[10] Write program\n")
         print("[11] I/O check\n")
@@ -86,6 +87,30 @@ while 1
             rftest.setlog()
             if rftest.postest() != nil then
                 raise RuntimeError, "ERRR\n"
+            end
+        when 4
+            while 1
+                Dir.chdir "../io_test"
+                if iotest.writeprog() != nil then
+                    raise RuntimeError, "ERRR\n"
+                end
+                if iotest.alltest() != nil then
+                    raise RuntimeError, "ERRR\n"
+                end
+                Dir.chdir "../rf_test"
+                rftest.setlog()
+                if rftest.calib() != nil then
+                    raise RuntimeError, "ERRR\n"
+                end
+                if rftest.trialtest() != nil then
+                    raise RuntimeError, "ERRR\n"
+                end
+                rftest.setbarcode()
+                print("\n続ける場合は[Enter]を終了する場合[x]を入力してください：")
+                rep = gets().to_s
+                if rep =~ /x/ then
+                    break
+                end
             end
         when 10
             Dir.chdir "../io_test"

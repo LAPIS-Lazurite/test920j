@@ -78,6 +78,47 @@ class Rftest
         return
     end
 
+	def trialtest
+#       @@rftp.begin_subghz()
+        @@telectp._00_MS2830A_init()
+        val = @@telectp._01_Tolerance_of_occupied_bandwidth_Frequency_range()
+        if val != nil then
+            return val
+        end
+        val = @@telectp._02_Tolerance_of_frequency()
+        if val != nil then
+            return val
+        end
+        val = @@telectp._03_Antenna_power_point(@@ATT)
+        if val != nil then
+            return val
+        end
+        val = @@telectp._04_Antenna_power_ave(@@ATT)
+        if val != nil then
+            return val
+        end
+#       @@telectp._05_Tolerance_of_spurious_unwanted_emission_intensity_far()
+        val = @@telectp._06_Tolerance_of_spurious_unwanted_emission_intensity_near()
+        if val != nil then
+            return val
+        end
+        val = @@telectp._07_Tolerance_off_adjacent_channel_leakage_power()
+        if val != nil then
+            return val
+        end
+#       @@telectp._08_Limit_of_secondary_radiated_emissions()
+        val = @@telectp._09_Career_sense(@@ATT)
+        if val != nil then
+            return val
+        end
+        val = @@telectp._10_Spectrum_emission_mask()
+        if val != nil then
+            return val
+        end
+#       system("mpg321 -q ../mp3/beep.mp3")
+        return
+    end
+
 	def setbarcode
         t = Time.now
         date = sprintf("%04d%02d%02d%02d%02d_",t.year,t.mon,t.mday,t.hour,t.min)
