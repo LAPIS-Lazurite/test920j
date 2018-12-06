@@ -1,0 +1,8 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=LXTerminal_custom
+#Exec=lxterminal --geometry=158x62 -e bash /home/pi/test920j/startup.sh
+Exec=lxterminal --geometry=115x42 -e bash /home/pi/test920j/startup.sh
+Icon=lxterminal
+Type=Application
+Terminal=true

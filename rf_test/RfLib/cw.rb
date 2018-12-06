@@ -56,7 +56,5 @@ class Rftp::Test
         $sock.puts("*OPC?")
         value = $sock.gets
         p value
-
-        $sock.close
     end
 end

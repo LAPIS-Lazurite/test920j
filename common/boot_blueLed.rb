@@ -1,6 +1,6 @@
 #! /usr/bin/ruby
 # encoding: utf-8
-
+#
 # Halt process when CTRL+C is pushed.
 
 require 'serialport'
@@ -13,12 +13,15 @@ Signal.trap(:INT){
 }
 
 test = Lazurite::Test.new
-#result = test.boot_write("LAZURITE mini series","bin/ML620Q504_000RA.bin")
-#	devName ="LAZURITE mini series"
-result = test.boot_write("LAZURITE Sub-GHz Rev3","bin/ML620Q504_000RA.bin")
-	devName ="LAZURITE Sub-GHz Rev3"
+result = test.boot_write("LAZURITE mini series","../bin/ML620Q504_000RA.bin")
 p result
 if(result != "OK") then
 	p result[0],result[1],result[3]
 	exit 0
+end
+result = test.prog_write("LAZURITE mini series","../bin/blue_led.bin")
+if(result != "OK") then
+	p result[0],result[1],result[3]
+else
+	p result
 end

@@ -19,86 +19,47 @@ class Iotest
 		result = $test.pwr(false)
 	end
 
-
-	def writeprog
+	def startup()
 		$test.setTestBin(0)
 		result = $test.pwr(true)
 		if(result != "OK") then
 			print(" Power on fail%d %d %d!!\n",result[0],result[1],result[2])
-			return
+			return result
 		else
 			p result
 		end
-		
-		sleep(1)
+        return
+	end
+
+	def writeprog
+
+        sleep(0.5)
 
         result = $test.boot_write("LAZURITE mini series","../bin/ML620Q504_000RA.bin")
         p result
         if(result != "OK") then
             printf(" Bootloader program Fail %d %d %d!!\n",result[0],result[1],result[2])
-            return
+            return result
         end
         
-        sleep(0.1)
+        sleep(1)
         
         result = $test.prog_write("LAZURITE mini series","../bin/test.bin")
         if(result != "OK") then
             printf(" Program write Fail %d %d %d!!\n",result[0],result[1],result[2])
-            return
+            return result
         else
             p result
         end
-		
-        system("mpg321 ../mp3/beep.mp3")
-		
-		if(result != "OK") then
-			printf(" Power off fail %d %d %d!!\n",result[0],result[1],result[2])
-			return
-		else
-					printf("#############################################\n")
-					printf("###########      PASS!!           ###########\n")
-					printf("###########      End of TEST      ###########\n")
-					printf("#############################################\n")
-		end
+        return
 	end
 
 
-	def alltest(prog_wr_flg)
-		$test.setTestBin(0)
-		result = $test.pwr(true)
-		if(result != "OK") then
-			print(" Power on fail%d %d %d!!\n",result[0],result[1],result[2])
-			return
-		else
-			p result
-		end
-		
-		sleep(1)
-
-		if prog_wr_flg == 1 then
-            result = $test.boot_write("LAZURITE mini series","../bin/ML620Q504_000RA.bin")
-            p result
-            if(result != "OK") then
-                printf(" Bootloader program Fail %d %d %d!!\n",result[0],result[1],result[2])
-                return
-            end
-            
-            sleep(0.1)
-            
-            result = $test.prog_write("LAZURITE mini series","../bin/test.bin")
-            if(result != "OK") then
-                printf(" Program write Fail %d %d %d!!\n",result[0],result[1],result[2])
-                return
-            else
-                p result
-            end
-        end
-		
-#       system("mpg321 ../mp3/beep.mp3")
+	def alltest
 		result = $test.iotest()
 		if(result != "OK") then
 			printf(" IO Test Fail %d pin error!!\n",result[2])
-			return
+			return result
 		else
 			p result
 		end
@@ -112,21 +73,22 @@ class Iotest
 		if(result != "OK") then
 			p result[0],result[1],result[3]
 			printf(" Set baudrate fail %d %d %d!!\n",result[0],result[1],result[2])
-			return
+			return result
 		else
 			p result
 		end
 		
-#	result = $test.pwr(false)
-		if(result != "OK") then
-			printf(" Power off fail %d %d %d!!\n",result[0],result[1],result[2])
-			return
-		else
-					printf("#############################################\n")
-					printf("###########      PASS!!           ###########\n")
-					printf("###########      End of TEST      ###########\n")
-					printf("#############################################\n")
-		end
+#    	result = $test.pwr(false)
+#		if(result != "OK") then
+#			printf(" Power off fail %d %d %d!!\n",result[0],result[1],result[2])
+#			return result
+#		else
+#           printf("#############################################\n")
+#           printf("###########      PASS!!           ###########\n")
+#           printf("###########      End of TEST      ###########\n")
+#           printf("#############################################\n")
+#		end
+        return
 	end
 
 	def setCom

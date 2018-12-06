@@ -1,0 +1,48 @@
+ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
+update_config=1
+country=JP
+
+network={
+	ssid="Buffalo-G-9F00"
+	psk="wbuwa6t4ii5ah"
+	key_mgmt=WPA-PSK
+	proto=WPA2
+	group=CCMP
+	priority=2
+	id_str="wlan_Buffalo_G_9F00"
+}
+
+network={
+	ssid="Buffalo-G-2BD0"
+	psk="wu56euu4a6r3c"
+	key_mgmt=WPA-PSK
+}
+
+network={
+	ssid="SPWN_H36_ED2B88"
+	psk="qb68q6277gmb8a6"
+	key_mgmt=WPA-PSK
+}
+
+network={
+	ssid="6ENOHPISYSOFNI"
+	psk="0428508827"
+	key_mgmt=WPA-PSK
+}
+
+network={
+	ssid="Buffalo-G-C740"
+	psk="h3i6usiwsu4r"
+	key_mgmt=WPA-PSK
+}
+
+network={
+	ssid="SPWN_H36_ED2115"
+	psk="qtqmbhyjbtiqe8a"
+	key_mgmt=WPA-PSK
+}
+
+network={
+	ssid="ap-game-6eb620"
+	key_mgmt=NONE
+}

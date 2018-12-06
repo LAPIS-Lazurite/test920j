@@ -353,9 +353,9 @@ class Certification
 			when 11
 				rw()
 			when 20
-				system("./boot_wr_rev3.rb")
+				system("../common/boot_wr_rev3.rb")
 			when 21
-			     system("./load_prog.rb " + "bin/test920j_for_4k.bin Rev3")
+			     system("../common/load_prog.rb " + "../../bin/mk74040.bin Rev3")
 			when 22
 				e2p_base()
 			when 23

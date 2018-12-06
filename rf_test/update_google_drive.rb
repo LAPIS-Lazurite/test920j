@@ -1,6 +1,6 @@
 #! /usr/bin/ruby
 
-require './Rftp_serial.rb'
+require './RfCom.rb'
 #require './Rftp.rb'
 #require './Telectp.rb'
 require 'logger'
@@ -25,7 +25,7 @@ address = @@rftp.set_addr()
 #sleep(2)
 #address = "ABCDEF"
 logfilename = date + address + ".log"
-File.rename('temp.log',"Log/" + logfilename)
+File.rename('temp.log',"/home/pi/test920j/Log/" + logfilename)
 gFolder = sprintf("%04d%02d%02d_LOG",t.year,t.mon,t.mday)
 printf("Folder name :   %s\n",gFolder)
 printf("Log file name : %s\n",logfilename)
@@ -63,5 +63,5 @@ if list != nil
     end
 end
 
-myDrive.send("Log/" + logfilename,logfilename)
+myDrive.send("/home/pi/test920j/Log/" + logfilename,logfilename)
 system("sudo if up eth0")
