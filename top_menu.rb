@@ -24,6 +24,7 @@ while 1
         print("[2]  Post-test\n")
         print("[3]  Verify\n")
         print("[4]  CS 600\n")
+        print("[5]  Reliability test\n")
         print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n")
         print("[10] Write program\n")
         print("[11] I/O check\n")
@@ -106,6 +107,20 @@ while 1
                     raise RuntimeError, "ERRR\n"
                 end
                 rftest.setbarcode()
+                print("\n続ける場合は[Enter]を終了する場合[x]を入力してください：")
+                rep = gets().to_s
+                if rep =~ /x/ then
+                    break
+                end
+            end
+        when 5
+            while 1
+                Dir.chdir "../rf_test"
+                rftest.setlog()
+                if rftest.trialtest() != nil then
+                    raise RuntimeError, "ERRR\n"
+                end
+                rftest.createLogFile()
                 print("\n続ける場合は[Enter]を終了する場合[x]を入力してください：")
                 rep = gets().to_s
                 if rep =~ /x/ then

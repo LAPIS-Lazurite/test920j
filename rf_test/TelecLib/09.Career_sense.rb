@@ -17,11 +17,11 @@ class Telectp::Test
         if val != nil then
             return val
         end
-        val = func_thread(50,61)
-        if val != nil then
-            return val
-        end
-#       func_thread(100,60)
+##      val = func_thread(50,61)
+#       val = func_thread(100,60)
+##      if val != nil then
+##          return val
+##      end
         return
 	end
 
