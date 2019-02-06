@@ -53,6 +53,28 @@ class Certification
         @sbg.com("ewp 1")
     end
 
+    def self.change_eui64_extend_type
+        @sbg.com("ewp 0")
+
+		print("\n")
+        print("Input EUI64 Extend Type(MJ2001:05,Lazurite920j:04)= ")
+        val = gets()
+        cmd = "ewr 36 0x" + val.to_s
+        p @sbg.com(cmd)
+
+        p @sbg.com("erd 0 32")
+        p @sbg.com("erd 32 32")
+        p @sbg.com("erd 64 32")
+        p @sbg.com("erd 96 32")
+        p @sbg.com("erd 128 32")
+        p @sbg.com("erd 160 32")
+        p @sbg.com("erd 192 32")
+        p @sbg.com("erd 224 32")
+        p @sbg.com("erd 256 32")
+
+        @sbg.com("ewp 1")
+    end
+
     def self.setup
 		print("Data Rate [100,50] => ")
 		rate = gets().to_i
@@ -174,6 +196,7 @@ class Certification
 			print("23: Set my address\n")
 			print("24: Get my address\n")
 			print("25: Read E2P\n")
+			print("26: Change EUI64 Extend Type\n")
 			print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n")
 			print("30: Adjust Frequency\n")
 			print("31: Adjust Power\n")
@@ -197,7 +220,8 @@ class Certification
 			when 11
 				rw()
 			when 19
-				system("../common/boot_wr.rb")
+#               system("../common/boot_wr.rb")
+                system('/LazuriteIDE/bin/Lazurite_boot_writer.exe 0 LAPIS "LAZURITE mini series" /LazuriteIDE/bin/ML620Q504_000RA.bin 0xf000 0xfc4f')
 			when 20
 				system("../common/load_prog.rb " + "../bin/test.bin mini")
 			when 22
@@ -209,6 +233,8 @@ class Certification
                 @@rftp.get_addr()
 			when 25
 				@@rftp.e2p_read()
+			when 26
+				change_eui64_extend_type()
 			when 30
                 adj_frq()
 			when 31
