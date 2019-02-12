@@ -240,6 +240,7 @@ loop do
   end  
 
 
+  sleep 1
   
   # RESET
   puts "reset MJ2001"
@@ -360,7 +361,9 @@ loop do
 
   $pmx18a.puts("OUTP OFF")
 
-  system("sshpass -p pwsjuser01 scp ./Log/test2.log sjuser01@10.9.20.1:")
+  p logfilename
+  syscom = "sshpass -p pwsjuser01 scp " + logfilename + " sjuser01@10.9.20.1:"
+  system(syscom)
 
   exit # --------------------
 
