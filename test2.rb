@@ -6,41 +6,14 @@ require "serialport"
 require "date"
 require "net/http"
 require "uri"
+
+require './rf_test/subghz.rb'
+require './rf_test/Rftp.rb'
+@@rftp = Rftp::Test.new
+
 #
 ####### PARAMETERS ########
-$TRG_BUTTON=6
-$OK_BUTTON=12
-$NG_BUTTON=13
-$PASS_LED=21
-$FAIL_LED=20
-$BLED=26
-$YLED=16
-$RLED=19
-
-$V3_PWR_ON_MIN	= 1.8
-$V3_PWR_ON_MAX	= 2.0
-$I_PWR_ON_MIN = 0.0
-$I_PWR_ON_MAX = 0.1
-
-$V3_RX_ENABLE_MIN	= 1.8
-$V3_RX_ENABLE_MAX	= 2
-$I_RX_ENABLE_MIN = 0.0
-$I_RX_ENABLE_MAX = 0.1
-
-$V3_RX_DISABLE_MIN	= 1.8
-$V3_RX_DISABLE_MAX	= 2.0
-$I_RX_DISABLE_MIN = 0.0
-$I_RX_DISABLE_MAX = 0.1
-
-$V5_HALT_MIN = 2.25
-$V5_HALT_MAX = 3.35
-$I_V5_HALT_MIN = 0.0
-$I_V5_HALT_MAX = 0.01
-
-$V2_HALT_MIN = 1.8
-$V2_HALT_MAX = 2.0
-$I_V2_HALT_MIN = 0.0
-$I_V2_HALT_MAX = 0.01
+$I_MAX = 0.05
 
 ####### COMMON FUNC ########
 def diffDateTime(b,a)
@@ -248,6 +221,21 @@ loop do
   $pmx18a.puts("VOLT 3.3")
   $pmx18a.puts("OUTP ON")
 
+  $pmx18a.puts("MEASure:CURRent?")
+  val = $pmx18a.gets().to_f
+  p val
+  if val > $I_MAX then
+      p "NG"
+###   log[:device][:pmx18a] = {
+###     :status => false,
+###     :log => "error"
+###   }
+  else
+      p "OK"
+  end  
+
+
+  
   # RESET
   puts "reset MJ2001"
   `rmmod ftdi_sio`

@@ -1,6 +1,6 @@
 #! /usr/bin/ruby
 
-require './subghz.rb'
+require '/home/pi/test920j/rf_test/subghz.rb'
 
 class Rftp::Test
 	def command

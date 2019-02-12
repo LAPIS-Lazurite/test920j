@@ -8,7 +8,8 @@ require 'socket'
     finish_flag=1
   }
 
-$sock=TCPSocket.open("192.168.11.6",49153)
+#$sock=TCPSocket.open("192.168.11.6",49153)
+$sock=TCPSocket.open("10.9.20.6",5025)
 $sock.puts("*IDN?")
 p $sock.gets
 $sock.puts("syst:lang nat")

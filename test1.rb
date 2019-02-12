@@ -8,6 +8,10 @@ require "net/http"
 require "uri"
 #
 ####### PARAMETERS ########
+$ENB_BOOT_WRITE=true
+$ENB_PROG_WRITE=true
+$ENB_LED_TEST  =true
+
 $TRG_BUTTON=6
 $OK_BUTTON=12
 $NG_BUTTON=13
@@ -17,96 +21,101 @@ $BLED=26
 $YLED=16
 $RLED=19
 
-$V3_PWR_ON_MIN	= 1.8
-$V3_PWR_ON_MAX	= 2.0
+$V3_PWR_ON_VIN	= 3.0
+$V3_PWR_ON_MIN	= 2.5
+$V3_PWR_ON_MAX	= 3.005
 $I_PWR_ON_MIN = 0.0
 $I_PWR_ON_MAX = 0.1
 
-$V3_RX_ENABLE_MIN	= 1.8
-$V3_RX_ENABLE_MAX	= 2
+$V3_RX_ENABLE_VIN	= 3.0
+$V3_RX_ENABLE_MIN	= 2.5
+$V3_RX_ENABLE_MAX	= 3
 $I_RX_ENABLE_MIN = 0.0
 $I_RX_ENABLE_MAX = 0.1
 
-$V3_RX_DISABLE_MIN	= 1.8
-$V3_RX_DISABLE_MAX	= 2.0
+$V3_RX_DISABLE_VIN	= 3.0
+$V3_RX_DISABLE_MIN	= 2.5
+$V3_RX_DISABLE_MAX	= 3.0
 $I_RX_DISABLE_MIN = 0.0
 $I_RX_DISABLE_MAX = 0.1
 
-$V5_HALT_MIN = 2.25
+$V5_HALT_VIN = 5.00
+$V5_HALT_MIN = 3.25
 $V5_HALT_MAX = 3.35
 $I_V5_HALT_MIN = 0.0
-$I_V5_HALT_MAX = 0.01
+$I_V5_HALT_MAX = 0.005
 
-$V2_HALT_MIN = 1.8
-$V2_HALT_MAX = 2.0
+$V2_HALT_VIN = 3.0
+$V2_HALT_MIN = 2.5
+$V2_HALT_MAX = 3.005
 $I_V2_HALT_MIN = 0.0
-$I_V2_HALT_MAX = 0.01
+$I_V2_HALT_MAX = 0.005
 
 ####### COMMON FUNC ########
 def diffDateTime(b,a)
-	(b - a)                       # => (1/17500)
-	(b - a).class                 # => Rational
-	(b - a) * 24 * 60 * 60        # => (5/1)
-	return ((b - a) * 24 * 60 * 60).to_i # => 5
+  (b - a)                       # => (1/17500)
+  (b - a).class                 # => Rational
+  (b - a) * 24 * 60 * 60        # => (5/1)
+  return ((b - a) * 24 * 60 * 60).to_i # => 5
 end
 
 def testEndProcess(pass,log)
-	if $sp  != nil then
-		$sp.close
-	end
-	$sp = nil
-	`rmmod ftdi_sio`
-	`rmmod usbserial`
-	$pmx18a.puts("OUTP OFF")
-	log[:ongoing] = false
-	log[:end] = DateTime.now
-	log[:message] = "試験機を開けてデバイスをセットしてください"
-	log[:optime] = diffDateTime(log[:end],log[:st])
-	if pass == true
-		log[:success] = true
-		`gpio -g write #{$PASS_LED} 1`
-		`gpio -g write #{$FAIL_LED} 0`
-		`gpio -g write #{$RLED} 0`
-		`gpio -g write #{$YLED} 0`
-		`gpio -g write #{$BLED} 0`
-		`lib/cpp/reset/reset "LAZURITE mini series"`
-	else
-		log[:success] = false
-		`gpio -g write #{$PASS_LED} 0`
-		`gpio -g write #{$FAIL_LED} 1`
-		`gpio -g write #{$RLED} 0`
-		`gpio -g write #{$YLED} 0`
-		`gpio -g write #{$BLED} 0`
-		`lib/cpp/reset/reset "LAZURITE mini series"`
-	end
-	#puts JSON.pretty_generate(log)
-	payload = {payload: log}
-	$req.body = payload.to_json
-	$res = $http.request($req)
+  if $sp  != nil then
+    $sp.close
+  end
+  $sp = nil
+  `rmmod ftdi_sio`
+  `rmmod usbserial`
+  $pmx18a.puts("OUTP OFF")
+  log[:ongoing] = false
+  log[:end] = DateTime.now
+  log[:message] = "試験機を開けてデバイスをセットしてください"
+  log[:optime] = diffDateTime(log[:end],log[:st])
+  if pass == true
+    log[:success] = true
+    `gpio -g write #{$PASS_LED} 1`
+    `gpio -g write #{$FAIL_LED} 0`
+    `gpio -g write #{$RLED} 0`
+    `gpio -g write #{$YLED} 0`
+    `gpio -g write #{$BLED} 0`
+    `lib/cpp/reset/reset "LAZURITE mini series"`
+  else
+    log[:success] = false
+    `gpio -g write #{$PASS_LED} 0`
+    `gpio -g write #{$FAIL_LED} 1`
+    `gpio -g write #{$RLED} 0`
+    `gpio -g write #{$YLED} 0`
+    `gpio -g write #{$BLED} 0`
+    `lib/cpp/reset/reset "LAZURITE mini series"`
+  end
+  #puts JSON.pretty_generate(log)
+  payload = {payload: log}
+  $req.body = payload.to_json
+  $res = $http.request($req)
 end
 def txVerifyTimeout(cmd,period)
-	begin
-		timeout(period) do 
-			$sp.puts(cmd);
-			tmp = $sp.readline.chomp.strip.downcase # こっちだと空白とか余分な情報をそぎ落としてくれる
-			if cmd == tmp then
-				return true
-			end
-			puts "txVerifyTimeout cmd:#{cmd}  rx:#{tmp}"
-			return "txVerifyTimeout cmd:#{cmd}  rx:#{tmp}"
-		end
-	rescue Timeout::Error
-		puts "txVerifyTimeout timeout"
-		return "txVerifyTimeout timeout"
-	end
+  begin
+    timeout(period) do 
+      $sp.puts(cmd);
+      tmp = $sp.readline.chomp.strip.downcase # こっちだと空白とか余分な情報をそぎ落としてくれる
+      if cmd == tmp then
+        return true
+      end
+      puts "txVerifyTimeout cmd:#{cmd}  rx:#{tmp}"
+      return "txVerifyTimeout cmd:#{cmd}  rx:#{tmp}"
+    end
+  rescue Timeout::Error
+    puts "txVerifyTimeout timeout"
+    return "txVerifyTimeout timeout"
+  end
 end
 
 def changeLedAll(on)
-	`gpio -g write #{$PASS_LED} #{on}`
-	`gpio -g write #{$FAIL_LED} #{on}`
-	`gpio -g write #{$RLED} #{on}`
-	`gpio -g write #{$YLED} #{on}`
-	`gpio -g write #{$BLED} #{on}`
+  `gpio -g write #{$PASS_LED} #{on}`
+  `gpio -g write #{$FAIL_LED} #{on}`
+  `gpio -g write #{$RLED} #{on}`
+  `gpio -g write #{$YLED} #{on}`
+  `gpio -g write #{$BLED} #{on}`
 end
 
 
@@ -123,105 +132,109 @@ log[:testNum] = 1;
 log[:process] = "init"
 log[:st] = DateTime.now
 log[:ongoing] = true
+log[:device] = {}
 payload = {:payload => log}
 $req.body = payload.to_json
 $res = $http.request($req)
 
 begin
-	timeout(5) do
-		$pmx18a=TCPSocket.open("10.9.20.2",5025)
-		$pmx18a.puts("*IDN?")
-		if $pmx18a.gets().chop != " KIKUSUI,PMX18-2A,YK000141,IFC01.52.0011 IOC01.10.0070" then
-			log[:pmx18a] = {
-				:status => false,
-				:log => "error"
-			}
-		else 
-			log[:pmx18a] = {
-				:status => true
-			}
-		end
-		$pmx18a.puts("CURR:PROT 0.2")
-		$pmx18a.puts("CURR:PROT?")
-		if $pmx18a.gets().to_f != 0.2 then
-			log[:pmx18a] = {
-				:status => false,
-				:log => "Current protection error"
-			}
-		end
-		$pmx18a.puts("VOLT 2.0")
-		$pmx18a.puts("VOLT?")
-		if $pmx18a.gets().to_f != 2 then
-			log[:pmx18a] = {
-				:status => false,
-				:log => "output voltage set error"
-			}
-		end
-	end
+  timeout(5) do
+    $pmx18a=TCPSocket.open("10.9.20.2",5025)
+    $pmx18a.puts("*IDN?")
+    if $pmx18a.gets().chop != "KIKUSUI,PMX18-2A,YK000148,IFC01.52.0011 IOC01.10.0070" then
+      log[:device][:pmx18a] = {
+        :status => false,
+        :log => "error"
+      }
+    else 
+      log[:device][:pmx18a] = {
+        :status => true
+      }
+    end
+    cmd = "VOLT #{$V3_PWR_ON_VIN}"
+    puts cmd
+    $pmx18a.puts(cmd)
+    $pmx18a.puts("VOLT?")
+    if $pmx18a.gets().to_f != $V3_PWR_ON_VIN then
+      log[:device][:pmx18a] = {
+        :status => false,
+        :log => "output voltage set error"
+      }
+    end
+    $pmx18a.puts("CURR:PROT 0.2")
+    $pmx18a.puts("CURR:PROT?")
+    if $pmx18a.gets().to_f != 0.2 then
+      log[:device][:pmx18a] = {
+        :status => false,
+        :log => "Current protection error"
+      }
+    end
+  end
 rescue Timeout::Error
-	log[:pmx18a] = {
-		:status => false,
-		:log => "not found"
-	}
+  log[:device][:pmx18a] = {
+    :status => false,
+    :log => "not found"
+  }
 end
 begin
-	timeout(5) do
-		$ky34461a_v=TCPSocket.open("10.9.20.3",5025)
-		$ky34461a_v.puts("*IDN?")
-		if $ky34461a_v.gets().chop != "Keysight Technologies,34461A,MY57224851,A.02.17-02.40-02.17-00.52-04-02" then
-			log[:ky34461a_v] = {
-				:status => false,
-				:log => "error"
-			}
-		else 
-			log[:ky34461a_v] = {
-				:status => true
-			}
-		end
-		$ky34461a_v.puts("CONF:VOLT:DC 10V")
-	end
+  timeout(5) do
+    $ky34461a_v=TCPSocket.open("10.9.20.3",5025)
+    $ky34461a_v.puts("*IDN?")
+    if $ky34461a_v.gets().chop != "Keysight Technologies,34461A,MY57224851,A.02.17-02.40-02.17-00.52-04-02" then
+      log[:device][:ky34461a_v] = {
+        :status => false,
+        :log => "error"
+      }
+    else 
+      log[:device][:ky34461a_v] = {
+        :status => true
+      }
+    end
+    $ky34461a_v.puts("CONF:VOLT:DC 10V")
+  end
 rescue Timeout::Error
-	log[:ky34461a_v] = {
-		:status => false,
-		:log => "not found"
-	}
+  log[:device][:ky34461a_v] = {
+    :status => false,
+    :log => "not found"
+  }
 end
 begin
-	timeout(5) do
-		$ky34465a_i=TCPSocket.open("10.9.20.4",5025)
-		$ky34465a_i.puts("*IDN?")
-		if $ky34465a_i.gets().chop != "Keysight Technologies,34465A,MY57515053,A.02.17-02.40-02.17-00.52-04-01" then
-			log[:ky34465a_i] = {
-				:status => false,
-				:log => "error"
-			}
-		else 
-			log[:ky34465a_i] = {
-				:status => true
-			}
-		end
-		$ky34465a_i.puts("CONF:CURR:DC 100mA")
-		$ky34465a_i.puts("CONF?")
-		puts $ky34465a_i.gets.chop
-	end
+  timeout(5) do
+    $ky34465a_i=TCPSocket.open("10.9.20.4",5025)
+    $ky34465a_i.puts("*IDN?")
+    if $ky34465a_i.gets().chop != "Keysight Technologies,34465A,MY57515053,A.02.17-02.40-02.17-00.52-04-01" then
+      log[:device][:ky34465a_i] = {
+        :status => false,
+        :log => "error"
+      }
+    else 
+      log[:device][:ky34465a_i] = {
+        :status => true
+      }
+    end
+    $ky34465a_i.puts("CONF:CURR:DC 100mA")
+    $ky34465a_i.puts("CONF?")
+    puts $ky34465a_i.gets.chop
+  end
 rescue Timeout::Error
-	log[:ky34465a_i] = {
-		:status => false,
-		:log => "not found"
-	}
+  log[:device][:ky34465a_i] = {
+    :status => false,
+    :log => "not found"
+  }
 end
 log[:process] = "init"
 log[:ongoing] = false
 log[:end] = DateTime.now
 log[:optime] = diffDateTime(log[:end],log[:st])
 log[:message] = "試験機を開けてデバイスをセットしてください"
+log[:details] = JSON.pretty_generate(log[:device])
 #puts log.to_json
 payload = {:payload => log}
 $req.body = payload.to_json
 $res = $http.request($req)
 
-if log[:pmx18a][:status] != true  || log[:ky34461a_v][:status] != true || log[:ky34465a_i][:status] != true then
-	exit
+if log[:device][:pmx18a][:status] != true  || log[:device][:ky34461a_v][:status] != true || log[:device][:ky34465a_i][:status] != true then
+  exit
 end
 
 `gpio -g mode #{$TRG_BUTTON} in`
@@ -235,16 +248,16 @@ end
 
 ####### TEST FUNC ########
 loop do
-	$mac=nil
-	button_loop_count=0
-	# 試験機がOPENになるのを待つ
-	loop do
-		button_state = `gpio -g read #{$TRG_BUTTON}`.chop.to_i
-		if button_state == 1 then
-			break
-		end
-		sleep(0.01)
-	end
+  $mac=nil
+  button_loop_count=0
+  # 試験機がOPENになるのを待つ
+  loop do
+    button_state = `gpio -g read #{$TRG_BUTTON}`.chop.to_i
+    if button_state == 1 then
+      break
+    end
+    sleep(0.01)
+  end
 
   begin
     timeout(1) do
@@ -252,7 +265,7 @@ loop do
         dummy = gets
       end
     end
-    rescue Timeout::Error
+  rescue Timeout::Error
   end
 
   log[:process] = "setting"
@@ -336,7 +349,7 @@ loop do
   $res = $http.request($req)
 
   #POWER OUTPUT
-  $pmx18a.puts("VOLT 2.0")
+  $pmx18a.puts("VOLT #{$V3_PWR_ON_VIN}")
   $pmx18a.puts("OUTP ON")
 
   # Measure 3V3
@@ -364,52 +377,56 @@ loop do
   sleep 0.4
 
   # BOOT Program Write
-  $testNum = 2
-  puts "[#{$testNum}] boot program write"
-  `rmmod ftdi_sio`
-  `rmmod usbserial`
-  `./lib/cpp/bootwriter/bootwriter 0 LAPIS "LAZURITE mini series" ./lib/cpp/bootwriter/ML620Q504_000RA.bin 0xf000 0xfc4f`
-  if $?.exitstatus == 0 then
-    log[:details] += "[#{$testNum}] boot write: OK\n"
-  else
-    log[:details] += "[#{$testNum}] boot write: FAIL\n"
-    testEndProcess(false,log)
-    next
+  if $ENB_BOOT_WRITE == true then
+    $testNum = 2
+    puts "[#{$testNum}] boot program write"
+    `rmmod ftdi_sio`
+    `rmmod usbserial`
+    `./lib/cpp/bootwriter/bootwriter 0 LAPIS "LAZURITE mini series" ./lib/cpp/bootwriter/ML620Q504_000RA.bin 0xf000 0xfc4f`
+    if $?.exitstatus == 0 then
+      log[:details] += "[#{$testNum}] boot write: OK\n"
+    else
+      log[:details] += "[#{$testNum}] boot write: FAIL\n"
+      testEndProcess(false,log)
+      next
+    end
+    payload = {payload: log}
+    $req.body = payload.to_json
+    $res = $http.request($req)
   end
-  payload = {payload: log}
-  $req.body = payload.to_json
-  $res = $http.request($req)
 
   # マイコンプログラム書き込み
   #`sudo rmmod ftdi_sio`
   #`sudo rmmod usbserial`
-  $testNum=3
-  puts "[#{$testNum}]MCU program write"
-  `lib/cpp/bootmode/bootmode "LAZURITE mini series"`
-  `modprobe ftdi_sio`
-  `modprobe usbserial`
-  `stty -F /dev/ttyUSB0 115200`
-  #sxは成功/失敗が捉えられないので45秒でtimeout
-  begin
-    timeout(30) do
-      `sx -b bin/test.bin > /dev/ttyUSB0 < /dev/ttyUSB0`
-      log[:details] += "[#{$testNum}] program write: OK\n"
+  if $ENB_PROG_WRITE == true then
+    $testNum=3
+    puts "[#{$testNum}]MCU program write"
+    `lib/cpp/bootmode/bootmode "LAZURITE mini series"`
+    `modprobe ftdi_sio`
+    `modprobe usbserial`
+    `stty -F /dev/ttyUSB0 115200`
+    #sxは成功/失敗が捉えられないので45秒でtimeout
+    begin
+      timeout(30) do
+        `sx -b bin/test.bin > /dev/ttyUSB0 < /dev/ttyUSB0`
+        log[:details] += "[#{$testNum}] program write: OK\n"
+      end
+    rescue Timeout::Error
+      #sxは処理が常駐されてしまうため、強制終了する
+      ps = `ps -aux |grep sx | grep -v grep`
+      lines = ps.split("\n")
+      lines.each {|line|
+        pid = line.split(" ")[1]
+        `kill -9 #{pid}`
+      }
+      log[:details] += "[#{$testNum}] program write: FAIL\n"
+      testEndProcess(false,log)
+      next
     end
-  rescue Timeout::Error
-    #sxは処理が常駐されてしまうため、強制終了する
-    ps = `ps -aux |grep sx | grep -v grep`
-    lines = ps.split("\n")
-    lines.each {|line|
-      pid = line.split(" ")[1]
-      `kill -9 #{pid}`
-    }
-    log[:details] += "[#{$testNum}] program write: FAIL\n"
-    testEndProcess(false,log)
-    next
+    payload = {payload: log}
+    $req.body = payload.to_json
+    $res = $http.request($req)
   end
-  payload = {payload: log}
-  $req.body = payload.to_json
-  $res = $http.request($req)
 
   # RESET
   puts "reset MJ2001"
@@ -422,6 +439,7 @@ loop do
 
   $sp = SerialPort.new('/dev/ttyUSB0', 115200, 8, 1, 0) # device, rate, data, stop, parity
   sleep(1);
+
 
   # [3]Initialize MJ2001
   $testNum=10
@@ -483,7 +501,7 @@ loop do
   # [13] release EEPROM write protection
   $testNum = 22
   puts "[#{$testNum}] set EEPROM Write Protetion"
-  if txVerifyTimeout("ewp,0",1) == true then
+  if txVerifyTimeout("ewp,1",1) == true then
     log[:details] += "[#{$testNum}] set write protection: OK\n"
   else
     log[:details] += "[#{$testNum}] set write protection: FAIL\n"
@@ -554,6 +572,7 @@ loop do
 
   $testNum = 42
   puts "[#{$testNum}] IV MEASURE ON rxEnable"
+  $pmx18a.puts("VOLT #{$V3_RX_ENABLE_VIN}")
   $ky34461a_v.puts("MEAS:VOLT:DC?")
   $ky34465a_i.puts("MEAS:CURR:DC?")
   vmeas = $ky34461a_v.gets.to_f
@@ -595,6 +614,7 @@ loop do
 
   $testNum = 45
   puts "[#{$testNum}] IV MEASURE ON rxDisable"
+  $pmx18a.puts("VOLT #{$V3_RX_DISABLE_VIN}")
   $ky34461a_v.puts("MEAS:VOLT:DC?")
   $ky34465a_i.puts("MEAS:CURR:DC?")
   vmeas = $ky34461a_v.gets.to_f
@@ -774,6 +794,7 @@ loop do
     testEndProcess(false,log)
     next
   end
+
   if txVerifyTimeout("dw,26,1",1) != true then
     log[:details] += "[#{$testNum}] dw,25,0: FAIL\n"
     testEndProcess(false,log)
@@ -787,13 +808,11 @@ loop do
   $req.body = payload.to_json
   $res = $http.request($req)
 
-  exit
-
   $testNum = 60
   $sp.puts("dh")
   sleep 0.01
 
-  $pmx18a.puts("VOLT 5.0")
+  $pmx18a.puts("VOLT #{$V5_HALT_VIN}")
   sleep 1
   $ky34461a_v.puts("MEAS:VOLT:DC?")
   $ky34465a_i.puts("MEAS:CURR:DC?")
@@ -815,7 +834,7 @@ loop do
   $res = $http.request($req)
 
   $testNum = 61
-  $pmx18a.puts("VOLT 2.0")
+  $pmx18a.puts("VOLT #{$V2_HALT_VIN}")
   sleep 1
   $ky34461a_v.puts("MEAS:VOLT:DC?")
   $ky34465a_i.puts("MEAS:CURR:DC?")
@@ -835,9 +854,6 @@ loop do
   payload = {payload: log}
   $req.body = payload.to_json
   $res = $http.request($req)
-
-
-  sleep 1000
 
   testEndProcess(true,log)
 end
