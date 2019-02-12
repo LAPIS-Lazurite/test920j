@@ -7,13 +7,18 @@ require "date"
 require "net/http"
 require "uri"
 
+require 'logger'
 require './rf_test/subghz.rb'
 require './rf_test/Rftp.rb'
 @@rftp = Rftp::Test.new
 
 #
 ####### PARAMETERS ########
-$I_MAX = 0.05
+$V3_PWR_ON_VIN	= 3.0
+$V3_PWR_ON_MIN	= 2.5
+$V3_PWR_ON_MAX	= 3.005
+$I_PWR_ON_MIN = 0.0
+$I_PWR_ON_MAX = 0.1
 
 ####### COMMON FUNC ########
 def diffDateTime(b,a)
@@ -76,10 +81,10 @@ end
 
 
 ####### INITIALIZE ########
-#$uri = URI.parse("http://10.9.20.1:1880/callback/test1")
-#$http = Net::HTTP.new($uri.host, $uri.port)
-#$req = Net::HTTP::Post.new($uri.request_uri)
-#$req["Content-Type"] = "application/json"
+$uri = URI.parse("http://10.9.20.1:1880/callback/test1")
+$http = Net::HTTP.new($uri.host, $uri.port)
+$req = Net::HTTP::Post.new($uri.request_uri)
+$req["Content-Type"] = "application/json"
 
 $sp = nil
 
@@ -89,8 +94,8 @@ log[:process] = "init"
 log[:st] = DateTime.now
 log[:ongoing] = true
 payload = {:payload => log}
-#$req.body = payload.to_json
-#$res = $http.request($req)
+$req.body = payload.to_json
+$res = $http.request($req)
 
 begin
 	timeout(5) do
@@ -135,15 +140,15 @@ log[:ongoing] = false
 log[:end] = DateTime.now
 log[:optime] = diffDateTime(log[:end],log[:st])
 log[:message] = "試験機を開けてデバイスをセットしてください"
-#puts log.to_json
-#payload = {:payload => log}
-#$req.body = payload.to_json
-#$res = $http.request($req)
+puts log.to_json
+payload = {:payload => log}
+$req.body = payload.to_json
+$res = $http.request($req)
 
-#if log[:pmx18a][:status] != true  || log[:ky34461a_v][:status] != true || log[:ky34465a_i][:status] != true then
+#if log[:pmx18a][:status] != true then
 #	exit
 #end
-
+#
 ####### TEST FUNC ########
 loop do
 	$mac=nil
@@ -218,13 +223,13 @@ loop do
   @buttun_chat = nil
 
   #POWER OUTPUT
-  $pmx18a.puts("VOLT 3.3")
+  $pmx18a.puts("VOLT #{$V3_PWR_ON_VIN}")
   $pmx18a.puts("OUTP ON")
 
   $pmx18a.puts("MEASure:CURRent?")
   val = $pmx18a.gets().to_f
   p val
-  if val > $I_MAX then
+  if val > $I_PWR_ON_MAX then
       p "NG"
 ###   log[:device][:pmx18a] = {
 ###     :status => false,
@@ -245,19 +250,78 @@ loop do
   `modprobe ftdi_sio`
   `modprobe usbserial`
 
-  $sp = SerialPort.new('/dev/ttyUSB0', 115200, 8, 1, 0) # device, rate, data, stop, parity
-  sleep(1);
-  $sp.puts("sgi")
-  p $sp.gets()
-  sleep 0.05
-  $sp.puts("sgb 24 0xabcd 100 20")
-  p $sp.gets()
-  sleep 0.05
-  $sp.puts("rfw 8 0x6c 0x09")
-  p $sp.gets()
-  sleep 0.05
-  $sp.puts("rfr 8 0x6c")
-  p $sp.gets()
+    t = Time.now
+    date = sprintf("%04d%02d%02d%02d%02d_",t.year,t.mon,t.mday,t.hour,t.min)
+    logfilename = @@rftp.get_shortAddr()
+    logfilename = "/home/pi/test920j/Log/" + date + logfilename + ".log"
+    $log = Logger.new(logfilename)
+#   $log = Logger.new("| tee temp.log")
+    $log.info("+++++++++++ SUMMARY ++++++++++")
+
+    @sbg = Subghz.new()
+=begin
+    @@rftp.e2p_base()
+    @@rftp.calibration(@@ATT)
+    @@telectp._00_MS2830A_init()
+    val = @@telectp._01_Tolerance_of_occupied_bandwidth_Frequency_range()
+    if val != nil then
+        return val
+    end
+    val = @@telectp._02_Tolerance_of_frequency()
+    if val != nil then
+        return val
+    end
+    val = @@telectp._03_Antenna_power_point(@@ATT)
+    if val != nil then
+        return val
+    end
+    val = @@telectp._04_Antenna_power_ave(@@ATT)
+    if val != nil then
+        return val
+    end
+    #    @@telectp._05_Tolerance_of_spurious_unwanted_emission_intensity_far()
+    val = @@telectp._06_Tolerance_of_spurious_unwanted_emission_intensity_near()
+    if val != nil then
+        return val
+    end
+    val = @@telectp._07_Tolerance_off_adjacent_channel_leakage_power()
+    if val != nil then
+        return val
+    end
+    #     @@telectp._08_Limit_of_secondary_radiated_emissions()
+    val = @@telectp._09_Career_sense(@@ATT)
+    if val != nil then
+        return val
+    end
+    val = @@telectp._10_Spectrum_emission_mask()
+    if val != nil then
+        return val
+    end
+=end
+
+    p @sbg.trxoff
+    p @sbg.setup(24,100,20)
+    p @sbg.txon
+    p @sbg.rr("8 0x6c")
+
+# $sp = SerialPort.new('/dev/ttyUSB0', 115200, 8, 1, 0) # device, rate, data, stop, parity
+# sleep(1);
+# $sp.puts("sgi")
+# p $sp.gets()
+# sleep 0.05
+# $sp.puts("sgb 24 0xabcd 100 20")
+# p $sp.gets()
+# sleep 0.05
+# $sp.puts("rfw 8 0x6c 0x09")
+# p $sp.gets()
+# sleep 0.05
+# $sp.puts("rfr 8 0x6c")
+# p $sp.gets()
+
+
+
+
+
 
 # # [3]Initialize MJ2001
 # $testNum=10
@@ -293,6 +357,10 @@ loop do
 #   testEndProcess(false,log)
 #   next
 # end
+
+  $pmx18a.puts("OUTP OFF")
+
+  system("sshpass -p pwsjuser01 scp ./Log/test2.log sjuser01@10.9.20.1:")
 
   exit # --------------------
 
