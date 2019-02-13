@@ -6,11 +6,14 @@ require "serialport"
 require "date"
 require "net/http"
 require "uri"
+require 'LazGem'
+
 
 require 'logger'
-require './rf_test/subghz.rb'
-require './rf_test/Rftp.rb'
+require '/home/pi/test920j/rf_test/subghz.rb'
+require '/home/pi/test920j/rf_test/Rftp.rb'
 @@rftp = Rftp::Test.new
+@laz = LazGem::Device.new
 
 #
 ####### PARAMETERS ########
@@ -78,6 +81,33 @@ def txVerifyTimeout(cmd,period)
 		return "txVerifyTimeout timeout"
 	end
 end
+def lazGemProcess
+    @laz.init()
+
+    dst_short_addr = 0xffff
+    ch = 36
+    panid = 0xabcd
+    baud = 100
+    pwr = 20
+
+    begin
+    @laz.begin(ch,panid,baud,pwr)
+    rescue Exception => e
+        p "file io error!! reset driver"
+        @laz.remove()
+        @laz.init()
+    end
+    begin
+        p "FFFFFFFFFFFFFF"
+        @laz.send(panid,dst_short_addr,"LAPIS Lazurite RF system")
+    rescue Exception => e
+        p e
+        sleep 1
+    end
+    @laz.close()
+    sleep 1.000
+end
+
 
 
 ####### INITIALIZE ########
@@ -177,6 +207,7 @@ loop do
   sleep 1
   
   # RESET
+=begin
   puts "reset MJ2001"
   `rmmod ftdi_sio`
   `rmmod usbserial`
@@ -185,10 +216,10 @@ loop do
   `modprobe ftdi_sio`
   `modprobe usbserial`
 
-=begin
   $sp = SerialPort.new('/dev/ttyUSB0', 115200, 8, 1, 0) # device, rate, data, stop, parity
-  sleep(1);
 =end
+
+    sleep(1);
 
     t = Time.now
     date = sprintf("%04d%02d%02d%02d%02d_",t.year,t.mon,t.mday,t.hour,t.min)
@@ -240,8 +271,7 @@ loop do
 =end
 
     p @sbg.trxoff
-    p @sbg.setup(24,100,20)
-    p @sbg.txon
+    p @sbg.setup(36,100,20)
     p @sbg.rr("8 0x6c")
 
     $sp = SerialPort.new('/dev/ttyUSB0', 115200, 8, 1, 0) # device, rate, data, stop, parity
@@ -249,15 +279,20 @@ loop do
     $sp.puts("sgi")
     p $sp.gets()
     sleep 0.05
-    $sp.puts("sgb 24 0xabcd 100 20")
+    $sp.puts("sgb 36 0xabcd 100 20")
     p $sp.gets()
     sleep 0.05
-    $sp.puts("rfw 8 0x6c 0x09")
-    p $sp.gets()
-    sleep 0.05
+#   $sp.puts("rfw 8 0x6c 0x09")
+#   p $sp.gets()
+#   sleep 0.05
     $sp.puts("rfr 8 0x6c")
     p $sp.gets()
+    $sp.puts("w LAPIS MJ2001 test")
+    p $sp.gets()
+    $sp.puts("sgs 0xabcd 0xffff")
+    p $sp.gets()
 
+    sleep 1
   $pmx18a.puts("OUTP OFF")
 
   p logfilename
@@ -269,6 +304,7 @@ loop do
   $req.body = payload.to_json
   $res = $http.request($req)
 
+  lazGemProcess()
   exit
 
   sleep 1000
