@@ -23,7 +23,7 @@ $V3_PWR_ON_MIN	= 2.5
 $V3_PWR_ON_MAX	= 3.005
 $I_PWR_ON_MIN = 0.0
 $I_PWR_ON_MAX = 0.1
-
+$GLED=26
 ####### COMMON FUNC ########
 def diffDateTime(b,a)
 	(b - a)                       # => (1/17500)
@@ -269,6 +269,10 @@ loop do
   $req.body = payload.to_json
   $res = $http.request($req)
 
+
+ `gpio -g mode #{$GLED} out`
+ `gpio -g write #{$GLED} 0`
+
   #POWER OUTPUT
   $pmx18a.puts("VOLT #{$V3_PWR_ON_VIN}")
   $pmx18a.puts("OUTP ON")
@@ -320,6 +324,7 @@ loop do
   $req.body = payload.to_json
   $res = $http.request($req)
 
+ `gpio -g write #{$GLED} 1`
   exit
 
   sleep 1000
