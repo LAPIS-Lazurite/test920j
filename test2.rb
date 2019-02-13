@@ -12,8 +12,9 @@ require 'LazGem'
 require 'logger'
 require '/home/pi/test920j/rf_test/subghz.rb'
 require '/home/pi/test920j/rf_test/Rftp.rb'
-@@rftp = Rftp::Test.new
+@rftp = Rftp::Test.new
 @laz = LazGem::Device.new
+@sbg = Subghz.new
 
 #
 ####### PARAMETERS ########
@@ -81,7 +82,56 @@ def txVerifyTimeout(cmd,period)
 		return "txVerifyTimeout timeout"
 	end
 end
-def lazGemProcess
+def t108Test
+    p "ARIB T108 TEST"
+    p @sbg.trxoff
+    p @sbg.setup(36,100,20)
+    p @sbg.rr("8 0x6c")
+    p @sbg.rw("8 0x71 ","0x02")
+    p @sbg.rr("8 0x71")
+=begin
+    @rftp.e2p_base()
+    @rftp.calibration(@ATT)
+    @telectp._00_MS2830A_init()
+    val = @telectp._01_Tolerance_of_occupied_bandwidth_Frequency_range()
+    if val != nil then
+        return val
+    end
+    val = @telectp._02_Tolerance_of_frequency()
+    if val != nil then
+        return val
+    end
+    val = @telectp._03_Antenna_power_point(@ATT)
+    if val != nil then
+        return val
+    end
+    val = @telectp._04_Antenna_power_ave(@ATT)
+    if val != nil then
+        return val
+    end
+    #    @telectp._05_Tolerance_of_spurious_unwanted_emission_intensity_far()
+    val = @telectp._06_Tolerance_of_spurious_unwanted_emission_intensity_near()
+    if val != nil then
+        return val
+    end
+    val = @telectp._07_Tolerance_off_adjacent_channel_leakage_power()
+    if val != nil then
+        return val
+    end
+    #     @telectp._08_Limit_of_secondary_radiated_emissions()
+    val = @telectp._09_Career_sense(@ATT)
+    if val != nil then
+        return val
+    end
+    val = @telectp._10_Spectrum_emission_mask()
+    if val != nil then
+        return val
+    end
+=end
+    p @sbg.rw("8 0x71 ","0x06")
+    p @sbg.rr("8 0x71")
+end
+def anntenaTest
     @laz.init()
 
     dst_short_addr = 0xffff
@@ -98,8 +148,37 @@ def lazGemProcess
         @laz.init()
     end
     begin
-        p "FFFFFFFFFFFFFF"
-        @laz.send(panid,dst_short_addr,"LAPIS Lazurite RF system")
+        p "Anntena TEST"
+        # RX setting
+#       @laz.send(panid,dst_short_addr,"LAPIS Lazurite RF system")
+        @laz.rxEnable()
+        sleep 1
+
+        # TX setting
+        $sp = SerialPort.new('/dev/ttyUSB0', 115200, 8, 1, 0) # device, rate, data, stop, parity
+        sleep(1);
+        $sp.puts("sgi")
+        p $sp.gets()
+        sleep 0.05
+        $sp.puts("sgb 36 0xabcd 100 20")
+        p $sp.gets()
+        sleep 0.05
+    #   $sp.puts("rfw 8 0x6c 0x09")
+    #   p $sp.gets()
+    #   sleep 0.05
+        $sp.puts("rfr 8 0x6c")
+        p $sp.gets()
+        $sp.puts("w LAPIS MJ2001 test")
+        p $sp.gets()
+        $sp.puts("sgs 0xabcd 0xac48")
+        p $sp.gets()
+
+        # Receive
+        sleep 1
+        @laz.available() 
+        rcv = @laz.read()
+        p rcv
+
     rescue Exception => e
         p e
         sleep 1
@@ -219,80 +298,17 @@ loop do
   $sp = SerialPort.new('/dev/ttyUSB0', 115200, 8, 1, 0) # device, rate, data, stop, parity
 =end
 
-    sleep(1);
+  t = Time.now
+  date = sprintf("%04d%02d%02d%02d%02d_",t.year,t.mon,t.mday,t.hour,t.min)
+  logfilename = @rftp.get_shortAddr()
+  logfilename = "/home/pi/test920j/Log/" + date + logfilename + ".log"
+  $log = Logger.new(logfilename)
+# $log = Logger.new("| tee temp.log")
+  $log.info("+++++++++++ SUMMARY ++++++++++")
 
-    t = Time.now
-    date = sprintf("%04d%02d%02d%02d%02d_",t.year,t.mon,t.mday,t.hour,t.min)
-    logfilename = @@rftp.get_shortAddr()
-    logfilename = "/home/pi/test920j/Log/" + date + logfilename + ".log"
-    $log = Logger.new(logfilename)
-#   $log = Logger.new("| tee temp.log")
-    $log.info("+++++++++++ SUMMARY ++++++++++")
+  t108Test()
+  anntenaTest()
 
-    @sbg = Subghz.new()
-=begin
-    @@rftp.e2p_base()
-    @@rftp.calibration(@@ATT)
-    @@telectp._00_MS2830A_init()
-    val = @@telectp._01_Tolerance_of_occupied_bandwidth_Frequency_range()
-    if val != nil then
-        return val
-    end
-    val = @@telectp._02_Tolerance_of_frequency()
-    if val != nil then
-        return val
-    end
-    val = @@telectp._03_Antenna_power_point(@@ATT)
-    if val != nil then
-        return val
-    end
-    val = @@telectp._04_Antenna_power_ave(@@ATT)
-    if val != nil then
-        return val
-    end
-    #    @@telectp._05_Tolerance_of_spurious_unwanted_emission_intensity_far()
-    val = @@telectp._06_Tolerance_of_spurious_unwanted_emission_intensity_near()
-    if val != nil then
-        return val
-    end
-    val = @@telectp._07_Tolerance_off_adjacent_channel_leakage_power()
-    if val != nil then
-        return val
-    end
-    #     @@telectp._08_Limit_of_secondary_radiated_emissions()
-    val = @@telectp._09_Career_sense(@@ATT)
-    if val != nil then
-        return val
-    end
-    val = @@telectp._10_Spectrum_emission_mask()
-    if val != nil then
-        return val
-    end
-=end
-
-    p @sbg.trxoff
-    p @sbg.setup(36,100,20)
-    p @sbg.rr("8 0x6c")
-
-    $sp = SerialPort.new('/dev/ttyUSB0', 115200, 8, 1, 0) # device, rate, data, stop, parity
-    sleep(1);
-    $sp.puts("sgi")
-    p $sp.gets()
-    sleep 0.05
-    $sp.puts("sgb 36 0xabcd 100 20")
-    p $sp.gets()
-    sleep 0.05
-#   $sp.puts("rfw 8 0x6c 0x09")
-#   p $sp.gets()
-#   sleep 0.05
-    $sp.puts("rfr 8 0x6c")
-    p $sp.gets()
-    $sp.puts("w LAPIS MJ2001 test")
-    p $sp.gets()
-    $sp.puts("sgs 0xabcd 0xffff")
-    p $sp.gets()
-
-    sleep 1
   $pmx18a.puts("OUTP OFF")
 
   p logfilename
@@ -304,7 +320,6 @@ loop do
   $req.body = payload.to_json
   $res = $http.request($req)
 
-  lazGemProcess()
   exit
 
   sleep 1000
