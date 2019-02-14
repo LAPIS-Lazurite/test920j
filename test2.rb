@@ -142,6 +142,9 @@ def anntenaTest
             $log.info("error: Anntena test: no receiving")
             `gpio -g write #{$RLED} 1`
         else
+            $log.info("+++++++++++ SUMMARY ++++++++++")
+            $log.info("Subject: Anntena test")
+            $log.info("Judgement: PASS")
             p rcv
         end
     rescue Exception => e
@@ -228,6 +231,9 @@ loop do
   date = sprintf("%04d%02d%02d%02d%02d_",t.year,t.mon,t.mday,t.hour,t.min)
   logfilename = @rftp.get_shortAddr()
   logfilename = "/home/pi/test920j/Log/" + date + logfilename + ".log"
+  if File.exist?(logfilename) == true then
+    p "duplicate log file name"
+  end
   $log = Logger.new(logfilename)
 # $log = Logger.new("| tee temp.log")
 
@@ -238,4 +244,5 @@ loop do
 
   p logfilename
   system("sshpass -p pwsjuser01 scp " + logfilename + " sjuser01@10.9.20.1:~/test920j/Log/.")
+  File.delete(logfilename)
 end
