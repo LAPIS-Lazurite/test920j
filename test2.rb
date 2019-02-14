@@ -24,6 +24,8 @@ $V3_PWR_ON_MAX	= 3.005
 $I_PWR_ON_MIN = 0.0
 $I_PWR_ON_MAX = 0.1
 $GLED=26
+$RLED=19
+$TRG_BUTTON=6
 ####### COMMON FUNC ########
 def diffDateTime(b,a)
 	(b - a)                       # => (1/17500)
@@ -270,8 +272,12 @@ loop do
   $res = $http.request($req)
 
 
+ `gpio -g mode #{$TRG_BUTTON} in`
  `gpio -g mode #{$GLED} out`
+ `gpio -g mode #{$RLED} out`
+
  `gpio -g write #{$GLED} 0`
+ `gpio -g write #{$RLED} 0`
 
   #POWER OUTPUT
   $pmx18a.puts("VOLT #{$V3_PWR_ON_VIN}")
@@ -289,6 +295,15 @@ loop do
 
   sleep 1
   
+  loop do
+    button_state = `gpio -g read #{$TRG_BUTTON}`.chop.to_i
+    if button_state == 1 then
+      break
+    end
+    sleep(0.01)
+  end
+
+
   # RESET
 =begin
   puts "reset MJ2001"
@@ -325,6 +340,7 @@ loop do
   $res = $http.request($req)
 
  `gpio -g write #{$GLED} 1`
+ `gpio -g write #{$RLED} 1`
   exit
 
   sleep 1000
