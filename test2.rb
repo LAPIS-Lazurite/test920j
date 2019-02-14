@@ -13,8 +13,8 @@ require 'logger'
 require '/home/pi/test920j/rf_test/subghz.rb'
 require '/home/pi/test920j/rf_test/Rftp.rb'
 @rftp = Rftp::Test.new
+@sbg = Subghz::new
 @laz = LazGem::Device.new
-@sbg = Subghz.new
 
 finish_flag=0
 Signal.trap(:INT){
@@ -30,7 +30,8 @@ $I_PWR_ON_MAX = 0.1
 $GLED=26
 $RLED=19
 $TRG_BUTTON=6
-####### COMMON FUNC ########
+
+####### SUB FUNC ########
 def diffDateTime(b,a)
 	(b - a)                       # => (1/17500)
 	(b - a).class                 # => Rational
@@ -38,56 +39,6 @@ def diffDateTime(b,a)
 	return ((b - a) * 24 * 60 * 60).to_i # => 5
 end
 
-def testEndProcess(pass,log)
-	if $sp  != nil then
-		$sp.close
-	end
-	$sp = nil
-	`rmmod ftdi_sio`
-	`rmmod usbserial`
-	$pmx18a.puts("OUTP OFF")
-	log[:ongoing] = false
-	log[:end] = DateTime.now
-	log[:message] = "試験機を開けてデバイスをセットしてください"
-	log[:optime] = diffDateTime(log[:end],log[:st])
-	if pass == true
-		log[:success] = true
-		`gpio -g write #{$PASS_LED} 1`
-		`gpio -g write #{$FAIL_LED} 0`
-		`gpio -g write #{$RLED} 0`
-		`gpio -g write #{$YLED} 0`
-		`gpio -g write #{$BLED} 0`
-		`lib/cpp/reset/reset "LAZURITE mini series"`
-	else
-		log[:success] = false
-		`gpio -g write #{$PASS_LED} 0`
-		`gpio -g write #{$FAIL_LED} 1`
-		`gpio -g write #{$RLED} 0`
-		`gpio -g write #{$YLED} 0`
-		`gpio -g write #{$BLED} 0`
-		`lib/cpp/reset/reset "LAZURITE mini series"`
-	end
-	#puts JSON.pretty_generate(log)
-	payload = {payload: log}
-	$req.body = payload.to_json
-	$res = $http.request($req)
-end
-def txVerifyTimeout(cmd,period)
-	begin
-		timeout(period) do 
-			$sp.puts(cmd);
-			tmp = $sp.readline.chomp.strip.downcase # こっちだと空白とか余分な情報をそぎ落としてくれる
-			if cmd == tmp then
-				return true
-			end
-			puts "txVerifyTimeout cmd:#{cmd}  rx:#{tmp}"
-			return "txVerifyTimeout cmd:#{cmd}  rx:#{tmp}"
-		end
-	rescue Timeout::Error
-		puts "txVerifyTimeout timeout"
-		return "txVerifyTimeout timeout"
-	end
-end
 def t108Test
     p "ARIB T108 TEST"
     p @sbg.trxoff
@@ -137,6 +88,28 @@ def t108Test
     p @sbg.rw("8 0x71 ","0x06")
     p @sbg.rr("8 0x71")
 end
+
+def sbgSend
+        $sp = SerialPort.new('/dev/ttyUSB0', 115200, 8, 1, 0) # device, rate, data, stop, parity
+        sleep 0.1
+        $sp.puts("sgi")
+        p $sp.gets()
+        sleep 0.05
+        $sp.puts("sgb 36 0xabcd 100 20")
+        p $sp.gets()
+        sleep 0.05
+    #   $sp.puts("rfw 8 0x6c 0x09")
+    #   p $sp.gets()
+    #   sleep 0.05
+        $sp.puts("rfr 8 0x6c")
+        p $sp.gets()
+        $sp.puts("w LAPIS MJ2001 test")
+        p $sp.gets()
+        $sp.puts("sgs 0xabcd 0xac48")
+        p $sp.gets()
+        $sp.close
+end
+
 def anntenaTest
     @laz.init()
 
@@ -158,127 +131,50 @@ def anntenaTest
         # RX setting
 #       @laz.send(panid,dst_short_addr,"LAPIS Lazurite RF system")
         @laz.rxEnable()
-        sleep 1
-
+        sleep 0.01
         # TX setting
-        $sp = SerialPort.new('/dev/ttyUSB0', 115200, 8, 1, 0) # device, rate, data, stop, parity
-        sleep(1);
-        $sp.puts("sgi")
-        p $sp.gets()
-        sleep 0.05
-        $sp.puts("sgb 36 0xabcd 100 20")
-        p $sp.gets()
-        sleep 0.05
-    #   $sp.puts("rfw 8 0x6c 0x09")
-    #   p $sp.gets()
-    #   sleep 0.05
-        $sp.puts("rfr 8 0x6c")
-        p $sp.gets()
-        $sp.puts("w LAPIS MJ2001 test")
-        p $sp.gets()
-        $sp.puts("sgs 0xabcd 0xac48")
-        p $sp.gets()
-
+        sbgSend()
         # Receive
-        sleep 1
         @laz.available() 
         rcv = @laz.read()
+        if rcv == 0 then
+            $log.info("error: Anntena test: no receiving")
+        end
+
         p rcv
 
     rescue Exception => e
         p e
         sleep 1
     end
-    @laz.close()
+#   @laz.close()
     @laz.remove()
     sleep 1.000
 end
 
-
-
 ####### INITIALIZE ########
-$uri = URI.parse("http://10.9.20.1:1880/callback/test1")
-$http = Net::HTTP.new($uri.host, $uri.port)
-$req = Net::HTTP::Post.new($uri.request_uri)
-$req["Content-Type"] = "application/json"
-
-$sp = nil
-
-log = {}
-log[:testNum] = 1;
-log[:process] = "init"
-log[:st] = DateTime.now
-log[:ongoing] = true
-payload = {:payload => log}
-$req.body = payload.to_json
-$res = $http.request($req)
-
 begin
 	timeout(5) do
 		$pmx18a=TCPSocket.open("10.9.20.6",5025)
 		$pmx18a.puts("*IDN?")
 		if $pmx18a.gets().chop != "KIKUSUI,PMX18-2A,YK000141,IFC01.52.0011 IOC01.10.0070" then
-			log[:pmx18a] = {
-				:status => false,
-				:log => "error"
-			}
-		else 
-			log[:pmx18a] = {
-				:status => true
-            }
+            $log.info("error: PMX18-2A not found")
         end
 		$pmx18a.puts("CURR:PROT 0.2")
 		$pmx18a.puts("CURR:PROT?")
 		if $pmx18a.gets().to_f != 0.2 then
-			log[:pmx18a] = {
-				:status => false,
-				:log => "Current protection error"
-			}
+            $log.info("error: Current protection error")
 		end
 		$pmx18a.puts("VOLT 2.0")
 		$pmx18a.puts("VOLT?")
 		if $pmx18a.gets().to_f != 2 then
-			log[:pmx18a] = {
-				:status => false,
-				:log => "output voltage set error"
-			}
+            $log.info("error: output voltage set error")
 		end
 	end
-rescue Timeout::Error
-	log[:pmx18a] = {
-		:status => false,
-		:log => "not found"
-	}
 end
 
-=begin
-log[:process] = "init"
-log[:ongoing] = false
-log[:end] = DateTime.now
-log[:optime] = diffDateTime(log[:end],log[:st])
-log[:message] = "試験機を開けてデバイスをセットしてください"
-puts log.to_json
-payload = {:payload => log}
-$req.body = payload.to_json
-$res = $http.request($req)
-=end
-
-if log[:pmx18a][:status] != true then
-	exit
-end
-#
-####### TEST FUNC ########
+####### MAIN LOOP ########
 loop do
-  log[:process] = "setting"
-  log[:ongoing] = false
-  log[:st] = DateTime.now
-  log[:message] = "試験機を閉じてください"
-  # post message
-  payload = {payload: log}
-  $req.body = payload.to_json
-  $res = $http.request($req)
-
-
  `gpio -g mode #{$TRG_BUTTON} in`
  `gpio -g mode #{$GLED} out`
  `gpio -g mode #{$RLED} out`
@@ -306,32 +202,13 @@ loop do
   #POWER OUTPUT
   $pmx18a.puts("VOLT #{$V3_PWR_ON_VIN}")
   $pmx18a.puts("OUTP ON")
-
   sleep 1
-
   $pmx18a.puts("MEASure:CURRent?")
   val = $pmx18a.gets().to_f
   p val
   if val > $I_PWR_ON_MAX then
-      log[:device][:pmx18a] = {
-      :status => false,
-      :log => "error"
-   }
+      $log.info("error: Current error")
   end  
-
-
-  # RESET
-=begin
-  puts "reset MJ2001"
-  `rmmod ftdi_sio`
-  `rmmod usbserial`
-  `lib/cpp/reset/reset "LAZURITE mini series"`
-
-  `modprobe ftdi_sio`
-  `modprobe usbserial`
-
-  $sp = SerialPort.new('/dev/ttyUSB0', 115200, 8, 1, 0) # device, rate, data, stop, parity
-=end
 
   t = Time.now
   date = sprintf("%04d%02d%02d%02d%02d_",t.year,t.mon,t.mday,t.hour,t.min)
@@ -347,15 +224,6 @@ loop do
   $pmx18a.puts("OUTP OFF")
 
   p logfilename
+  $log.info(logfilename)
   system("sshpass -p pwsjuser01 scp " + logfilename + " sjuser01@10.9.20.1:~/test920j/Log/.")
-
-=begin
-  log[:ongoing] = true
-  log[:message] == ""
-  payload = {payload: log}
-  $req.body = payload.to_json
-  $res = $http.request($req)
-  testEndProcess(true,log)
-=end
 end
-
