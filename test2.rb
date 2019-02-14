@@ -16,6 +16,10 @@ require '/home/pi/test920j/rf_test/Rftp.rb'
 @laz = LazGem::Device.new
 @sbg = Subghz.new
 
+finish_flag=0
+Signal.trap(:INT){
+	finish_flag=1
+}
 #
 ####### PARAMETERS ########
 $V3_PWR_ON_VIN	= 3.0
@@ -186,6 +190,7 @@ def anntenaTest
         sleep 1
     end
     @laz.close()
+    @laz.remove()
     sleep 1.000
 end
 
@@ -246,6 +251,7 @@ rescue Timeout::Error
 	}
 end
 
+=begin
 log[:process] = "init"
 log[:ongoing] = false
 log[:end] = DateTime.now
@@ -255,6 +261,7 @@ puts log.to_json
 payload = {:payload => log}
 $req.body = payload.to_json
 $res = $http.request($req)
+=end
 
 if log[:pmx18a][:status] != true then
 	exit
@@ -276,12 +283,31 @@ loop do
  `gpio -g mode #{$GLED} out`
  `gpio -g mode #{$RLED} out`
 
+ `gpio -g write #{$GLED} 1`
+ `gpio -g write #{$RLED} 1`
+
+  print("試験機を開けてデバイスをセットしてください\n")
+  
+  loop do
+    button_state = `gpio -g read #{$TRG_BUTTON}`.chop.to_i
+    if button_state == 1 then
+      break
+    end
+    sleep(0.01)
+
+    if finish_flag == 1 then
+        exit
+    end
+  end
+
  `gpio -g write #{$GLED} 0`
  `gpio -g write #{$RLED} 0`
 
   #POWER OUTPUT
   $pmx18a.puts("VOLT #{$V3_PWR_ON_VIN}")
   $pmx18a.puts("OUTP ON")
+
+  sleep 1
 
   $pmx18a.puts("MEASure:CURRent?")
   val = $pmx18a.gets().to_f
@@ -292,16 +318,6 @@ loop do
       :log => "error"
    }
   end  
-
-  sleep 1
-  
-  loop do
-    button_state = `gpio -g read #{$TRG_BUTTON}`.chop.to_i
-    if button_state == 1 then
-      break
-    end
-    sleep(0.01)
-  end
 
 
   # RESET
@@ -333,18 +349,13 @@ loop do
   p logfilename
   system("sshpass -p pwsjuser01 scp " + logfilename + " sjuser01@10.9.20.1:~/test920j/Log/.")
 
+=begin
   log[:ongoing] = true
   log[:message] == ""
   payload = {payload: log}
   $req.body = payload.to_json
   $res = $http.request($req)
-
- `gpio -g write #{$GLED} 1`
- `gpio -g write #{$RLED} 1`
-  exit
-
-  sleep 1000
-
   testEndProcess(true,log)
+=end
 end
 
