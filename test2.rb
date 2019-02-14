@@ -39,7 +39,7 @@ def diffDateTime(b,a)
 	return ((b - a) * 24 * 60 * 60).to_i # => 5
 end
 
-def t108Test
+def aribTest
     p "ARIB T108 TEST"
     p @sbg.trxoff
     p @sbg.setup(36,100,20)
@@ -90,24 +90,24 @@ def t108Test
 end
 
 def sbgSend
-        $sp = SerialPort.new('/dev/ttyUSB0', 115200, 8, 1, 0) # device, rate, data, stop, parity
-        sleep 0.1
-        $sp.puts("sgi")
-        p $sp.gets()
-        sleep 0.05
-        $sp.puts("sgb 36 0xabcd 100 20")
-        p $sp.gets()
-        sleep 0.05
-    #   $sp.puts("rfw 8 0x6c 0x09")
-    #   p $sp.gets()
-    #   sleep 0.05
-        $sp.puts("rfr 8 0x6c")
-        p $sp.gets()
-        $sp.puts("w LAPIS MJ2001 test")
-        p $sp.gets()
-        $sp.puts("sgs 0xabcd 0xac48")
-        p $sp.gets()
-        $sp.close
+    $sp = SerialPort.new('/dev/ttyUSB0', 115200, 8, 1, 0) # device, rate, data, stop, parity
+    sleep 0.1
+    $sp.puts("sgi")
+    p $sp.gets()
+    sleep 0.05
+    $sp.puts("sgb 36 0xabcd 100 20")
+    p $sp.gets()
+    sleep 0.05
+#   $sp.puts("rfw 8 0x6c 0x09")
+#   p $sp.gets()
+#   sleep 0.05
+    $sp.puts("rfr 8 0x6c")
+    p $sp.gets()
+    $sp.puts("w LAPIS MJ2001 test")
+    p $sp.gets()
+    $sp.puts("sgs 0xabcd 0xac48")
+    p $sp.gets()
+    $sp.close
 end
 
 def anntenaTest
@@ -125,6 +125,7 @@ def anntenaTest
         p "file io error!! reset driver"
         @laz.remove()
         @laz.init()
+        `gpio -g write #{$RLED} 1`
     end
     begin
         p "Anntena TEST"
@@ -139,10 +140,10 @@ def anntenaTest
         rcv = @laz.read()
         if rcv == 0 then
             $log.info("error: Anntena test: no receiving")
+            `gpio -g write #{$RLED} 1`
+        else
+            p rcv
         end
-
-        p rcv
-
     rescue Exception => e
         p e
         sleep 1
@@ -159,18 +160,30 @@ begin
 		$pmx18a.puts("*IDN?")
 		if $pmx18a.gets().chop != "KIKUSUI,PMX18-2A,YK000141,IFC01.52.0011 IOC01.10.0070" then
             $log.info("error: PMX18-2A not found")
+            `gpio -g write #{$RLED} 1`
         end
 		$pmx18a.puts("CURR:PROT 0.2")
 		$pmx18a.puts("CURR:PROT?")
 		if $pmx18a.gets().to_f != 0.2 then
             $log.info("error: Current protection error")
+            `gpio -g write #{$RLED} 1`
 		end
 		$pmx18a.puts("VOLT 2.0")
 		$pmx18a.puts("VOLT?")
 		if $pmx18a.gets().to_f != 2 then
             $log.info("error: output voltage set error")
 		end
+=begin
+		$ms2830a=TCPSocket.open("10.9.20.6",5025)
+		$pmx18a.puts("*IDN?")
+		if $ms2830a.gets().chop != "MS2830A" then
+            $log.info("error: MS2830A not found")
+            `gpio -g write #{$RLED} 1`
+        end
+=end
 	end
+rescue StandardError
+   `gpio -g write #{$RLED} 1`
 end
 
 ####### MAIN LOOP ########
@@ -180,7 +193,6 @@ loop do
  `gpio -g mode #{$RLED} out`
 
  `gpio -g write #{$GLED} 1`
- `gpio -g write #{$RLED} 1`
 
   print("試験機を開けてデバイスをセットしてください\n")
   
@@ -207,23 +219,23 @@ loop do
   val = $pmx18a.gets().to_f
   p val
   if val > $I_PWR_ON_MAX then
-      $log.info("error: Current error")
+      `gpio -g write #{$RLED} 1`
+      p "error: Current error"
   end  
 
+  #CREATE LOG FILE
   t = Time.now
   date = sprintf("%04d%02d%02d%02d%02d_",t.year,t.mon,t.mday,t.hour,t.min)
   logfilename = @rftp.get_shortAddr()
   logfilename = "/home/pi/test920j/Log/" + date + logfilename + ".log"
   $log = Logger.new(logfilename)
 # $log = Logger.new("| tee temp.log")
-  $log.info("+++++++++++ SUMMARY ++++++++++")
 
-  t108Test()
+  aribTest()
   anntenaTest()
 
   $pmx18a.puts("OUTP OFF")
 
   p logfilename
-  $log.info(logfilename)
   system("sshpass -p pwsjuser01 scp " + logfilename + " sjuser01@10.9.20.1:~/test920j/Log/.")
 end
