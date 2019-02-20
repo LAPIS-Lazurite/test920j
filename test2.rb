@@ -159,9 +159,10 @@ end
 ####### INITIALIZE ########
 begin
 	timeout(5) do
-		$pmx18a=TCPSocket.open("10.9.20.6",5025)
+		$pmx18a=TCPSocket.open("10.9.20.2",5025)
 		$pmx18a.puts("*IDN?")
-		if $pmx18a.gets().chop != "KIKUSUI,PMX18-2A,YK000141,IFC01.52.0011 IOC01.10.0070" then
+#		if $pmx18a.gets().chop != "KIKUSUI,PMX18-2A,YK000141,IFC01.52.0011 IOC01.10.0070" then #10.9.20.6
+        if $pmx18a.gets().chop != "KIKUSUI,PMX18-2A,YK000148,IFC01.52.0011 IOC01.10.0070" then #10.9.20.2
             $log.info("error: PMX18-2A not found")
             `gpio -g write #{$RLED} 1`
         end
