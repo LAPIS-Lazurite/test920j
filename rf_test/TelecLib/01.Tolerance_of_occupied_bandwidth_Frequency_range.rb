@@ -2,8 +2,8 @@
 #
 # 周波数偏差（変調）、占有帯域測定
 #
-require './socket.rb'
-require './subghz.rb'
+require '/home/pi/test920j/rf_test/socket.rb'
+require '/home/pi/test920j/rf_test/subghz.rb'
 
 #setup DUT --------------------------------------
 class Telectp::Test

@@ -1,7 +1,7 @@
 #!/usr/bin/ruby
 
-require './socket.rb'
-require './subghz.rb'
+require '/home/pi/test920j/rf_test/socket.rb'
+require '/home/pi/test920j/rf_test/subghz.rb'
 
 class Telectp::Test
 	def _00_MS2830A_init()

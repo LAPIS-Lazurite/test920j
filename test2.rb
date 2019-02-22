@@ -10,11 +10,15 @@ require 'LazGem'
 
 
 require 'logger'
-require '/home/pi/test920j/rf_test/subghz.rb'
-require '/home/pi/test920j/rf_test/Rftp.rb'
+require './rf_test/subghz.rb'
+require './rf_test/Rftp.rb'
+require './rf_test/Telectp.rb'
 @rftp = Rftp::Test.new
 @sbg = Subghz::new
 @laz = LazGem::Device.new
+@telectp = Telectp::Test.new
+
+@ATT = "9.9"
 
 finish_flag=0
 Signal.trap(:INT){
@@ -46,9 +50,12 @@ def aribTest
     p @sbg.rr("8 0x6c")
     p @sbg.rw("8 0x71 ","0x02")
     p @sbg.rr("8 0x71")
-=begin
+#=begin
     @rftp.e2p_base()
-    @rftp.calibration(@ATT)
+    val = @rftp.calibration(@ATT)
+    if val != nil then
+        return val
+    end
     @telectp._00_MS2830A_init()
     val = @telectp._01_Tolerance_of_occupied_bandwidth_Frequency_range()
     if val != nil then
@@ -84,7 +91,7 @@ def aribTest
     if val != nil then
         return val
     end
-=end
+#=end
     p @sbg.rw("8 0x71 ","0x06")
     p @sbg.rr("8 0x71")
 end
@@ -140,7 +147,7 @@ def anntenaTest
         rcv = @laz.read()
         if rcv == 0 then
             $log.info("error: Anntena test: no receiving")
-            `gpio -g write #{$RLED} 1`
+            return "Error"
         else
             $log.info("+++++++++++ SUMMARY ++++++++++")
             $log.info("Subject: Anntena test")
@@ -154,15 +161,17 @@ def anntenaTest
 #   @laz.close()
     @laz.remove()
     sleep 1.000
+    return nil
 end
 
 ####### INITIALIZE ########
 begin
 	timeout(5) do
-		$pmx18a=TCPSocket.open("10.9.20.2",5025)
+ 		$pmx18a=TCPSocket.open("10.9.20.6",5025) #141
+#		$pmx18a=TCPSocket.open("10.9.20.2",5025) #148
 		$pmx18a.puts("*IDN?")
-#		if $pmx18a.gets().chop != "KIKUSUI,PMX18-2A,YK000141,IFC01.52.0011 IOC01.10.0070" then #10.9.20.6
-        if $pmx18a.gets().chop != "KIKUSUI,PMX18-2A,YK000148,IFC01.52.0011 IOC01.10.0070" then #10.9.20.2
+ 		if $pmx18a.gets().chop != "KIKUSUI,PMX18-2A,YK000141,IFC01.52.0011 IOC01.10.0070" then #10.9.20.6
+#       if $pmx18a.gets().chop != "KIKUSUI,PMX18-2A,YK000148,IFC01.52.0011 IOC01.10.0070" then #10.9.20.2
             $log.info("error: PMX18-2A not found")
             `gpio -g write #{$RLED} 1`
         end
@@ -192,58 +201,74 @@ end
 
 ####### MAIN LOOP ########
 loop do
- `gpio -g mode #{$TRG_BUTTON} in`
- `gpio -g mode #{$GLED} out`
- `gpio -g mode #{$RLED} out`
+  begin 
+     `gpio -g mode #{$TRG_BUTTON} in`
+     `gpio -g mode #{$GLED} out`
+     `gpio -g mode #{$RLED} out`
 
- `gpio -g write #{$GLED} 1`
+     `gpio -g write #{$GLED} 1`
 
-  print("試験機を開けてデバイスをセットしてください\n")
-  
-  loop do
-    button_state = `gpio -g read #{$TRG_BUTTON}`.chop.to_i
-    if button_state == 1 then
-      break
-    end
-    sleep(0.01)
+      print("試験機を開けてデバイスをセットしてください\n")
+      
+      loop do
+        button_state = `gpio -g read #{$TRG_BUTTON}`.chop.to_i
+        if button_state == 1 then
+          break
+        end
+        sleep(0.01)
 
-    if finish_flag == 1 then
-        exit
-    end
+        if finish_flag == 1 then
+            exit
+        end
+      end
+
+     `gpio -g write #{$GLED} 0`
+     `gpio -g write #{$RLED} 0`
+
+      #POWER OUTPUT
+      $pmx18a.puts("VOLT #{$V3_PWR_ON_VIN}")
+      $pmx18a.puts("OUTP ON")
+      sleep 1
+      $pmx18a.puts("MEASure:CURRent?")
+      val = $pmx18a.gets().to_f
+      p val
+      if val > $I_PWR_ON_MAX then
+          p "error: Current error"
+          raise RuntimeError, "ERRR\n"
+      end  
+
+      #CREATE LOG FILE
+      t = Time.now
+      date = sprintf("%04d%02d%02d%02d%02d_",t.year,t.mon,t.mday,t.hour,t.min)
+      logfilename = @rftp.get_shortAddr()
+      logfilename = "/home/pi/test920j/Log/" + date + logfilename + ".log"
+      if File.exist?(logfilename) == true then
+        p "duplicate log file name"
+      end
+      $log = Logger.new(logfilename)
+    # $log = Logger.new("| tee temp.log")
+
+      val = aribTest()
+      if val == "Error" then
+          p "error: arib test error"
+          raise RuntimeError, "ERRR\n"
+      end  
+      val = anntenaTest()
+      if val == "Error" then
+          p "error: arib test error"
+          raise RuntimeError, "ERRR\n"
+      end  
+
+      $pmx18a.puts("OUTP OFF")
+
+      p logfilename
+      system("sshpass -p pwsjuser01 scp " + logfilename + " sjuser01@10.9.20.1:~/test920j/Log/.")
+      File.delete(logfilename)
+
+      rescue RuntimeError
+           $pmx18a.puts("OUTP OFF")
+          `gpio -g write #{$RLED} 1`
+          next
+      next
   end
-
- `gpio -g write #{$GLED} 0`
- `gpio -g write #{$RLED} 0`
-
-  #POWER OUTPUT
-  $pmx18a.puts("VOLT #{$V3_PWR_ON_VIN}")
-  $pmx18a.puts("OUTP ON")
-  sleep 1
-  $pmx18a.puts("MEASure:CURRent?")
-  val = $pmx18a.gets().to_f
-  p val
-  if val > $I_PWR_ON_MAX then
-      `gpio -g write #{$RLED} 1`
-      p "error: Current error"
-  end  
-
-  #CREATE LOG FILE
-  t = Time.now
-  date = sprintf("%04d%02d%02d%02d%02d_",t.year,t.mon,t.mday,t.hour,t.min)
-  logfilename = @rftp.get_shortAddr()
-  logfilename = "/home/pi/test920j/Log/" + date + logfilename + ".log"
-  if File.exist?(logfilename) == true then
-    p "duplicate log file name"
-  end
-  $log = Logger.new(logfilename)
-# $log = Logger.new("| tee temp.log")
-
-  aribTest()
-  anntenaTest()
-
-  $pmx18a.puts("OUTP OFF")
-
-  p logfilename
-  system("sshpass -p pwsjuser01 scp " + logfilename + " sjuser01@10.9.20.1:~/test920j/Log/.")
-  File.delete(logfilename)
 end

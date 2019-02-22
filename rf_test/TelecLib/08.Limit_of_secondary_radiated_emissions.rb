@@ -3,9 +3,8 @@
 # 8.•›ŽŸ“I‚É”­‚·‚é“d”g‚È‚Ç‚ÌŒÀ“x
 #
 
-require './socket.rb'
-require './subghz.rb'
-
+require '/home/pi/test920j/rf_test/socket.rb'
+require '/home/pi/test920j/rf_test/subghz.rb'
 
 #setup DUT --------------------------------------
 class Telectp::Test

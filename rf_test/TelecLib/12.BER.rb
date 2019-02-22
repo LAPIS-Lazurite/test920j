@@ -4,7 +4,7 @@
 # 12-1.óMŒ±iBER‘ª’èj
 #
 
-require './socket.rb'
+require '/home/pi/test920j/rf_test/socket.rb'
 
 class Telectp::Test
 	def _12_BER

@@ -3,8 +3,8 @@
 # 空中線電力（平均電力）
 #
 
-require './socket.rb'
-require './subghz.rb'
+require '/home/pi/test920j/rf_test/socket.rb'
+require '/home/pi/test920j/rf_test/subghz.rb'
 
 #setup DUT --------------------------------------
 

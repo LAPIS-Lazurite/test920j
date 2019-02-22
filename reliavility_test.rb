@@ -21,12 +21,11 @@ while 1
             print("\n続ける場合は[Enter]を終了する場合[x]を入力してください：")
             rep = gets().to_s
             if rep =~ /x/ then
-                break
+                exit
             end
         end
     rescue RuntimeError
-	#system("mpg321 -q ../mp3/se4.mp3")
-	system('zenity --info --text="エラーが発生したため試験を中断しました。"')
-        next
+	    system('zenity --info --text="エラーが発生したため試験を中断しました。"')
+        break
     end
 end
