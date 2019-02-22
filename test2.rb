@@ -237,6 +237,16 @@ loop do
           raise RuntimeError, "ERRR\n"
       end  
 
+      # MJ2001 firmware checking
+      $sp = SerialPort.new('/dev/ttyUSB0', 115200, 8, 1, 0) 
+      sleep 0.1
+      $sp.puts("sgi")
+      val = $sp.gets()
+      if val !~ /sgi/ then
+          p "error: not found test920 firmware"
+          raise RuntimeError, "ERRR\n"
+      end
+
       #CREATE LOG FILE
       t = Time.now
       date = sprintf("%04d%02d%02d%02d%02d_",t.year,t.mon,t.mday,t.hour,t.min)
