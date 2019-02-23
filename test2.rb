@@ -50,7 +50,6 @@ def aribTest
     p @sbg.rr("8 0x6c")
     p @sbg.rw("8 0x71 ","0x02")
     p @sbg.rr("8 0x71")
-#=begin
     @rftp.e2p_base()
     val = @rftp.calibration(@ATT)
     if val != nil then
@@ -69,10 +68,12 @@ def aribTest
     if val != nil then
         return val
     end
+=begin
     val = @telectp._04_Antenna_power_ave(@ATT)
     if val != nil then
         return val
     end
+=end
     #    @telectp._05_Tolerance_of_spurious_unwanted_emission_intensity_far()
     val = @telectp._06_Tolerance_of_spurious_unwanted_emission_intensity_near()
     if val != nil then
@@ -91,7 +92,6 @@ def aribTest
     if val != nil then
         return val
     end
-#=end
     p @sbg.rw("8 0x71 ","0x06")
     p @sbg.rr("8 0x71")
 end
@@ -167,10 +167,10 @@ end
 ####### INITIALIZE ########
 begin
 	timeout(5) do
- 		$pmx18a=TCPSocket.open("10.9.20.6",5025) #141
+  		$pmx18a=TCPSocket.open("10.9.20.6",5025) #141
 #		$pmx18a=TCPSocket.open("10.9.20.2",5025) #148
 		$pmx18a.puts("*IDN?")
- 		if $pmx18a.gets().chop != "KIKUSUI,PMX18-2A,YK000141,IFC01.52.0011 IOC01.10.0070" then #10.9.20.6
+  		if $pmx18a.gets().chop != "KIKUSUI,PMX18-2A,YK000141,IFC01.52.0011 IOC01.10.0070" then #10.9.20.6
 #       if $pmx18a.gets().chop != "KIKUSUI,PMX18-2A,YK000148,IFC01.52.0011 IOC01.10.0070" then #10.9.20.2
             $log.info("error: PMX18-2A not found")
             `gpio -g write #{$RLED} 1`
@@ -186,14 +186,12 @@ begin
 		if $pmx18a.gets().to_f != 2 then
             $log.info("error: output voltage set error")
 		end
-=begin
-		$ms2830a=TCPSocket.open("10.9.20.6",5025)
+		$ms2830a=TCPSocket.open("10.9.20.8",49153)
 		$pmx18a.puts("*IDN?")
 		if $ms2830a.gets().chop != "MS2830A" then
             $log.info("error: MS2830A not found")
             `gpio -g write #{$RLED} 1`
         end
-=end
 	end
 rescue StandardError
    `gpio -g write #{$RLED} 1`
@@ -234,7 +232,7 @@ loop do
       p val
       if val > $I_PWR_ON_MAX then
           p "error: Current error"
-          raise RuntimeError, "ERRR\n"
+          `gpio -g write #{$RLED} 1`
       end  
 
       # MJ2001 firmware checking
@@ -244,8 +242,24 @@ loop do
       val = $sp.gets()
       if val !~ /sgi/ then
           p "error: not found test920 firmware"
-          raise RuntimeError, "ERRR\n"
+          `gpio -g write #{$RLED} 1`
       end
+
+      $sp.puts("ewp 0")
+      p $sp.gets()
+      $sp.puts("erd 32 8")
+      val = $sp.gets().split(",")
+      $sp.puts("ewp 1")
+      p $sp.gets()
+
+      p val[4,1].to_s.length
+      address64 = val[4,1]
+      p address64
+
+=begin
+#     "sshpass -p pwsjuser01 ssh sjuser01@10.9.20.1 grep 151517 /home/share/MJ2001/log/test1.csv"
+#     system("sshpass -p pwsjuser01 scp " + logfilename + " sjuser01@10.9.20.1:/home/share/MJ2001/log2/.")
+=end
 
       #CREATE LOG FILE
       t = Time.now
@@ -268,17 +282,19 @@ loop do
           p "error: arib test error"
           raise RuntimeError, "ERRR\n"
       end  
-
       $pmx18a.puts("OUTP OFF")
-
+      $log.info(" => RF test finished: PASS")
       p logfilename
-      system("sshpass -p pwsjuser01 scp " + logfilename + " sjuser01@10.9.20.1:~/test920j/Log/.")
+      system("sshpass -p pwsjuser01 scp " + logfilename + " sjuser01@10.9.20.1:/home/share/MJ2001/log2/.")
       File.delete(logfilename)
 
       rescue RuntimeError
-           $pmx18a.puts("OUTP OFF")
+          $pmx18a.puts("OUTP OFF")
+          $log.info(" => RF test finish: NG")
+          p logfilename
+          system("sshpass -p pwsjuser01 scp " + logfilename + " sjuser01@10.9.20.1:/home/share/MJ2001/log2/.")
+          File.delete(logfilename)
           `gpio -g write #{$RLED} 1`
           next
-      next
-  end
+      end
 end
