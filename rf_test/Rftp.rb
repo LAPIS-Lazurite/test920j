@@ -1,6 +1,7 @@
 # encoding: utf-8
 module Rftp; end
 require_relative "./RfLib/e2p_base"
+require_relative "./RfLib/e2p_base_MJ2001"
 require_relative "./RfLib/calibration"
 require_relative "./RfLib/cw"
 require_relative "./RfLib/snd"

@@ -50,7 +50,7 @@ def aribTest
     p @sbg.rr("8 0x6c")
     p @sbg.rw("8 0x71 ","0x02")
     p @sbg.rr("8 0x71")
-    @rftp.e2p_base()
+    @rftp.e2p_base_MJ2001()
     val = @rftp.calibration(@ATT)
     if val != nil then
         return val
