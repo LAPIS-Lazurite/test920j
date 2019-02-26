@@ -13,6 +13,7 @@ require 'net/http'
 require 'uri'
 require 'json'
 
+require 'net/ping'
 require 'logger'
 require './rf_test/subghz.rb'
 require './rf_test/Rftp.rb'
@@ -183,6 +184,11 @@ end
 ####### INITIALIZE ########
 begin
 	timeout(5) do
+        pi = Net::Ping::External.new("10.9.20.1")
+        if pi.ping == false then
+            $log.info("error: 10.9.20.1 not found")
+            `gpio -g write #{$RLED} 1`
+        end
   		$pmx18a=TCPSocket.open("10.9.20.6",5025) #141
 #		$pmx18a=TCPSocket.open("10.9.20.2",5025) #148
 		$pmx18a.puts("*IDN?")
@@ -222,12 +228,27 @@ loop do
 
      `gpio -g write #{$GLED} 1`
 
+      print("暗箱を開けてください\n")
+
+      loop do
+        button_state = `gpio -g read #{$TRG_BUTTON}`.chop.to_i
+        if button_state == 0 then
+            break
+        else
+        end
+        sleep(0.01)
+
+        if finish_flag == 1 then
+            exit
+        end
+      end
+
       print("試験機を開けてデバイスをセットしてください\n")
       
       loop do
         button_state = `gpio -g read #{$TRG_BUTTON}`.chop.to_i
         if button_state == 1 then
-          break
+            break
         end
         sleep(0.01)
 
@@ -250,6 +271,7 @@ loop do
           p "error: Current error"
           `gpio -g write #{$RLED} 1`
           $pmx18a.puts("OUTP OFF")
+          $sp.close
           next
       end  
 
@@ -263,6 +285,7 @@ loop do
           p "error: firmware or device not found"
           `gpio -g write #{$RLED} 1`
           $pmx18a.puts("OUTP OFF")
+          $sp.close
           next
       end
 
@@ -348,6 +371,7 @@ loop do
       p logfilename
       system("sshpass -p pwsjuser01 scp " + logfilename + " sjuser01@10.9.20.1:/home/share/MJ2001/log2/.")
       File.delete(logfilename)
+      $sp.close
 
       rescue RuntimeError
           $pmx18a.puts("OUTP OFF")
@@ -358,6 +382,7 @@ loop do
           system("sshpass -p pwsjuser01 scp " + logfilename + " sjuser01@10.9.20.1:/home/share/MJ2001/log2/.")
           File.delete(logfilename)
           `gpio -g write #{$RLED} 1`
+          $sp.close
           next
       end
 end
