@@ -9,10 +9,10 @@ require '/home/pi/test920j/rf_test/subghz.rb'
 class Telectp::Test
 	def _09_Career_sense(att)
 		@@att = att.to_f.round(2)
-		val = func_thread(50,24)
-        if val != nil then
-            return val
-        end
+#		val = func_thread(50,24)
+#       if val != nil then
+#          return val
+#       end
 		val = func_thread(100,42)
         if val != nil then
             return val

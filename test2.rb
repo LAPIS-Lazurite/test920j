@@ -8,11 +8,22 @@ require "net/http"
 require "uri"
 require 'LazGem'
 
+# checkDb
+require 'net/http'
+require 'uri'
+require 'json'
 
 require 'logger'
 require './rf_test/subghz.rb'
 require './rf_test/Rftp.rb'
 require './rf_test/Telectp.rb'
+
+# checkDb
+uri = URI.parse("http://10.9.20.1:1880/check")
+$http = Net::HTTP.new(uri.host, uri.port)
+$req = Net::HTTP::Post.new(uri.request_uri)
+$req["Content-Type"] = "application/json"
+
 @rftp = Rftp::Test.new
 @sbg = Subghz::new
 @laz = LazGem::Device.new
@@ -36,6 +47,15 @@ $RLED=19
 $TRG_BUTTON=6
 
 ####### SUB FUNC ########
+def checkDb(mac)
+	payload = {}
+	payload[:mac] = mac;
+	$req.body = payload.to_json
+	$res = $http.request($req)
+	body = JSON.parse($res.body);
+	return body["result"]
+end
+
 def diffDateTime(b,a)
 	(b - a)                       # => (1/17500)
 	(b - a).class                 # => Rational
@@ -45,12 +65,12 @@ end
 
 def aribTest
     p "ARIB T108 TEST"
-    p @sbg.trxoff
-    p @sbg.setup(36,100,20)
-    p @sbg.rr("8 0x6c")
-    p @sbg.rw("8 0x71 ","0x02")
-    p @sbg.rr("8 0x71")
     @rftp.e2p_base_MJ2001()
+    p @sbg.trxoff
+#   p @sbg.setup(36,100,20)
+#   p @sbg.rr("8 0x6c")
+#   p @sbg.rw("8 0x71 ","0x02")
+#   p @sbg.rr("8 0x71")
     val = @rftp.calibration(@ATT)
     if val != nil then
         return val
@@ -68,12 +88,10 @@ def aribTest
     if val != nil then
         return val
     end
-=begin
-    val = @telectp._04_Antenna_power_ave(@ATT)
-    if val != nil then
-        return val
-    end
-=end
+#   val = @telectp._04_Antenna_power_ave(@ATT)
+#   if val != nil then
+#       return val
+#   end
     #    @telectp._05_Tolerance_of_spurious_unwanted_emission_intensity_far()
     val = @telectp._06_Tolerance_of_spurious_unwanted_emission_intensity_near()
     if val != nil then
@@ -92,8 +110,6 @@ def aribTest
     if val != nil then
         return val
     end
-    p @sbg.rw("8 0x71 ","0x06")
-    p @sbg.rr("8 0x71")
 end
 
 def sbgSend
@@ -105,9 +121,9 @@ def sbgSend
     $sp.puts("sgb 36 0xabcd 100 20")
     p $sp.gets()
     sleep 0.05
-#   $sp.puts("rfw 8 0x6c 0x09")
-#   p $sp.gets()
-#   sleep 0.05
+    $sp.puts("rfw 8 0x71 0x06")
+    p $sp.gets()
+    sleep 0.05
     $sp.puts("rfr 8 0x6c")
     p $sp.gets()
     $sp.puts("w LAPIS MJ2001 test")
@@ -233,33 +249,35 @@ loop do
       if val > $I_PWR_ON_MAX then
           p "error: Current error"
           `gpio -g write #{$RLED} 1`
+          $pmx18a.puts("OUTP OFF")
           next
       end  
 
+      sleep 0.5
       # MJ2001 firmware checking
       $sp = SerialPort.new('/dev/ttyUSB0', 115200, 8, 1, 0) 
       sleep 0.1
       $sp.puts("sgi")
       val = $sp.gets()
       if val !~ /sgi/ then
-          p "error: firmware not found"
+          p "error: firmware or device not found"
           `gpio -g write #{$RLED} 1`
+          $pmx18a.puts("OUTP OFF")
           next
       end
 
-        p "sbg program -----------------------------"
         val = @sbg.com("erd 32 8")
         addr64 = val[11,val.length - 11 - 1].split(",")
         for index in 0..addr64.length - 1 do
             if addr64[index].length == 1 then
                 addr64[index].insert(0,"0")
             end
-            p addr64[index]
+        #   p addr64[index]
         end
         addr_str = addr64[0]+addr64[1]+addr64[2]+addr64[3]+addr64[4]+addr64[5]+addr64[6]+addr64[7]
         p addr_str
 
-        p "SP program -----------------------------"
+=begin
         $sp = SerialPort.new('/dev/ttyUSB0', 115200, 8, 1, 0) # device, rate, data, stop, parity
         sleep 0.1
         $sp.puts("ewp 0")
@@ -275,11 +293,19 @@ loop do
         end
         addr_str = addr64[0]+addr64[1]+addr64[2]+addr64[3]+addr64[4]+addr64[5]+addr64[6]+addr64[7]
         p addr_str
-
+=end
 =begin
 #     "sshpass -p pwsjuser01 ssh sjuser01@10.9.20.1 grep 151517 /home/share/MJ2001/log/test1.csv"
 #     system("sshpass -p pwsjuser01 scp " + logfilename + " sjuser01@10.9.20.1:/home/share/MJ2001/log2/.")
 =end
+
+	  $dbResult = nil
+      checkdb_thread = Thread.new do 
+#		$dbResult = checkDb("001D12D004001CE6")
+ 		$dbResult = checkDb(addr_str)
+	  end
+
+	  checkdb_thread.join
 
       #CREATE LOG FILE
       t = Time.now
@@ -292,25 +318,42 @@ loop do
       $log = Logger.new(logfilename)
     # $log = Logger.new("| tee temp.log")
 
+	  if $dbResult == false then
+          msg = "error: device is not registered in log.db"
+          $log.info(msg)
+          p msg
+          raise RuntimeError, "ERRR\n"
+      end
+
       val = aribTest()
       if val == "Error" then
-          p "error: arib test error"
+          msg = "error: arib test error"
+          $log.info(msg)
+          p msg
           raise RuntimeError, "ERRR\n"
       end  
+
       val = anntenaTest()
       if val == "Error" then
-          p "error: arib test error"
+          msg = "error: anntena test error"
+          $log.info(msg)
+          p msg
           raise RuntimeError, "ERRR\n"
       end  
+
       $pmx18a.puts("OUTP OFF")
-      $log.info(" => RF test finished: PASS")
+      $log.info("########################")
+      $log.info(" RF test finished: PASS")
+      $log.info("########################")
       p logfilename
       system("sshpass -p pwsjuser01 scp " + logfilename + " sjuser01@10.9.20.1:/home/share/MJ2001/log2/.")
       File.delete(logfilename)
 
       rescue RuntimeError
           $pmx18a.puts("OUTP OFF")
+          $log.info("########################")
           $log.info(" => RF test finish: NG")
+          $log.info("########################")
           p logfilename
           system("sshpass -p pwsjuser01 scp " + logfilename + " sjuser01@10.9.20.1:/home/share/MJ2001/log2/.")
           File.delete(logfilename)

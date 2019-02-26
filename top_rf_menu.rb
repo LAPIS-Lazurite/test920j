@@ -158,8 +158,8 @@ while 1
             end
             rftest.setbarcode()
         else
-            Dir.chdir "../io_test"
-            iotest.shutdown()
+#           Dir.chdir "../io_test"
+#           iotest.shutdown()
             break
         end
     rescue RuntimeError

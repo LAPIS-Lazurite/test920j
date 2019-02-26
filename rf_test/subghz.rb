@@ -40,6 +40,8 @@ class Subghz
 #		p sp.gets()
 		sp.puts("sgb," + ch.to_s + ",0xabcd," + rate.to_s + "," + mode.to_s)
 		p sp.gets()
+        sp.puts("rfw 8 0x71 0x02")
+		p sp.gets()
 		sp.close
 	end
 
