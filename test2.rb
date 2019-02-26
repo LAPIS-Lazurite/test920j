@@ -271,7 +271,6 @@ loop do
           p "error: Current error"
           `gpio -g write #{$RLED} 1`
           $pmx18a.puts("OUTP OFF")
-          $sp.close
           next
       end  
 
@@ -284,10 +283,11 @@ loop do
       if val !~ /sgi/ then
           p "error: firmware or device not found"
           `gpio -g write #{$RLED} 1`
-          $pmx18a.puts("OUTP OFF")
           $sp.close
+          $pmx18a.puts("OUTP OFF")
           next
       end
+      $sp.close
 
         val = @sbg.com("erd 32 8")
         addr64 = val[11,val.length - 11 - 1].split(",")
@@ -297,8 +297,8 @@ loop do
             end
         #   p addr64[index]
         end
-        addr_str = addr64[0]+addr64[1]+addr64[2]+addr64[3]+addr64[4]+addr64[5]+addr64[6]+addr64[7]
-        p addr_str
+        addr64_str = addr64[0]+addr64[1]+addr64[2]+addr64[3]+addr64[4]+addr64[5]+addr64[6]+addr64[7]
+        p addr64_str
 
 =begin
         $sp = SerialPort.new('/dev/ttyUSB0', 115200, 8, 1, 0) # device, rate, data, stop, parity
@@ -314,8 +314,8 @@ loop do
             end
             p addr64[index]
         end
-        addr_str = addr64[0]+addr64[1]+addr64[2]+addr64[3]+addr64[4]+addr64[5]+addr64[6]+addr64[7]
-        p addr_str
+        addr64_str = addr64[0]+addr64[1]+addr64[2]+addr64[3]+addr64[4]+addr64[5]+addr64[6]+addr64[7]
+        p addr64_str
 =end
 =begin
 #     "sshpass -p pwsjuser01 ssh sjuser01@10.9.20.1 grep 151517 /home/share/MJ2001/log/test1.csv"
@@ -325,7 +325,7 @@ loop do
 	  $dbResult = nil
       checkdb_thread = Thread.new do 
 #		$dbResult = checkDb("001D12D004001CE6")
- 		$dbResult = checkDb(addr_str)
+ 		$dbResult = checkDb(addr64_str)
 	  end
 
 	  checkdb_thread.join
@@ -333,7 +333,8 @@ loop do
       #CREATE LOG FILE
       t = Time.now
       date = sprintf("%04d%02d%02d%02d%02d_",t.year,t.mon,t.mday,t.hour,t.min)
-      logfilename = @rftp.get_shortAddr()
+#     logfilename = @rftp.get_shortAddr()
+      logfilename = addr64_str
       logfilename = "/home/pi/test920j/Log/" + date + logfilename + ".log"
       if File.exist?(logfilename) == true then
         p "duplicate log file name"
@@ -371,7 +372,6 @@ loop do
       p logfilename
       system("sshpass -p pwsjuser01 scp " + logfilename + " sjuser01@10.9.20.1:/home/share/MJ2001/log2/.")
       File.delete(logfilename)
-      $sp.close
 
       rescue RuntimeError
           $pmx18a.puts("OUTP OFF")
@@ -382,7 +382,6 @@ loop do
           system("sshpass -p pwsjuser01 scp " + logfilename + " sjuser01@10.9.20.1:/home/share/MJ2001/log2/.")
           File.delete(logfilename)
           `gpio -g write #{$RLED} 1`
-          $sp.close
           next
       end
 end
