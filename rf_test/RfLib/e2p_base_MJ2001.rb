@@ -9,7 +9,7 @@ class Rftp::Test
         sbg.setup(24,100,20)
     end
 
-    def e2p_base
+    def e2p_base_MJ2001
         sbg = Subghz.new()
         # it's dummy, for wakeup
         sbg.setup(24,100,20)

@@ -233,6 +233,7 @@ loop do
       if val > $I_PWR_ON_MAX then
           p "error: Current error"
           `gpio -g write #{$RLED} 1`
+          next
       end  
 
       # MJ2001 firmware checking
@@ -241,11 +242,11 @@ loop do
       $sp.puts("sgi")
       val = $sp.gets()
       if val !~ /sgi/ then
-          p "error: not found test920 firmware"
+          p "error: firmware not found"
           `gpio -g write #{$RLED} 1`
+          next
       end
 
-=begin
         p "sbg program -----------------------------"
         val = @sbg.com("erd 32 8")
         addr64 = val[11,val.length - 11 - 1].split(",")
@@ -275,6 +276,7 @@ loop do
         addr_str = addr64[0]+addr64[1]+addr64[2]+addr64[3]+addr64[4]+addr64[5]+addr64[6]+addr64[7]
         p addr_str
 
+=begin
 #     "sshpass -p pwsjuser01 ssh sjuser01@10.9.20.1 grep 151517 /home/share/MJ2001/log/test1.csv"
 #     system("sshpass -p pwsjuser01 scp " + logfilename + " sjuser01@10.9.20.1:/home/share/MJ2001/log2/.")
 =end
