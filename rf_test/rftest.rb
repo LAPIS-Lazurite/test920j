@@ -10,8 +10,8 @@ require 'fileutils'
 
 class Rftest
 #	@@ATT = "7.9"   #2nd lots was 6.1
-#	@@ATT = "9.9"   #2nd lots was 6.1
-	@@ATT = "10.4"   #2nd lots was 6.1
+	@@ATT = "9.9"   #2nd lots was 6.1
+#	@@ATT = "10.4"   #2nd lots was 6.1
     def led
         @@rftp.led("blue");
     end
