@@ -25,6 +25,12 @@ $http = Net::HTTP.new(uri.host, uri.port)
 $req = Net::HTTP::Post.new(uri.request_uri)
 $req["Content-Type"] = "application/json"
 
+# msg out
+uri = URI.parse("http://10.9.20.1:1880/callback/test2")
+$http_log = Net::HTTP.new(uri.host, uri.port)
+$req_log = Net::HTTP::Post.new(uri.request_uri)
+$req_log["Content-Type"] = "application/json"
+
 @rftp = Rftp::Test.new
 @sbg = Subghz::new
 @laz = LazGem::Device.new
@@ -226,9 +232,14 @@ loop do
      `gpio -g mode #{$GLED} out`
      `gpio -g mode #{$RLED} out`
 
-     `gpio -g write #{$GLED} 1`
-
       print("暗箱を開けてください\n")
+      $postMsg = {
+          "process" => "setting",
+          "ongoing" => false,
+          "message" => "暗箱を開けてください"
+      }
+      $req_log.body = $postMsg.to_json
+      $http_log.request($req_log);
 
       loop do
         button_state = `gpio -g read #{$TRG_BUTTON}`.chop.to_i
@@ -244,6 +255,14 @@ loop do
       end
 
       print("試験機を開けてデバイスをセットしてください\n")
+      $postMsg = {
+          "process" => "setting",
+          "ongoing" => false,
+          "message" => "試験機を開けてデバイスをセットしてください"
+      }
+      $req_log.body = $postMsg.to_json
+      $http_log.request($req_log);
+
       
       loop do
         button_state = `gpio -g read #{$TRG_BUTTON}`.chop.to_i
@@ -260,6 +279,15 @@ loop do
      `gpio -g write #{$GLED} 0`
      `gpio -g write #{$RLED} 0`
 
+      $postMsg = {
+          "process" => "testing",
+          "ongoing" => true,
+          "st" => DateTime.now,
+          "message" => "テストを開始しました"
+      }
+      $req_log.body = $postMsg.to_json
+      $http_log.request($req_log);
+
       #POWER OUTPUT
       $pmx18a.puts("VOLT #{$V3_PWR_ON_VIN}")
       $pmx18a.puts("OUTP ON")
@@ -271,6 +299,15 @@ loop do
           p "error: Current error"
           `gpio -g write #{$RLED} 1`
           $pmx18a.puts("OUTP OFF")
+
+          $postMsg["end"] = DateTime.now;
+          $postMsg["optime"] = diffDateTime($postMsg["end"],$postMsg["st"])
+          $postMsg["success"] = false
+          $postMsg["message"] = "テストが完了しました"
+          $postMsg["details"] = "fail"
+          $req_log.body = $postMsg.to_json
+          $http_log.request($req_log);
+
           next
       end  
 
@@ -285,20 +322,29 @@ loop do
           `gpio -g write #{$RLED} 1`
           $sp.close
           $pmx18a.puts("OUTP OFF")
+
+          $postMsg["end"] = DateTime.now;
+          $postMsg["optime"] = diffDateTime($postMsg["end"],$postMsg["st"])
+          $postMsg["success"] = false
+          $postMsg["message"] = "テストが完了しました"
+          $postMsg["details"] = "fail"
+          $req_log.body = $postMsg.to_json
+          $http_log.request($req_log);
+
           next
       end
       $sp.close
 
-        val = @sbg.com("erd 32 8")
-        addr64 = val[11,val.length - 11 - 1].split(",")
-        for index in 0..addr64.length - 1 do
-            if addr64[index].length == 1 then
-                addr64[index].insert(0,"0")
-            end
-        #   p addr64[index]
-        end
-        addr64_str = addr64[0]+addr64[1]+addr64[2]+addr64[3]+addr64[4]+addr64[5]+addr64[6]+addr64[7]
-        p addr64_str
+      val = @sbg.com("erd 32 8")
+      addr64 = val[11,val.length - 11 - 1].split(",")
+      for index in 0..addr64.length - 1 do
+          if addr64[index].length == 1 then
+              addr64[index].insert(0,"0")
+          end
+          #   p addr64[index]
+      end
+      addr64_str = addr64[0]+addr64[1]+addr64[2]+addr64[3]+addr64[4]+addr64[5]+addr64[6]+addr64[7]
+      p addr64_str
 
 =begin
         $sp = SerialPort.new('/dev/ttyUSB0', 115200, 8, 1, 0) # device, rate, data, stop, parity
@@ -322,27 +368,27 @@ loop do
 #     system("sshpass -p pwsjuser01 scp " + logfilename + " sjuser01@10.9.20.1:/home/share/MJ2001/log2/.")
 =end
 
-	  $dbResult = nil
+      $dbResult = nil
       checkdb_thread = Thread.new do 
-#		$dbResult = checkDb("001D12D004001CE6")
- 		$dbResult = checkDb(addr64_str)
-	  end
+          #		$dbResult = checkDb("001D12D004001CE6")
+          $dbResult = checkDb(addr64_str)
+      end
 
-	  checkdb_thread.join
+      checkdb_thread.join
 
       #CREATE LOG FILE
       t = Time.now
       date = sprintf("%04d%02d%02d%02d%02d_",t.year,t.mon,t.mday,t.hour,t.min)
-#     logfilename = @rftp.get_shortAddr()
+      #     logfilename = @rftp.get_shortAddr()
       logfilename = addr64_str
       logfilename = "/home/pi/test920j/Log/" + date + logfilename + ".log"
       if File.exist?(logfilename) == true then
-        p "duplicate log file name"
+          p "duplicate log file name"
       end
       $log = Logger.new(logfilename)
-    # $log = Logger.new("| tee temp.log")
+      # $log = Logger.new("| tee temp.log")
 
-	  if $dbResult == false then
+      if $dbResult == false then
           msg = "error: device is not registered in log.db"
           $log.info(msg)
           p msg
@@ -356,6 +402,14 @@ loop do
           p msg
           raise RuntimeError, "ERRR\n"
       end  
+
+      button_state = `gpio -g read #{$TRG_BUTTON}`.chop.to_i
+      if button_state == 0 then
+          msg = "error: box open check error"
+          $log.info(msg)
+          p msg
+          raise RuntimeError, "ERRR\n"
+      end
 
       val = anntenaTest()
       if val == "Error" then
@@ -372,16 +426,38 @@ loop do
       p logfilename
       system("sshpass -p pwsjuser01 scp " + logfilename + " sjuser01@10.9.20.1:/home/share/MJ2001/log2/.")
       File.delete(logfilename)
+      `gpio -g write #{$GLED} 1`
 
-      rescue RuntimeError
-          $pmx18a.puts("OUTP OFF")
-          $log.info("########################")
-          $log.info(" => RF test finish: NG")
-          $log.info("########################")
-          p logfilename
-          system("sshpass -p pwsjuser01 scp " + logfilename + " sjuser01@10.9.20.1:/home/share/MJ2001/log2/.")
-          File.delete(logfilename)
-          `gpio -g write #{$RLED} 1`
-          next
-      end
+      $postMsg["end"] = DateTime.now;
+      $postMsg["optime"] = diffDateTime($postMsg["end"],$postMsg["st"])
+      $postMsg["success"] = true
+      $postMsg["message"] = "テストが完了しました"
+      $postMsg["details"] = "pass"
+      $req_log.body = $postMsg.to_json
+      $http_log.request($req_log);
+
+  rescue RuntimeError
+
+      $req_log.body = $postMsg.to_json
+      $http_log.request($req_log);
+
+      $pmx18a.puts("OUTP OFF")
+      $log.info("########################")
+      $log.info(" => RF test finish: NG")
+      $log.info("########################")
+      p logfilename
+      system("sshpass -p pwsjuser01 scp " + logfilename + " sjuser01@10.9.20.1:/home/share/MJ2001/log2/.")
+      File.delete(logfilename)
+      `gpio -g write #{$RLED} 1`
+
+      $postMsg["end"] = DateTime.now;
+      $postMsg["optime"] = diffDateTime($postMsg["end"],$postMsg["st"])
+      $postMsg["success"] = false
+      $postMsg["message"] = "テストが完了しました"
+      $postMsg["details"] = "fail"
+      $req_log.body = $postMsg.to_json
+      $http_log.request($req_log);
+
+      next
+  end
 end
