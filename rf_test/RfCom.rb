@@ -1,8 +1,8 @@
 # encoding: utf-8
 module Rftp; end
-require_relative "./RfLib/e2p_base"
-require_relative "./RfLib/set_addr"
-require_relative "./RfLib/get_addr"
-require_relative "./RfLib/command"
-require_relative "./RfLib/led"
-require_relative "./RfLib/get_shortAddr"
+require_relative "./RfCom/e2p_base"
+require_relative "./RfCom/set_addr"
+require_relative "./RfCom/get_addr"
+require_relative "./RfCom/command"
+require_relative "./RfCom/led"
+require_relative "./RfCom/get_shortAddr"
