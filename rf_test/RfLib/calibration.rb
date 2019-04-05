@@ -158,7 +158,8 @@ class Rftp::Test
                     i = reg.hex - @pow[mode].pa_bit
                     @sbg.rw(@pow[mode].pa_addr,"0x" + i.to_s(16))
                 # 100ー＞150に変更：03空中戦電力Fail回避
-                elsif (diff.to_i) > 150 then
+#               elsif (diff.to_i) > 150 then    # MJ2001 1st lots
+                elsif (diff.to_i) > 200 then
                     i = reg.hex + @pow[mode].pa_bit
                     @sbg.rw(@pow[mode].pa_addr,"0x" + i.to_s(16))
                 else
@@ -199,9 +200,9 @@ class Rftp::Test
             # DUT setup ------------------------------------
             pow_param = Struct.new(:mode, :level, :pa_addr, :pa_bit, :pa_max, :ep_addr)
             p1mW_mode = pow_param.new(1, -1, PA_ADJ1_ADDR, 0x01, 0x0f, "ewr 43 ")
-    #       p20mW_mode = pow_param.new(20, 13, PA_ADJ3_ADDR, 0x10, 0xf0, "ewr 41 ")
     #       p20mW_mode = pow_param.new(20, 12, PA_ADJ3_ADDR, 0x10, 0xf0, "ewr 41 ")
-            p20mW_mode = pow_param.new(20, 12.5, PA_ADJ3_ADDR, 0x10, 0xf0, "ewr 41 ")
+    #       p20mW_mode = pow_param.new(20, 12.5, PA_ADJ3_ADDR, 0x10, 0xf0, "ewr 41 ")   # MJ2001 1st lots
+            p20mW_mode = pow_param.new(20, 13, PA_ADJ3_ADDR, 0x10, 0xf0, "ewr 41 ")
             @pow = {1  => p1mW_mode, 20 => p20mW_mode}
             @max_num=9
             @sbg = Subghz.new()

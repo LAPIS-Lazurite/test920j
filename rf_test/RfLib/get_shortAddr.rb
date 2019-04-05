@@ -9,9 +9,10 @@ class Rftp::Test
 
         # it's dummy, for wakeup
         sbg.setup(24,100,20)
+        sleep(0.5)
         myaddr = sbg.ra()
         printf("My address: %#2.4x\n", myaddr[1])
-        sleep(1)
+        sleep(0.5)
 #       return  "fadfadf"
         val = myaddr[1]
         return  "00" + val[2,4].to_s
