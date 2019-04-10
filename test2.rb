@@ -313,17 +313,23 @@ loop do
           next
       end  
 
-      sleep 0.5
-      # MJ2001 firmware checking
-      $sp = SerialPort.new('/dev/ttyUSB0', 115200, 8, 1, 0) 
-      sleep 0.5
-      $sp.puts("sgi")
-      sleep 0.5
-      val = $sp.gets()
+      for index in 0..3 do
+          sleep 0.5
+          # MJ2001 firmware checking
+          $sp = SerialPort.new('/dev/ttyUSB0', 115200, 8, 1, 0) 
+          sleep 0.1
+          $sp.puts("sgi")
+          sleep 0.1
+          val = $sp.gets()
+          $sp.close
+          if val =~ /sgi/ then
+              break
+          end
+      end
+
       if val !~ /sgi/ then
           p "error: firmware or device not found"
           `gpio -g write #{$RLED} 1`
-          $sp.close
           $pmx18a.puts("OUTP OFF")
 
           $postMsg["end"] = DateTime.now;
@@ -333,10 +339,8 @@ loop do
           $postMsg["details"] = "fail"
           $req_log.body = $postMsg.to_json
           $http_log.request($req_log);
-
           next
       end
-      $sp.close
 
       val = @sbg.com("erd 32 8")
       addr64 = val[11,val.length - 11 - 1].split(",")
