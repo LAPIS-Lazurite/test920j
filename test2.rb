@@ -316,9 +316,9 @@ loop do
       sleep 0.5
       # MJ2001 firmware checking
       $sp = SerialPort.new('/dev/ttyUSB0', 115200, 8, 1, 0) 
-      sleep 0.1
+      sleep 0.5
       $sp.puts("sgi")
-      sleep 0.1
+      sleep 0.5
       val = $sp.gets()
       if val !~ /sgi/ then
           p "error: firmware or device not found"
