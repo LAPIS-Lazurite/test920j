@@ -200,8 +200,8 @@ class Rftp::Test
             # DUT setup ------------------------------------
             pow_param = Struct.new(:mode, :level, :pa_addr, :pa_bit, :pa_max, :ep_addr)
             p1mW_mode = pow_param.new(1, -1, PA_ADJ1_ADDR, 0x01, 0x0f, "ewr 43 ")
-    #       p20mW_mode = pow_param.new(20, 12, PA_ADJ3_ADDR, 0x10, 0xf0, "ewr 41 ")
-    #       p20mW_mode = pow_param.new(20, 12.5, PA_ADJ3_ADDR, 0x10, 0xf0, "ewr 41 ")   # MJ2001 1st lots
+#           p20mW_mode = pow_param.new(20, 12, PA_ADJ3_ADDR, 0x10, 0xf0, "ewr 41 ")
+#           p20mW_mode = pow_param.new(20, 12.5, PA_ADJ3_ADDR, 0x10, 0xf0, "ewr 41 ")   # MJ2001 1st lots
             p20mW_mode = pow_param.new(20, 13, PA_ADJ3_ADDR, 0x10, 0xf0, "ewr 41 ")
             @pow = {1  => p1mW_mode, 20 => p20mW_mode}
             @max_num=9
@@ -250,7 +250,11 @@ class Rftp::Test
             $log.info(sprintf("MAC Address: %s",summary.macaddr[3...11]))
 
             max_pow = @pow[20].level.to_i-@@att+1
-            min_pow = @pow[20].level.to_i-@@att-2
+            min_pow = @pow[20].level.to_i-@@att-3
+             
+#           p summary.lv20mw.to_i
+#           p min_pow
+#           p max_pow
 
             if summary.frq == 0 then
                 $log.info("!!!ERROR!!!n")

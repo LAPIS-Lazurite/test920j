@@ -318,6 +318,7 @@ loop do
       $sp = SerialPort.new('/dev/ttyUSB0', 115200, 8, 1, 0) 
       sleep 0.1
       $sp.puts("sgi")
+      sleep 0.1
       val = $sp.gets()
       if val !~ /sgi/ then
           p "error: firmware or device not found"
