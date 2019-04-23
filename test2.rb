@@ -164,7 +164,7 @@ def anntenaTest
         # RX setting
 #       @laz.send(panid,dst_short_addr,"LAPIS Lazurite RF system")
         @laz.rxEnable()
-        sleep 0.01
+        sleep 0.1
         # TX setting
         sbgSend()
         # Receive
@@ -172,6 +172,8 @@ def anntenaTest
         rcv = @laz.read()
         if rcv == 0 then
             $log.info("error: Anntena test: no receiving")
+            @laz.remove()
+            sleep 1.000
             return "Error"
         else
             $log.info("+++++++++++ SUMMARY ++++++++++")
