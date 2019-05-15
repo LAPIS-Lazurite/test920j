@@ -177,6 +177,7 @@ def anntenaTest
             return "Error"
         else
             $log.info("+++++++++++ SUMMARY ++++++++++")
+            $log.info("Rx Rssi: %d",rcv["rssi"])
             $log.info("Subject: Anntena test")
             $log.info("Judgement: PASS")
             p rcv
