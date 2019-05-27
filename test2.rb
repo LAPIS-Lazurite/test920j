@@ -430,6 +430,19 @@ loop do
       end  
 
       $pmx18a.puts("OUTP OFF")
+
+      $log.info("+++++++++++ SUMMARY ++++++++++\n")
+      $log.info("Subject: read eeprom\n")
+      $log.info(sbg.com("erd 0 32"))
+      $log.info(sbg.com("erd 32 32"))
+      $log.info(sbg.com("erd 64 32"))
+      $log.info(sbg.com("erd 96 32"))
+      $log.info(sbg.com("erd 128 32"))
+      $log.info(sbg.com("erd 160 32"))
+      $log.info(sbg.com("erd 192 32"))
+      $log.info(sbg.com("erd 224 32"))
+      $log.info(sbg.com("erd 256 32"))
+
       $log.info("########################")
       $log.info(sprintf("Device ID: %s",addr64_str))
       $log.info("RF test finished: PASS")
