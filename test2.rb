@@ -42,6 +42,9 @@ finish_flag=0
 Signal.trap(:INT){
 	finish_flag=1
 }
+
+@TEST_MODE = 0 # 1: Local test, 2: RSSI only
+
 #
 ####### PARAMETERS ########
 $V3_PWR_ON_VIN	= 3.0
@@ -170,6 +173,7 @@ def anntenaTest
         # Receive
         @laz.available() 
         rcv = @laz.read()
+        p rcv["rssi"]
         if rcv == 0 then
             $log.info("error: Anntena test: no receiving")
             @laz.remove()
@@ -177,7 +181,7 @@ def anntenaTest
             return "Error"
         else
             $log.info("+++++++++++ SUMMARY ++++++++++")
-            $log.info("Rx Rssi: %d",rcv["rssi"])
+            $log.info(sprintf("Rx rssi: %d\n",rcv["rssi"]))
             $log.info("Subject: Anntena test")
             $log.info("Judgement: PASS")
             p rcv
@@ -378,13 +382,15 @@ loop do
 #     system("sshpass -p pwsjuser01 scp " + logfilename + " sjuser01@10.9.20.1:/home/share/MJ2001/log2/.")
 =end
 
-      $dbResult = nil
-      checkdb_thread = Thread.new do 
-          #		$dbResult = checkDb("001D12D004001CE6")
-          $dbResult = checkDb(addr64_str)
-      end
+      if @TEST_MODE == 0 then
+          $dbResult = nil
+          checkdb_thread = Thread.new do 
+              #		$dbResult = checkDb("001D12D004001CE6")
+              $dbResult = checkDb(addr64_str)
+          end
 
-      checkdb_thread.join
+          checkdb_thread.join
+      end
 
       #CREATE LOG FILE
       t = Time.now
@@ -398,20 +404,24 @@ loop do
       $log = Logger.new(logfilename)
       # $log = Logger.new("| tee temp.log")
 
-      if $dbResult == false then
-          msg = "error: device is not registered in log.db"
-          $log.info(msg)
-          p msg
-          raise RuntimeError, "ERRR\n"
+      if @TEST_MODE == 0 then
+          if $dbResult == false then
+              msg = "error: device is not registered in log.db"
+              $log.info(msg)
+              p msg
+              raise RuntimeError, "ERRR\n"
+          end
       end
 
-      val = aribTest()
-      if val == "Error" then
-          msg = "error: arib test error"
-          $log.info(msg)
-          p msg
-          raise RuntimeError, "ERRR\n"
-      end  
+      if @TEST_MODE < 2 then
+          val = aribTest()
+          if val == "Error" then
+              msg = "error: arib test error"
+              $log.info(msg)
+              p msg
+              raise RuntimeError, "ERRR\n"
+          end  
+      end
 
       button_state = `gpio -g read #{$TRG_BUTTON}`.chop.to_i
       if button_state == 0 then
@@ -429,27 +439,31 @@ loop do
           raise RuntimeError, "ERRR\n"
       end  
 
-      $pmx18a.puts("OUTP OFF")
-
       $log.info("+++++++++++ SUMMARY ++++++++++\n")
       $log.info("Subject: read eeprom\n")
-      $log.info(sbg.com("erd 0 32"))
-      $log.info(sbg.com("erd 32 32"))
-      $log.info(sbg.com("erd 64 32"))
-      $log.info(sbg.com("erd 96 32"))
-      $log.info(sbg.com("erd 128 32"))
-      $log.info(sbg.com("erd 160 32"))
-      $log.info(sbg.com("erd 192 32"))
-      $log.info(sbg.com("erd 224 32"))
-      $log.info(sbg.com("erd 256 32"))
+      $log.info(@sbg.com("erd 0 32"))
+      $log.info(@sbg.com("erd 0 32"))
+      $log.info(@sbg.com("erd 32 32"))
+      $log.info(@sbg.com("erd 64 32"))
+      $log.info(@sbg.com("erd 96 32"))
+      $log.info(@sbg.com("erd 128 32"))
+      $log.info(@sbg.com("erd 160 32"))
+      $log.info(@sbg.com("erd 192 32"))
+      $log.info(@sbg.com("erd 224 32"))
+      $log.info(@sbg.com("erd 256 32"))
+
+      $pmx18a.puts("OUTP OFF")
 
       $log.info("########################")
       $log.info(sprintf("Device ID: %s",addr64_str))
       $log.info("RF test finished: PASS")
       $log.info("########################")
       p logfilename
-      system("sshpass -p pwsjuser01 scp " + logfilename + " sjuser01@10.9.20.1:/home/share/MJ2001/log2/.")
-      File.delete(logfilename)
+
+      if @TEST_MODE == 0 then
+          system("sshpass -p pwsjuser01 scp " + logfilename + " sjuser01@10.9.20.1:/home/share/MJ2001/log2/.")
+          File.delete(logfilename)
+      end
       `gpio -g write #{$GLED} 1`
 
       $postMsg["end"] = DateTime.now;
