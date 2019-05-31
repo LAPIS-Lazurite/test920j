@@ -43,7 +43,7 @@ Signal.trap(:INT){
 	finish_flag=1
 }
 
-@TEST_MODE = 0 # 1: Local test, 2: RSSI only
+@TEST_MODE = 0 # 1: Local test, 2: RSSI only, 3: calibration + RSSI
 
 #
 ####### PARAMETERS ########
@@ -421,6 +421,11 @@ loop do
               p msg
               raise RuntimeError, "ERRR\n"
           end  
+      end
+
+      if @TEST_MODE == 3 then
+        @rftp.e2p_base_MJ2001()
+        @rftp.calibration(@ATT)
       end
 
       button_state = `gpio -g read #{$TRG_BUTTON}`.chop.to_i
