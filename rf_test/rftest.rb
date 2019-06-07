@@ -9,7 +9,8 @@ require 'fileutils'
 @@telectp = Telectp::Test.new
 
 class Rftest
-	@@ATT = "7.9"   #2nd lots was 6.1
+#	@@ATT = "7.9"   #2nd lots was 6.1
+	@@ATT = "4.9"   # atenneta UPD-2XB1
     def led
         @@rftp.led("blue");
     end
