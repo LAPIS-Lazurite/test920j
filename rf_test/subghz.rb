@@ -38,11 +38,16 @@ class Subghz
 		p sp.gets()
 #		sp.puts("sgsma,0")
 #		p sp.gets()
+        if $ANT_SW_OUT == 1 then
+            sp.puts("sgsansw,1")
+ 	        p sp.gets()
+        end
 		sp.puts("sgb," + ch.to_s + ",0xabcd," + rate.to_s + "," + mode.to_s)
 		p sp.gets()
-        if RUBY_PLATFORM !=  "x64-mingw32" then
-            sp.puts("rfw 8 0x71 0x02")
-		    p sp.gets()
+        if $ANT_SW_OUT == 1 then
+#           sp.puts("rfw 8 0x71 0x02")
+            sp.puts("rfr,8,0x71")
+ 	        p sp.gets()
         end
 		sp.close
 	end

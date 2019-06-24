@@ -55,6 +55,7 @@ $I_PWR_ON_MAX = 0.1
 $GLED=26
 $RLED=19
 $TRG_BUTTON=6
+$ANT_SW_OUT=1
 
 ####### SUB FUNC ########
 def checkDb(mac)

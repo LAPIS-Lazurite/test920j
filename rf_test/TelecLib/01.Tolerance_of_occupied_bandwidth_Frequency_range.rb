@@ -127,12 +127,14 @@ class Telectp::Test
             $log.info(sprintf("OBW Center: %d",center))
             $log.info(sprintf("OBW Lower: %d",lower))
             $log.info(sprintf("OBW Upper: %d",upper))
+            $log.info(sprintf("OBW : %d",upper-lower))
             $log.info(sprintf("Deviation: %d",DEV * $frq[ra][ch].to_i))
-            if (frequency - center).abs > (DEV * frequency) then
+#           if (frequency - center).abs > (DEV * frequency) then
+            if ((upper - lower) < 200000 && (upper - lower) > 170000) then
+                $log.info("Judgement: PASS")
+            else
                 $log.info("Judgement: FAIL")
                 raise StandardError, "FAIL\n"
-            else
-                $log.info("Judgement: PASS")
             end
         rescue StandardError
             printf("Error: program stop\n")
