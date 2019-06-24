@@ -56,6 +56,7 @@ while 1
                 if rftest.pretest() != nil then
                     raise RuntimeError, "ERRR\n"
                 end
+                sleep(0.3)
                 print("\n続ける場合は[Enter]を終了する場合[x]を入力してください：")
                 rep = gets().to_s
                 if rep =~ /x/ then

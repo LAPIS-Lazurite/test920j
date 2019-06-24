@@ -151,14 +151,21 @@ class Rftp::Test
                 diff = (@pow[mode].level.to_i * 100) - (value.to_f * 100) - (@@att * 100)
                 printf("Power adjustment: diff:%.2f, target level:%.2f, current level:%.2f(ATT:%.2f)\n",
                                     (diff/100).to_f,@pow[mode].level.to_i,value.to_f,@@att.to_f)
+
+		# MJ2001 2nd lots
+                get_val = (value.to_f + @@att) * 100
+                exp_val = @pow[mode].level.to_i * 100
+
                 reg = @sbg.rr(@pow[mode].pa_addr)
                 p reg
 
-                if (diff.to_i) < 0 then
+#               if (diff.to_i) < 0 then #MJ2001 1st lots
+                if get_val > exp_val then
                     i = reg.hex - @pow[mode].pa_bit
                     @sbg.rw(@pow[mode].pa_addr,"0x" + i.to_s(16))
                 # 100ー＞150に変更：03空中戦電力Fail回避
-                elsif (diff.to_i) > 150 then
+#               elsif (diff.to_i) > 150 then    # MJ2001 1st lots
+               elsif get_val < (exp_val - 300) then
                     i = reg.hex + @pow[mode].pa_bit
                     @sbg.rw(@pow[mode].pa_addr,"0x" + i.to_s(16))
                 else
@@ -179,12 +186,11 @@ class Rftp::Test
             end
         rescue RuntimeError
             printf("Error: stoped adjustment %s dBm\n",value.chop)
-            return value.chop
+            return 0 # value.chop # MJ2001 1st lots
         rescue StandardError
             printf("Error: not enough adjustment %s dBm\n",value.chop)
-            return value.chop
+            return 0 # value.chop # MJ2001 1st lots
         end
-
         printf("Fixed to %s dBm\n",value.chop)
         return value.chop
     end
@@ -199,9 +205,10 @@ class Rftp::Test
             # DUT setup ------------------------------------
             pow_param = Struct.new(:mode, :level, :pa_addr, :pa_bit, :pa_max, :ep_addr)
             p1mW_mode = pow_param.new(1, -1, PA_ADJ1_ADDR, 0x01, 0x0f, "ewr 43 ")
-    #       p20mW_mode = pow_param.new(20, 13, PA_ADJ3_ADDR, 0x10, 0xf0, "ewr 41 ")
-    #       p20mW_mode = pow_param.new(20, 12, PA_ADJ3_ADDR, 0x10, 0xf0, "ewr 41 ")
-            p20mW_mode = pow_param.new(20, 12.5, PA_ADJ3_ADDR, 0x10, 0xf0, "ewr 41 ")
+#           p20mW_mode = pow_param.new(20, 12, PA_ADJ3_ADDR, 0x10, 0xf0, "ewr 41 ")
+            # MJ2001
+#           p20mW_mode = pow_param.new(20, 12.5, PA_ADJ3_ADDR, 0x10, 0xf0, "ewr 41 ")
+            p20mW_mode = pow_param.new(20, 13, PA_ADJ3_ADDR, 0x10, 0xf0, "ewr 41 ")
             @pow = {1  => p1mW_mode, 20 => p20mW_mode}
             @max_num=9
             @sbg = Subghz.new()
@@ -248,13 +255,15 @@ class Rftp::Test
             $log.info(sprintf("My Address: %#2.4x",summary.myaddr[1]))
             $log.info(sprintf("MAC Address: %s",summary.macaddr[3...11]))
 
+=begin MJ2001 1st lots
             max_pow = @pow[20].level.to_i-@@att+1
             min_pow = @pow[20].level.to_i-@@att-2
-
+=end
             if summary.frq == 0 then
                 $log.info("!!!ERROR!!!n")
                 raise StandardError, "FAIL"
-            elsif summary.lv20mw.to_i.between?(min_pow,max_pow) == false then
+#           elsif summary.lv20mw.to_i.between?(min_pow,max_pow) == false then # MJ2001 1st lots
+            elsif summary.lv20mw.to_i == 0 then
                 $log.info("!!!ERROR!!!")
                 raise StandardError, "FAIL"
             elsif summary.lv1mw.to_i.between?(-1-@@att,0-@@att) == false then
