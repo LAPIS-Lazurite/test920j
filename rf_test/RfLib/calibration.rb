@@ -192,9 +192,8 @@ class Rftp::Test
             printf("Error: not enough adjustment %s dBm\n",value.chop)
             return 0 # value.chop # MJ2001 1st lots
         end
-
         printf("Fixed to %s dBm\n",value.chop)
-        return 1 #value.chop # MJ2001 1st lots
+        return value.chop
     end
 
 
