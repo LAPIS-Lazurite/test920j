@@ -208,7 +208,7 @@ class Rftp::Test
 #           p20mW_mode = pow_param.new(20, 12, PA_ADJ3_ADDR, 0x10, 0xf0, "ewr 41 ")
             # MJ2001
 #           p20mW_mode = pow_param.new(20, 12.5, PA_ADJ3_ADDR, 0x10, 0xf0, "ewr 41 ")
-            p20mW_mode = pow_param.new(20, 13, PA_ADJ3_ADDR, 0x10, 0xf0, "ewr 41 ")
+            p20mW_mode = pow_param.new(20, 12.8, PA_ADJ3_ADDR, 0x10, 0xf0, "ewr 41 ")
             @pow = {1  => p1mW_mode, 20 => p20mW_mode}
             @max_num=9
             @sbg = Subghz.new()
@@ -251,6 +251,7 @@ class Rftp::Test
             $log.info("############ Calibration Summary #############")
             $log.info(sprintf("Frequency: %s MHz",summary.frq))
             $log.info(sprintf("Power level: 20mW=%2.2fdBm, 1mW=%2.2fdBm",summary.lv20mw.to_i + @@att, summary.lv1mw.to_i + @@att))
+            $log.info(sprintf("RF Reg: PA_ADJ1=0x%x,PA_ADJ3=0x%x,OSC_ADJ=0x%x,OSC_ADJ2=0x%x", @sbg.rr(PA_ADJ1_ADDR), @sbg.rr(PA_ADJ3_ADDR), @sbg.rr(OSC_ADJ_ADDR), @sbg.rr(OSC_ADJ2_ADDR)))
             $log.info(sprintf("Attenuate: %2.2f dB",@@att))
             $log.info(sprintf("My Address: %#2.4x",summary.myaddr[1]))
             $log.info(sprintf("MAC Address: %s",summary.macaddr[3...11]))

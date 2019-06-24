@@ -163,7 +163,7 @@ class Telectp::Test
             $log.info(sprintf("Frequency: %s", $frq[rate][ch]))
             $log.info(sprintf("Attenuate: %2.2f dB",@@att))
             $log.info(sprintf("Result: %3.2f dBm",result))
-            if result.between?(9,13) == false then
+            if result.between?(8,13) == false then
                 $log.info("Judgement: FAIL")
                 raise StandardError, "FAIL\n"
             else
