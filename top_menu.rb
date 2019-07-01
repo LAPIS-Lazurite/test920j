@@ -164,7 +164,7 @@ while 1
             break
         end
     rescue RuntimeError
-	#system("mpg321 -q ../mp3/se4.mp3")
+	system("mpg321 -q ../mp3/se4.mp3")
 	system('zenity --info --text="エラーが発生したため試験を中断しました。"')
         next
     end
