@@ -56,6 +56,9 @@ class Iotest
 
 
 	def alltest
+
+        system("mpg321 ../mp3/beep.mp3")
+
 		result = $test.iotest()
 		if(result != "OK") then
 			printf(" IO Test Fail %d pin error!!\n",result[2])
