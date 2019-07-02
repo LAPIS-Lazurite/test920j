@@ -57,7 +57,7 @@ class Iotest
 
 	def alltest
 
-        system("mpg321 ../mp3/beep.mp3")
+        system("mpg321 ../mp3/sample2.mp3")
 
 		result = $test.iotest()
 		if(result != "OK") then
