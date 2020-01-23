@@ -5,14 +5,21 @@ require '/home/pi/test920j/rf_test/subghz.rb'
 
 class Rftp::Test
 
-	RATE = 100
-	CH = 42
-    Summary = Struct.new(:frq, :lv20mw, :lv1mw, :myaddr, :macaddr)
-    FRQ_RENGE_MIN = -4   # version 1.0 is -10
-    FRQ_RENGE_MAX = 4    # version 1.0 is 10
+  PA_ADJ_UNIT = 100
+  PA_TARGET_LOW = 300 # 3dB
+  KHZ_UINT = 1000
+  MHZ_UINT = 1000000
+  RATE = 100
+  CH = 42
 
-    FRQ_RENGE_FINE_MIN = -2
-    FRQ_RENGE_FINE_MAX = 2
+  FRQ_RENGE_MIN = -4
+  FRQ_RENGE_MAX = 4
+  FRQ_RENGE_FINE_MIN = -2
+  FRQ_RENGE_FINE_MAX = 2
+
+  
+  Summary= Struct.new(:frq, :lv20mw, :lv1mw, :myaddr, :macaddr)
+
     # Frequency adjustment ------------------------
     def frq_fine_adj(rate,ch)
         begin
@@ -29,29 +36,28 @@ class Rftp::Test
                 $sock.gets
 
                 $sock.puts("mkf?")
-                $sock.puts("*OPC?")
                 value = $sock.gets
                 p value
 
                 diff = $frq[rate][ch].to_i - value.to_i
                 printf("Frequency adjustment: diff:%s, tartget:%d, current:%d\n",
                        diff,$frq[rate][ch].to_i,value.to_i)
-                diff = diff/1000
+                diff = diff/KHZ_UINT
 
-                reg = @sbg.rr(OSC_ADJ_ADDR)
-                p reg
+                reg_data = @sbg.rr(OSC_ADJ_ADDR)
+                p reg_data
 
                 if (diff) < FRQ_RENGE_FINE_MIN then
-                    i = reg.hex + 1
+                    i = reg_data.hex + 1
                     @sbg.rw(OSC_ADJ_ADDR,"0x" + i.to_s)
                 elsif (diff) > FRQ_RENGE_FINE_MAX then
-                    i = reg.hex - 1
+                    i = reg_data.hex - 1
                     @sbg.rw(OSC_ADJ_ADDR,"0x" + i.to_s)
                 else
-                    i = reg.hex
+                    i = reg_data.hex
                     com = "ewr 45 " + i.to_s
                     p @sbg.com(com)
-                    print("Frequency adjustment completed\n")
+                    print("Frequency fine adjustment completed\n")
                     break
                 end
 
@@ -60,12 +66,12 @@ class Rftp::Test
                 end
             end
         rescue RuntimeError
-            print ("Error: stoped adjustment\n")
+            print ("Error: stop freq fine adjustment\n")
             ret_val = 0
             return ret_val
         end
 
-        ret_val = (value.to_f/1000000).round(3)
+        ret_val = (value.to_f/MHZ_UINT).round(3)
         printf("Fixed to %s MHz\n",ret_val)
         return ret_val
     end
@@ -86,26 +92,26 @@ class Rftp::Test
                 $sock.gets
 
                 $sock.puts("mkf?")
-                $sock.puts("*OPC?")
                 value = $sock.gets
                 p value
 
                 diff = $frq[rate][ch].to_i - value.to_i
                 printf("Frequency adjustment: diff:%s, tartget:%d, current:%d\n",
                        diff,$frq[rate][ch].to_i,value.to_i)
-                diff = diff/1000
+                diff = diff/KHZ_UINT
 
-                reg = @sbg.rr(OSC_ADJ2_ADDR)
-                p reg
+                reg_data = @sbg.rr(OSC_ADJ2_ADDR)
+                p reg_data
+
 
                 if (diff) < FRQ_RENGE_MIN then
-                    i = reg.hex + 1
+                    i = reg_data.hex + 1
                     @sbg.rw(OSC_ADJ2_ADDR,"0x0" + i.to_s)
                 elsif (diff) > FRQ_RENGE_MAX then
-                    i = reg.hex - 1
+                    i = reg_data.hex - 1
                     @sbg.rw(OSC_ADJ2_ADDR,"0x0" + i.to_s)
                 else
-                    i = reg.hex
+                    i = reg_data.hex
                     com = "ewr 128 " + i.to_s
                     p @sbg.com(com)
                     print("Frequency adjustment completed\n")
@@ -117,12 +123,12 @@ class Rftp::Test
                 end
             end
         rescue RuntimeError
-            print ("Error: stoped adjustment\n")
+            print ("Error: stop freq adjustment\n")
             ret_val = 0
             return ret_val
         end
 
-        ret_val = (value.to_f/1000000).round(3)
+        ret_val = (value.to_f/MHZ_UINT).round(3)
         printf("Fixed to %s MHz\n",ret_val)
         return ret_val
     end
@@ -144,40 +150,31 @@ class Rftp::Test
                 $sock.gets
 
                 $sock.puts("mkl?")
-                $sock.puts("*OPC?")
                 value = $sock.gets
                 p value
 
-                diff = (@pow[mode].level.to_i * 100) - (value.to_f * 100) - (@@att * 100)
-                printf("Power adjustment: diff:%.2f, target level:%.2f, current level:%.2f(ATT:%.2f)\n",
-                                    (diff/100).to_f,@pow[mode].level.to_i,value.to_f,@@att.to_f)
+                target_level =@pow[mode].level.to_i * PA_ADJ_UNIT
+                measurement = (value.to_f + @@att) * PA_ADJ_UNIT
+                reg_data = @sbg.rr(@pow[mode].pa_addr)
+                printf("Power adjustment: target:%.2f, measurement:%.2f, ATT:%.2f, pa_addr:0x%x\n",target_level, measurement, @@att.to_f, reg_data)
 
-		# MJ2001 2nd lots
-                get_val = (value.to_f + @@att) * 100
-                exp_val = @pow[mode].level.to_i * 100
-
-                reg = @sbg.rr(@pow[mode].pa_addr)
-                p reg
-
-#               if (diff.to_i) < 0 then #MJ2001 1st lots
-                if get_val > exp_val then
-                    i = reg.hex - @pow[mode].pa_bit
-                    @sbg.rw(@pow[mode].pa_addr,"0x" + i.to_s(16))
-                # 100ー＞150に変更：03空中戦電力Fail回避
-#               elsif (diff.to_i) > 150 then    # MJ2001 1st lots
-#               elsif (diff.to_i) > 200 then # MJ2001 1st lots
-                elsif get_val < (exp_val - 300) then
-                    i = reg.hex + @pow[mode].pa_bit
-                    @sbg.rw(@pow[mode].pa_addr,"0x" + i.to_s(16))
+                if measurement > target_level then
+                    set_data = reg_data.hex - @pow[mode].pa_bit
+                    @sbg.rw(@pow[mode].pa_addr,"0x" + set_data.to_s(16))
+                    print("Power over limit: set to %x\n",set_data.hex)
+                elsif measurement < (target_level - PA_TARGET_LOW) then
+                    set_data = reg_data.hex + @pow[mode].pa_bit
+                    @sbg.rw(@pow[mode].pa_addr,"0x" + set_data.to_s(16))
+                    print("Power under limit: set to %x\n",set_data.hex)
                 else
-                    i = reg.hex
-                    com = @pow[mode].ep_addr + i.to_s
+                    set_data = reg_data.hex
+                    com = @pow[mode].ep_addr + set_data.to_s
                     p @sbg.com(com)
-                    print ("Power adjustment completed\n")
+                    print("Power adjustment completed\n")
                     break
                 end
 
-                if (i.to_s(16).hex & @pow[mode].pa_max) == @pow[mode].pa_max then
+                if (set_data.to_s(16).hex & @pow[mode].pa_max) == @pow[mode].pa_max then
                     raise StandardError, "ERRR\n"
                 end
 
@@ -186,18 +183,18 @@ class Rftp::Test
                 end
             end
         rescue RuntimeError
-            printf("Error: stoped adjustment %s dBm\n",value.chop)
-            return 0 # value.chop # MJ2001 1st lots
+            printf("Error: stop power adjustment %s dBm\n",value.chop)
+            return 0
         rescue StandardError
-            printf("Error: not enough adjustment %s dBm\n",value.chop)
-            return 0 # value.chop # MJ2001 1st lots
+            printf("Error: adjustment under than limit %s dBm\n",value.chop)
+            return 0
         end
         printf("Fixed to %s dBm\n",value.chop)
         return value.chop
     end
 
 
-	def calibration(att)
+  def calibration(att)
 
         begin
             @@att = att.to_f.round(2)
@@ -205,9 +202,7 @@ class Rftp::Test
 
             # DUT setup ------------------------------------
             pow_param = Struct.new(:mode, :level, :pa_addr, :pa_bit, :pa_max, :ep_addr)
-            p1mW_mode = pow_param.new(1, -1, PA_ADJ1_ADDR, 0x01, 0x0f, "ewr 43 ")
-#           p20mW_mode = pow_param.new(20, 12, PA_ADJ3_ADDR, 0x10, 0xf0, "ewr 41 ")
-#           p20mW_mode = pow_param.new(20, 12.5, PA_ADJ3_ADDR, 0x10, 0xf0, "ewr 41 ")   # MJ2001 1st lots
+            p1mW_mode = pow_param.new(1, 0, PA_ADJ1_ADDR, 0x01, 0x0f, "ewr 43 ")
             p20mW_mode = pow_param.new(20, 13, PA_ADJ3_ADDR, 0x10, 0xf0, "ewr 41 ")
             @pow = {1  => p1mW_mode, 20 => p20mW_mode}
             @max_num=9
@@ -246,7 +241,7 @@ class Rftp::Test
 
             @sbg.trxoff()
             @sbg.com("ewp 1")
-#           $sock.close
+#            $sock.close
 
             $log.info("############ Calibration Summary #############")
             $log.info(sprintf("Frequency: %s MHz",summary.frq))
@@ -255,18 +250,9 @@ class Rftp::Test
             $log.info(sprintf("My Address: %#2.4x",summary.myaddr[1]))
             $log.info(sprintf("MAC Address: %s",summary.macaddr[3...11]))
 
-=begin MJ2001 1st lots
-            max_pow = @pow[20].level.to_i-@@att+1
-            min_pow = @pow[20].level.to_i-@@att-3
-             
- #           p summary.lv20mw.to_i
- #           p min_pow
- #           p max_pow
-=end
             if summary.frq == 0 then
                 $log.info("!!!ERROR!!!n")
                 raise StandardError, "FAIL"
-#           elsif summary.lv20mw.to_i.between?(min_pow,max_pow) == false then # MJ2001 1st lots
             elsif summary.lv20mw.to_i == 0 then
                 $log.info("!!!ERROR!!!")
                 raise StandardError, "FAIL"
@@ -281,9 +267,9 @@ class Rftp::Test
             $log.info("##############################################")
 
         rescue StandardError
-            printf("Error: stoped adjustment\n")
+            printf("Error: stop calibration\n")
             return "Error"
         end
         return nil
     end
-end
+end # class

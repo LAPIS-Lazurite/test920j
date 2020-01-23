@@ -39,7 +39,7 @@ class Subghz
 #		sp.puts("sgsma,0")
 #		p sp.gets()
         if $ANT_SW_OUT == 1 then
-            sp.puts("sgsansw,1")
+            sp.puts("sgansw,1")
  	        p sp.gets()
         end
 		sp.puts("sgb," + ch.to_s + ",0xabcd," + rate.to_s + "," + mode.to_s)

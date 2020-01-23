@@ -13,6 +13,8 @@ rftest = Rftest.new()
 #system("amixer cset numid=3 1")
 #system("amixer cset numid=1 -- 80%")
 
+$ANT_SW_OUT=1
+
 while 1
     begin
 #       Dir.chdir "../io_test"
