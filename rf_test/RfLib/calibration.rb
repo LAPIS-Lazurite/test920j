@@ -7,15 +7,15 @@ class Rftp::Test
 
   PA_ADJ_UNIT = 100
   PA_TARGET_LOW = 300 # 3dB
-  KHZ_UINT = 1000
-  MHZ_UINT = 1000000
+  KHZ = 1000
+  MHZ = 1000000
   RATE = 100
   CH = 42
 
-  FRQ_RENGE_MIN = -4
-  FRQ_RENGE_MAX = 4
-  FRQ_RENGE_FINE_MIN = -2
-  FRQ_RENGE_FINE_MAX = 2
+  FRQ_RENGE_MIN = -4	# Range adjustable in fine adjustment
+  FRQ_RENGE_MAX = 4		# Range adjustable in fine adjustment
+# FRQ_RENGE_FINE_MIN = -2
+# FRQ_RENGE_FINE_MAX = 2
 
   
   Summary= Struct.new(:frq, :lv20mw, :lv1mw, :myaddr, :macaddr)
@@ -39,23 +39,21 @@ class Rftp::Test
                 value = $sock.gets
                 p value
 
-                diff = $frq[rate][ch].to_i - value.to_i
-                printf("Frequency adjustment: diff:%s, tartget:%d, current:%d\n",
-                       diff,$frq[rate][ch].to_i,value.to_i)
-                diff = diff/KHZ_UINT
+                diff = ($frq[rate][ch].to_i - value.to_i)/KHZ
+								reg_data = @sbg.rr(OSC_ADJ_ADDR)[2,2]
+	printf("Start Freq fine adjustment:diff:%s,tartget:%d,current:%d,reg_data:%d\n",
+				 diff,$frq[rate][ch].to_i/KHZ,value.to_i/KHZ,reg_data.hex)
 
-                reg_data = @sbg.rr(OSC_ADJ_ADDR)
-                p reg_data
-
-                if (diff) < FRQ_RENGE_FINE_MIN then
-                    i = reg_data.hex + 1
-                    @sbg.rw(OSC_ADJ_ADDR,"0x" + i.to_s)
-                elsif (diff) > FRQ_RENGE_FINE_MAX then
-                    i = reg_data.hex - 1
-                    @sbg.rw(OSC_ADJ_ADDR,"0x" + i.to_s)
+#               if (diff) < FRQ_RENGE_FINE_MIN then
+                if (diff) < 0
+                    i = reg_data.hex + 5 # 500Hz
+                    @sbg.rw(OSC_ADJ_ADDR,"0x" + i.to_s(16))
+                elsif (diff) > 0 then
+                    i = reg_data.hex - 5 # 500Hz
+                    @sbg.rw(OSC_ADJ_ADDR,"0x" + i.to_s(16))
                 else
                     i = reg_data.hex
-                    com = "ewr 45 " + i.to_s
+                    com = "ewr 45 " + i.to_s(16)
                     p @sbg.com(com)
                     print("Frequency fine adjustment completed\n")
                     break
@@ -71,7 +69,7 @@ class Rftp::Test
             return ret_val
         end
 
-        ret_val = (value.to_f/MHZ_UINT).round(3)
+        ret_val = (value.to_f/MHZ).round(3)
         printf("Fixed to %s MHz\n",ret_val)
         return ret_val
     end
@@ -95,24 +93,20 @@ class Rftp::Test
                 value = $sock.gets
                 p value
 
-                diff = $frq[rate][ch].to_i - value.to_i
-                printf("Frequency adjustment: diff:%s, tartget:%d, current:%d\n",
-                       diff,$frq[rate][ch].to_i,value.to_i)
-                diff = diff/KHZ_UINT
-
-                reg_data = @sbg.rr(OSC_ADJ2_ADDR)
-                p reg_data
-
+                diff = ($frq[rate][ch].to_i - value.to_i)/KHZ
+                reg_data = @sbg.rr(OSC_ADJ2_ADDR)[2,2]
+	printf("Start freq fine adjustment:diff:%s,tartget:%d,current:%d,reg_data:%d\n",
+				 diff,$frq[rate][ch].to_i/KHZ,value.to_i/KHZ,reg_data.hex)
 
                 if (diff) < FRQ_RENGE_MIN then
                     i = reg_data.hex + 1
-                    @sbg.rw(OSC_ADJ2_ADDR,"0x0" + i.to_s)
+                    @sbg.rw(OSC_ADJ2_ADDR,"0x0" + i.to_s(16))
                 elsif (diff) > FRQ_RENGE_MAX then
                     i = reg_data.hex - 1
-                    @sbg.rw(OSC_ADJ2_ADDR,"0x0" + i.to_s)
+                    @sbg.rw(OSC_ADJ2_ADDR,"0x0" + i.to_s(16))
                 else
                     i = reg_data.hex
-                    com = "ewr 128 " + i.to_s
+                    com = "ewr 128 " + i.to_s(16)
                     p @sbg.com(com)
                     print("Frequency adjustment completed\n")
                     break
@@ -128,7 +122,7 @@ class Rftp::Test
             return ret_val
         end
 
-        ret_val = (value.to_f/MHZ_UINT).round(3)
+        ret_val = (value.to_f/MHZ).round(3)
         printf("Fixed to %s MHz\n",ret_val)
         return ret_val
     end
@@ -155,26 +149,27 @@ class Rftp::Test
 
                 target_level =@pow[mode].level.to_i * PA_ADJ_UNIT
                 measurement = (value.to_f + @@att) * PA_ADJ_UNIT
-                reg_data = @sbg.rr(@pow[mode].pa_addr)
-                printf("Power adjustment: target:%.2f, measurement:%.2f, ATT:%.2f, pa_addr:0x%x\n",target_level, measurement, @@att.to_f, reg_data)
+                reg_data = @sbg.rr(@pow[mode].pa_addr)[2,2]
+	printf("Start pow adjustment:target:%.2f,measurement:%.2f,ATT:%.2f,reg_data:%d\n",
+				 target_level, measurement, @@att.to_f, reg_data.hex)
 
                 if measurement > target_level then
-                    set_data = reg_data.hex - @pow[mode].pa_bit
-                    @sbg.rw(@pow[mode].pa_addr,"0x" + set_data.to_s(16))
-                    print("Power over limit: set to %x\n",set_data.hex)
+                    i = reg_data.hex - @pow[mode].pa_bit
+                    @sbg.rw(@pow[mode].pa_addr,"0x" + i.to_s(16))
+                    print("Power over limit: set to %x\n",i.hex)
                 elsif measurement < (target_level - PA_TARGET_LOW) then
-                    set_data = reg_data.hex + @pow[mode].pa_bit
-                    @sbg.rw(@pow[mode].pa_addr,"0x" + set_data.to_s(16))
-                    print("Power under limit: set to %x\n",set_data.hex)
+                    i = reg_data.hex + @pow[mode].pa_bit
+                    @sbg.rw(@pow[mode].pa_addr,"0x" + i.to_s(16))
+                    print("Power under limit: set to %x\n",i.hex)
                 else
-                    set_data = reg_data.hex
-                    com = @pow[mode].ep_addr + set_data.to_s
+                    i = reg_data.hex
+                    com = @pow[mode].ep_addr + i.to_s		# unnecessary (16)
                     p @sbg.com(com)
                     print("Power adjustment completed\n")
                     break
                 end
 
-                if (set_data.to_s(16).hex & @pow[mode].pa_max) == @pow[mode].pa_max then
+                if (i.to_s(16).hex & @pow[mode].pa_max) == @pow[mode].pa_max then
                     raise StandardError, "ERRR\n"
                 end
 

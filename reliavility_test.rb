@@ -2,7 +2,7 @@
 
 p $SERIAL_PORT
 Dir.chdir "./rf_test"
-require "./rftest.rb"
+require "./menu_rftp_telec.rb"
 rftest = Rftest.new()
 
 #system("sudo modprobe snd-bcm2835")

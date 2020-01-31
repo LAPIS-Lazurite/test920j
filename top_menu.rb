@@ -1,22 +1,29 @@
 #! /usr/bin/ruby
 
-Dir.chdir "./io_test"
-require "./iotest.rb"
-iotest = Iotest.new()
-$SERIAL_PORT = iotest.setCom()
-p $SERIAL_PORT
-Dir.chdir "../rf_test"
-require "./rftest.rb"
+if ARGV == [] then
+	Dir.chdir "./io_test"
+	require "./iotest.rb"
+	iotest = Iotest.new()
+	$SERIAL_PORT = iotest.setCom()
+	p $SERIAL_PORT
+end
+$TOP_MENU=1
+Dir.chdir "./rf_test"
+require "./menu_telec_rftp.rb"
 rftest = Rftest.new()
 
 #system("sudo modprobe snd-bcm2835")
 #system("amixer cset numid=3 1")
 #system("amixer cset numid=1 -- 80%")
 
+$TOP_MENU = 1
+
 while 1
     begin
-        Dir.chdir "../io_test"
-        iotest.startup()
+				if ARGV == [] then
+					Dir.chdir "../io_test"
+					iotest.startup()
+				end
 
         system("pwd")
         print("~~~~~~~~~~~ TOP MENU ~~~~~~~~~~~\n")
@@ -139,10 +146,10 @@ while 1
             end
         when 12
             Dir.chdir "../rf_test"
-            rftest.menu()
+            rftest.Rftp_menu()
         when 13
             Dir.chdir "../rf_test"
-            rftest.telec()
+            rftest.telec_menu()
         when 20 # for LazuriteFly
             Dir.chdir "../io_test"
             if iotest.writeprog() != nil then
@@ -158,8 +165,10 @@ while 1
             end
             rftest.setbarcode()
         else
-            Dir.chdir "../io_test"
-            iotest.shutdown()
+						if ARGV == [] then
+							Dir.chdir "../io_test"
+							iotest.shutdown()
+						end
             break
         end
     rescue RuntimeError
