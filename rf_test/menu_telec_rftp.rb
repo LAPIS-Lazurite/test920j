@@ -5,10 +5,11 @@ require './Telectp.rb'
 require 'logger'
 require 'fileutils'
 
-@@rftp = Rftp::Test.new
-@@telectp = Telectp::Test.new
 
 class Rftest
+	@@rftp = Rftp::Test.new
+	@@telectp = Telectp::Test.new
+
 #	@@ATT = "7.9"		#2nd lots was 6.1
 	@@ATT = "6.9"		#2nd lots was 6.1
 #	@@ATT = "10.4"	 #2nd lots was 6.1
@@ -206,10 +207,12 @@ class Rftest
 	end
 
 	def Rftp_menu
+		if $TOP_MENU != nil then
 				if File.exist?("temp.log") == true then
 						File.delete("temp.log")
 				end
 				$log = Logger.new("| tee temp.log")
+		end
 		while 1
 			system("pwd")
 			print("~~~~~~~~~~~~~~ RF COMMAND ~~~~~~~~~~~\n")
