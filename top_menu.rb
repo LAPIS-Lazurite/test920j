@@ -6,17 +6,18 @@ if ARGV == [] then
 	iotest = Iotest.new()
 	$SERIAL_PORT = iotest.setCom()
 	p $SERIAL_PORT
+	Dir.chdir "../rf_test"
+else
+	$TOP_MENU=1
+	Dir.chdir "./rf_test"
 end
-$TOP_MENU=1
-Dir.chdir "./rf_test"
 require "./menu_telec_rftp.rb"
 rftest = Rftest.new()
+
 
 #system("sudo modprobe snd-bcm2835")
 #system("amixer cset numid=3 1")
 #system("amixer cset numid=1 -- 80%")
-
-$TOP_MENU = 1
 
 while 1
     begin
@@ -48,6 +49,7 @@ while 1
         case input
         when 1
             while 1
+							if ARGV == [] then
                 Dir.chdir "../io_test"
                 if iotest.writeprog() != nil then
                     raise RuntimeError, "ERRR\n"
@@ -55,6 +57,7 @@ while 1
                 if iotest.alltest() != nil then
                     raise RuntimeError, "ERRR\n"
                 end
+							end
                 Dir.chdir "../rf_test"
                 rftest.setlog()
                 if rftest.calib() != nil then
@@ -71,10 +74,12 @@ while 1
             end
         when 2
             while 1
+							if ARGV == [] then
                 Dir.chdir "../io_test"
                 if iotest.alltest() != nil then
                     raise RuntimeError, "ERRR\n"
                 end
+							end
                 Dir.chdir "../rf_test"
                 rftest.setlog()
                 if rftest.calib() != nil then
@@ -98,6 +103,7 @@ while 1
             end
         when 4
             while 1
+							if ARGV == [] then
                 Dir.chdir "../io_test"
                 if iotest.writeprog() != nil then
                     raise RuntimeError, "ERRR\n"
@@ -105,6 +111,7 @@ while 1
                 if iotest.alltest() != nil then
                     raise RuntimeError, "ERRR\n"
                 end
+							end
                 Dir.chdir "../rf_test"
                 rftest.setlog()
                 if rftest.calib() != nil then
@@ -135,15 +142,19 @@ while 1
                 end
             end
         when 10
-            Dir.chdir "../io_test"
-            if iotest.writeprog() != nil then
-                raise RuntimeError, "ERRR\n"
-            end
+						if ARGV == [] then
+							Dir.chdir "../io_test"
+							if iotest.writeprog() != nil then
+									raise RuntimeError, "ERRR\n"
+							end
+						end
         when 11
-            Dir.chdir "../io_test"
-            if iotest.alltest() != nil then
-                raise RuntimeError, "ERRR\n"
-            end
+						if ARGV == [] then
+							Dir.chdir "../io_test"
+							if iotest.alltest() != nil then
+									raise RuntimeError, "ERRR\n"
+							end
+						end
         when 12
             Dir.chdir "../rf_test"
             rftest.Rftp_menu()
@@ -151,10 +162,12 @@ while 1
             Dir.chdir "../rf_test"
             rftest.telec_menu()
         when 20 # for LazuriteFly
-            Dir.chdir "../io_test"
-            if iotest.writeprog() != nil then
-                raise RuntimeError, "ERRR\n"
-            end
+						if ARGV == [] then
+							Dir.chdir "../io_test"
+							if iotest.writeprog() != nil then
+									raise RuntimeError, "ERRR\n"
+							end
+						end
             Dir.chdir "../rf_test"
             rftest.setlog()
             if rftest.calib() != nil then

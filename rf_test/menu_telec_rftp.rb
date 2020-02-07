@@ -10,6 +10,10 @@ class Rftest
 	@@rftp = Rftp::Test.new
 	@@telectp = Telectp::Test.new
 
+	if @@rftp.sel_dev() == "ML7396" then
+		$ANT_SW_OUT=1
+	end
+
 #	@@ATT = "7.9"		#2nd lots was 6.1
 	@@ATT = "6.9"		#2nd lots was 6.1
 #	@@ATT = "10.4"	 #2nd lots was 6.1
@@ -222,7 +226,8 @@ class Rftest
 			print("[4] Send packet\n")
 			print("[5] Carrier Sense\n")
 			print("[6] Calibration MJ2001\n")
-			print("[7] ED adj\n")
+			print("[7] ED adjustment\n")
+			print("[8] Atteneta checker\n")
 			print("[10] Set my address\n")
 			print("[11] Get my address\n")
 			print("[20] Direct Command(ex: rfr 8 0x6c)\n")
@@ -232,29 +237,32 @@ class Rftest
 			input = gets().to_i
 
 			case input
-			when 1
-				@@rftp.e2p_base()
-			when 2
-				@@rftp.calibration(@@ATT)
-			when 3
-				@@rftp.cw()
-			when 4
-				@@rftp.snd()
-			when 5
-				@@rftp.cca()
-			when 6
-				@@rftp.e2p_base_MJ2001()
-				@@rftp.calibration(@@ATT)
-			when 7
-				@@rftp.ed_adj()
-			when 10
-				@@rftp.set_addr()
-			when 11
-				@@rftp.get_addr()
-			when 20
-				@@rftp.command()
-						else
-				break
+				when 1
+					@@rftp.e2p_base()
+				when 2
+					@@rftp.calibration(@@ATT)
+				when 3
+					@@rftp.cw()
+				when 4
+					@@rftp.snd()
+				when 5
+					@@rftp.cca()
+				when 6
+					@@rftp.e2p_base_MJ2001()
+					@@rftp.calibration(@@ATT)
+				when 7
+					@@rftp.ed_adj()
+				when 8
+					att = @@rftp.att_checker()
+					printf("ATT level: %s dB\n",att)
+				when 10
+					@@rftp.set_addr()
+				when 11
+					@@rftp.get_addr()
+				when 20
+					@@rftp.command()
+				else
+					break
 			end
 		end
 	end
@@ -262,7 +270,6 @@ end
 
 def top_menu
 	rftest = Rftest.new()
-	$ANT_SW_OUT=1
 
 	while 1
 			system("pwd")

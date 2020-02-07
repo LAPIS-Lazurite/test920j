@@ -17,7 +17,6 @@ class Rftp::Test
 #       mode = 20
         print("input test mode[CW=21, PN9=03, non=00 => ")
         test = gets().to_s
-#       test = "00".to_s
 
         pow_param = Struct.new(:mode, :level, :pa_addr, :pa_bit, :pa_max, :ep_addr)
         p1mW_mode = pow_param.new(1, 0, PA_ADJ1_ADDR, 0x01, 0x0f, "ewr 43 ")
@@ -26,7 +25,7 @@ class Rftp::Test
 
         sbg = Subghz.new()
         sbg.setup(ch, rate, mode)
-        sbg.rw("8 0x0c ","0x" + test)
+        sbg.test_mode(test)
         sbg.txon()
 
         # TESTER setup ----------------------------------

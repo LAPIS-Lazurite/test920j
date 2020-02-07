@@ -31,6 +31,20 @@ $frq = {50 => rate50, 100 => rate100}
 
 class Subghz
 
+	def dev_sel
+		sp = SerialPort.new($SERIAL_PORT,$SERIAL_BAUDRATE)
+		sp.puts("erd 0xa0 1")
+		val = sp.gets()
+		sel = val[11,1]
+		printf("sel_dev: %s\n",sel)
+		sp.close
+		if sel == "5" then
+			dev = "ML7396"
+		else
+			dev = "ML7404"
+		end
+	end
+
 	def setup(ch, rate, mode)
 		sp = SerialPort.new($SERIAL_PORT,$SERIAL_BAUDRATE)
 		sp.read_timeout=500
@@ -52,10 +66,26 @@ class Subghz
 		sp.close
 	end
 
+	def test_mode(mode)
+		sp = SerialPort.new($SERIAL_PORT,$SERIAL_BAUDRATE)
+		sp.read_timeout=500
+		if dev_sel() == "ML7396"
+			sp.puts("rfw 8 0x0c 0x0" + mode.to_s)
+		else
+			sp.puts("rfw 0 0x76 0x0" + mode.to_s)
+		end
+		p sp.gets()
+		sp.close
+	end
+	
 	def txon
 		sp = SerialPort.new($SERIAL_PORT,$SERIAL_BAUDRATE)
 		sp.read_timeout=500
-		sp.puts("rfw 8 0x6c 0x09")
+		if dev_sel() == "ML7396"
+			sp.puts("rfw 8 0x6c 0x09")
+		else
+			sp.puts("rfw 0 0x0b 0x09")
+		end
 		p sp.gets()
 		sp.close
 	end

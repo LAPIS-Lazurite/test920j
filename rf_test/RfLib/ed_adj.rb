@@ -21,10 +21,11 @@ class Rftp::Test
 		printf("sel_dev: %s\n",sel)
 		sp.close
 		if sel == "5" then
-			$RF = "ML7396"
+			rf = "ML7396"
 		else
-			$RF = "ML7404"
+			rf = "ML7404"
 		end
+		return rf
 	end
 
 	def set_command
@@ -105,7 +106,7 @@ class Rftp::Test
 					p $sp.gets()
 					$sp.puts(@@com_set_rssi_adj_l + "0x7f")
 					p $sp.gets()
-					$sp.puts(@@com_set_rssi_adj + "0x95")			# 0x00
+					$sp.puts(@@com_set_rssi_adj + "0x90")			# 0x00 -> 0x95 -> 0x93
 					p $sp.gets()
 					$sp.puts(@@com_set_rssi_mag_adj + "0x0d")	# 0x0d
 					p $sp.gets()
@@ -187,74 +188,18 @@ class Rftp::Test
 			sleep 0.1
 	end
 
-	def ms2830a_setting(ch,rate) 
-			# setup SPA
-			$sock.puts("*RST")
-			$sock.puts("*OPC?")
-			$sock.gets
-
-			$sock.puts("inst spect")
-			$sock.puts("*OPC?")
-			$sock.gets
-
-			$sock.puts("spf 10mhz")
-			$sock.puts("*OPC?")
-			$sock.gets
-
-			$sock.puts("rlv 0")
-			$sock.puts("*OPC?")
-			$sock.gets
-
-			$sock.puts("cnf " + $frq[rate][ch].to_s)
-			$sock.puts("*OPC?")
-			$sock.gets
-
-			# setup SG
-			$sock.puts("inst sg")
-			$sock.puts("*OPC?")
-			$sock.gets
-
-			#SG out 1:ON  0:OFF
-			$sock.puts("outp 1") 
-			$sock.puts("*OPC?")
-			$sock.gets
-
-			$sock.puts("freq " + $frq[rate][ch])
-			$sock.puts("*OPC?")
-			$sock.gets
-	end
-
-	def att_checker
-			$sock.puts("pow 0")
-			$sock.puts("*OPC?")
-			p $sock.gets
-			# setup SPA
-			$sock.puts("INST SPECT")
-			$sock.puts("*OPC?")
-			$sock.gets
-			$sock.puts("mkpk")
-			$sock.puts("*OPC?")
-			$sock.gets
-			$sock.puts("mkl?")
-			val = $sock.gets.delete("-\r\n")
-			# setup SG
-			$sock.puts("inst sg")
-			$sock.puts("*OPC?")
-			$sock.gets
-			return val 
-	end
-
 	def ed_adj
-			sel_dev()
+			$RF = sel_dev()
+			p $RF
 			set_command()
 			print("--------------< 100kbps >---------------\n")
 			ch = 42
 			rate = 100
 			searching(ch,rate)
-			print("--------------< 50kbps >---------------\n")
-			ch = 43
-			rate = 50
-			searching(ch,rate)
+#			print("--------------< 50kbps >---------------\n")
+#			ch = 43
+#			rate = 50
+#			searching(ch,rate)
 	end
 
 	$BASE_PW_LEVEL = -20
@@ -266,6 +211,11 @@ class Rftp::Test
 		 	subghz_setting(ch,rate)
 			rf_setting(rate)
 			rf_getting()
+
+			#SG out 1:ON  0:OFF
+			$sock.puts("outp 1") 
+			$sock.puts("*OPC?")
+			$sock.gets
 
 			pw_level = $BASE_PW_LEVEL + att.to_i
 			max_pw_level = pw_level
