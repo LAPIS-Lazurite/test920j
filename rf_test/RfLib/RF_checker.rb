@@ -3,6 +3,7 @@
 require '/home/pi/test920j/rf_test/socket.rb'
 
 class Rftp::Test
+
 	def ms2830a_setting(ch,rate) 
 			# setup SPA
 			$sock.puts("*RST")
@@ -17,7 +18,7 @@ class Rftp::Test
 			$sock.puts("*OPC?")
 			$sock.gets
 
-			$sock.puts("rlv 0")
+			$sock.puts("rlv 15")
 			$sock.puts("*OPC?")
 			$sock.gets
 
@@ -74,6 +75,7 @@ class Rftp::Test
 			val = $sock.gets.delete("\r\n")
 			p val.to_i
 			dev = $frq[rate][ch].to_i - val.to_i
+			printf("------------------------------\n")
 			printf("Target: %s kHz\n",$frq[rate][ch].to_i)
 			printf("Measurement: %s kHz\n",val.to_i)
 			printf("Deviation: %s Hz\n",dev)

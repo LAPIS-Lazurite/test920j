@@ -10,13 +10,18 @@ class Rftest
 	@@rftp = Rftp::Test.new
 	@@telectp = Telectp::Test.new
 
-	if @@rftp.sel_dev() == "ML7396" then
+	@@dev = @@rftp.sel_dev()
+	if @@dev == "ML7396" then
 		$ANT_SW_OUT=1
 	end
 
 #	@@ATT = "7.9"		#2nd lots was 6.1
 	@@ATT = "6.9"		#2nd lots was 6.1
 #	@@ATT = "10.4"	 #2nd lots was 6.1
+
+	@@rftp.ms2830a_setting(42,100) 
+	@@ATT = @@rftp.att_checker(42,100)
+
 		def led
 				@@rftp.led("blue");
 		end
@@ -221,18 +226,20 @@ class Rftest
 			system("pwd")
 			print("~~~~~~~~~~~~~~ RF COMMAND ~~~~~~~~~~~\n")
 			print("[1] To Write basic parameter on E2P\n")
-			print("[2] Calibration\n")
-			print("[3] Continuous Wave\n")
-			print("[4] Send packet\n")
-			print("[5] Carrier Sense\n")
+			print("[2] Continuous Wave\n")
+			print("[3] Send packet\n")
+			print("[4] Carrier Sense\n")
+			print("[5] Calibration\n")
 			print("[6] Calibration MJ2001\n")
-			print("[7] Atteneta checker\n")
-			print("[8] Power adjustment\n")
-			print("[9] RSSI adjustment\n")
-			print("[10] Frequency deviation adjustment\n")
-			print("[20] Set my address\n")
-			print("[21] Get my address\n")
-			print("[22] Direct Command(ex: rfr 8 0x6c)\n")
+			print("~~~~~~~~~~~~~~~~ MK7404 ~~~~~~~~~~~~~\n")
+			print("[21] Atteneta checker\n")
+			print("[22] Power adjustment MK74040\n")
+			print("[23] RSSI adjustment\n")
+			print("[24] Frequency deviation adjustment\n")
+			print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n")
+			print("[31] Set my address\n")
+			print("[32] Get my address\n")
+			print("[33] Direct Command(ex: rfr 8 0x6c)\n")
 			print("[99] Exit\n")
 			print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n")
 			print("input number => ")
@@ -242,52 +249,50 @@ class Rftest
 				when 1
 					@@rftp.e2p_base()
 				when 2
-					@@rftp.calibration(@@ATT)
-				when 3
 					@@rftp.cw()
-				when 4
+				when 3
 					@@rftp.snd()
-				when 5
+				when 4
 					@@rftp.cca()
+				when 5
+					@@rftp.calibration(@@ATT)
 				when 6
+					if File.exist?("temp.log") == true then
+						File.delete("temp.log")
+					end
+					$log = Logger.new("| tee temp.log")
 					@@rftp.e2p_base_MJ2001()
 					@@rftp.calibration(@@ATT)
-				when 7
-					print("Input ch: ")
-					ch = gets().to_i
-					print("Input rate: ")
-					rate = gets().to_i
+				when 21
+					ch=42
+					rate=100
 					@@rftp.ms2830a_setting(ch,rate) 
 					att = @@rftp.att_checker(ch,rate)
 					printf("ATT level: %s dB\n",att)
-				when 8
-					print("Input ch: ")
-					ch = gets().to_i
-					print("Input rate: ")
-					rate = gets().to_i
+				when 22
+					ch=42
+					rate=100
 					@@rftp.ms2830a_setting(ch,rate) 
-					@@rftp.set_command()
+					@@rftp.set_command(@@dev)
 					@@rftp.subghz_setting(ch,rate,"tx") 
-					@@rftp.pow_adj_4k
-				when 9
-					@@rftp.rssi_adj()
-				when 10
+					@@rftp.pow_adj_4k(ch,rate,@@ATT)
+				when 23
+					@@rftp.rssi_adj(@@dev)
+				when 24
 					print("Input ch: ")
 					ch = gets().to_i
 					print("Input rate: ")
 					rate = gets().to_i
 					@@rftp.ms2830a_setting(ch,rate) 
-					@@rftp.set_command()
+					@@rftp.set_command(@@dev)
 					@@rftp.subghz_setting(ch,rate,"tx") 
 					freq_dev = @@rftp.freq_dev_checker(ch,rate)
-					printf("Frequency deviation: %s Hz\n",freq_dev)
-					p freq_dev
-					@@rftp.frq_adj(freq_dev)
-				when 20
+					@@rftp.freq_dev_adj(freq_dev)
+				when 31
 					@@rftp.set_addr()
-				when 21
+				when 32
 					@@rftp.get_addr()
-				when 22
+				when 33
 					@@rftp.command()
 				else
 					break
@@ -297,8 +302,6 @@ class Rftest
 end
 
 def top_menu
-	rftest = Rftest.new()
-
 	while 1
 			system("pwd")
 			print("~~~~~~~~~~~ TOP MENU ~~~~~~~~~~~\n")
@@ -333,6 +336,7 @@ def top_menu
 							end
 					end
 			when 3
+   				rftest = Rftest.new()
 					Dir.chdir "../rf_test"
 					rftest.Rftp_menu()
 			when 4
@@ -343,7 +347,6 @@ def top_menu
 		end
 	end # while
 end
-
 if $TOP_MENU == nil then
 top_menu()
 end

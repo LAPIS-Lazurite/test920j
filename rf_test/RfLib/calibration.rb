@@ -95,8 +95,7 @@ class Rftp::Test
 
                 diff = ($frq[rate][ch].to_i - value.to_i)/KHZ
                 reg_data = @sbg.rr(OSC_ADJ2_ADDR)[2,2]
-	printf("Start freq fine adjustment:diff:%s,tartget:%d,current:%d,reg_data:%d\n",
-				 diff,$frq[rate][ch].to_i/KHZ,value.to_i/KHZ,reg_data.hex)
+printf("Start freq fine adjustment:diff:%s,tartget:%d,current:%d,reg_data:%d\n",diff,$frq[rate][ch].to_i/KHZ,value.to_i/KHZ,reg_data.hex)
 
                 if (diff) < FRQ_RENGE_MIN then
                     i = reg_data.hex + 1
@@ -148,6 +147,7 @@ class Rftp::Test
                 p value
 
                 target_level =@pow[mode].level.to_i * PA_ADJ_UNIT
+
                 measurement = (value.to_f + @@att) * PA_ADJ_UNIT
                 reg_data = @sbg.rr(@pow[mode].pa_addr)[2,2]
 	printf("Start pow adjustment:target:%.2f,measurement:%.2f,ATT:%.2f,reg_data:%d\n",
