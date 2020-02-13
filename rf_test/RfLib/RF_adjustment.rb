@@ -1,7 +1,8 @@
 #! /usr/bin/ruby
 
 require '/home/pi/test920j/rf_test/socket.rb'
-require "serialport"
+require '/home/pi/test920j/rf_test/subghz.rb'
+#require "serialport"
 
 $finish_flag=0
 Signal.trap(:INT){
@@ -32,7 +33,8 @@ class Rftp::Test
 		if $RF == "ML7396" then
 			@@com_set_trxoff = "rfw 8 0x6c 0x03"
 			@@com_ed_val = "rfr 8 0x16"
-			@@com_set_rf_status = "rfw 8 0x6c 0x06"
+			@@com_set_rx_status = "rfw 8 0x6c 0x06"
+			@@com_set_tx_status = "rfw 8 0x6c 0x09"
 			@@com_get_rf_status = "rfr 8 0x6c"
 			@@com_get_gain_ml = "rfr 8 0x1c"
 			@@com_get_gain_lm = "rfr 8 0x1d"
@@ -48,7 +50,8 @@ class Rftp::Test
 		else
 			# ML7404 get command
 			@@com_ed_val = "rfr 0 0x3a"
-			@@com_set_rf_status = "rfw 0 0x0b 0x06"
+			@@com_set_rx_status = "rfw 0 0x0b 0x06"
+			@@com_set_tx_status = "rfw 0 0x0b 0x09"
 			@@com_get_rf_status = "rfr 0 0x0b"
 			@@com_get_gain_lm = "rfr 2 0x7b"
 			@@com_get_gain_ml = "rfr 2 0x7a"
@@ -61,11 +64,14 @@ class Rftp::Test
 			@@com_get_rssi_adj_l = "rfr 2 0x7e"
 			@@com_get_rssi_adj = "rfr 0 0x66"
 			@@com_get_rssi_mag_adj = "rfr 1 0x13"
+			# ML7404 get freq_adj
+			@@com_get_freq_adj_h = "rfr 1 0x42"
+			@@com_get_freq_adj_l = "rfr 1 0x43"
 			# ML7404 set command
 			@@com_set_gc_ctrl = "rfw 1 0x15 0x86"
 			@@com_set_gain_lm = "rfw 2 0x7b 0x3c"			# 50kbps only
 			@@com_set_gain_ml = "rfw 2 0x7a 0x8c"
-			@@com_set_gain_mh = "rfw 2 0x79	0x3c"			# 50kbps only
+			@@com_set_gain_mh = "rfw 2 0x79 0x3c"			# 50kbps only
 			@@com_set_gain_hm = "rfw 2 0x78 0x8c"
 			@@com_set_gain_h_hh = "rfw 2 0x77 0x3c"		# 50kbps only
 			@@com_set_gain_hh_h = "rfw 2 0x76 0x8c"
@@ -74,6 +80,9 @@ class Rftp::Test
 			@@com_set_rssi_adj_l = "rfw 2 0x7e "
 			@@com_set_rssi_adj = "rfw 0 0x66 "
 			@@com_set_rssi_mag_adj = "rfw 1 0x13 "
+			# ML7404 set freq_adj
+			@@com_set_freq_adj_h = "rfw 1 0x42 "
+			@@com_set_freq_adj_l = "rfw 1 0x43 "
 		end
 	end
 
@@ -106,9 +115,9 @@ class Rftp::Test
 					p $sp.gets()
 					$sp.puts(@@com_set_rssi_adj_l + "0x7f")
 					p $sp.gets()
-					$sp.puts(@@com_set_rssi_adj + "0x90")			# 0x00 -> 0x95 -> 0x93
+					$sp.puts(@@com_set_rssi_adj + $RSSI_ADJ_100K)
 					p $sp.gets()
-					$sp.puts(@@com_set_rssi_mag_adj + "0x0d")	# 0x0d
+					$sp.puts(@@com_set_rssi_mag_adj + $RSSI_MAG_ADJ_100K)
 					p $sp.gets()
 				else
 					$sp.puts(@@com_set_rssi_adj_h + "0x2f")
@@ -117,9 +126,9 @@ class Rftp::Test
 					p $sp.gets()
 					$sp.puts(@@com_set_rssi_adj_l + "0x7f")
 					p $sp.gets()
-					$sp.puts(@@com_set_rssi_adj + "0x0f")		# 0x00
+					$sp.puts(@@com_set_rssi_adj + $RSSI_ADJ_50K)
 					p $sp.gets()
-					$sp.puts(@@com_set_rssi_mag_adj + "0x0e")	# 0x0e
+					$sp.puts(@@com_set_rssi_mag_adj + $RSSI_MAG_ADJ_50K)
 					p $sp.gets()
 				end
 			end #$RF
@@ -167,7 +176,7 @@ class Rftp::Test
 		end
 	end
 
-	def subghz_setting(ch,rate)
+	def subghz_setting(ch,rate,trx)
 			$sp = SerialPort.new('/dev/ttyUSB0', 115200, 8, 1, 0) 
 			sleep 0.1
 			$sp.puts("sgi")
@@ -180,7 +189,11 @@ class Rftp::Test
 			$sp.puts("sgb " + ch.to_s + " 0xabcd " + rate.to_s + " 20")
 			p $sp.gets()
 			sleep 0.1
-			$sp.puts(@@com_set_rf_status)
+			if trx == "tx" then
+				$sp.puts(@@com_set_tx_status)
+			else
+				$sp.puts(@@com_set_rx_status)
+			end
 			p $sp.gets()
 			sleep 0.1
 			$sp.puts(@@com_get_rf_status)
@@ -188,27 +201,71 @@ class Rftp::Test
 			sleep 0.1
 	end
 
-	def ed_adj
+	$BASE_PW_LEVEL = -20
+	$LEVEL_STEP = 2
+	$RSSI_ADJ_100K = "0x99"
+	$RSSI_MAG_ADJ_100K = "0x0e"
+	$RSSI_ADJ_50K = "0x00"
+	$RSSI_MAG_ADJ_50K = "0x0e"
+	$PA_20_ADJ_H = "0x00"
+	$PA_20_ADJ_L = "0xE4"
+	$PA_1_ADJ_H = "0x00"
+	$PA_1_ADJ_L = "0x2E"
+
+	def rssi_adj
 			$RF = sel_dev()
 			p $RF
 			set_command()
+
 			print("--------------< 100kbps >---------------\n")
 			ch = 42
 			rate = 100
 			searching(ch,rate)
-#			print("--------------< 50kbps >---------------\n")
-#			ch = 43
-#			rate = 50
-#			searching(ch,rate)
-	end
+			print("--------------< 50kbps >---------------\n")
+			ch = 43
+			rate = 50
+			searching(ch,rate)
 
-	$BASE_PW_LEVEL = -20
-	$LEVEL_STEP = 2
+			$sp = SerialPort.new('/dev/ttyUSB0', 115200, 8, 1, 0) 
+			$sp.puts(@@com_set_rssi_adj)
+			p $sp.gets()
+			$sp.puts(@@com_set_rssi_mag_adj)
+			p $sp.gets()
+			$sp.puts("ewp 0")
+			p $sp.gets()
+			$sp.puts("erd,0x81,1")
+			p $sp.gets()
+			$sp.puts("erd,0x82,1")
+			p $sp.gets()
+			$sp.puts("erd,0x83,1")
+			p $sp.gets()
+			$sp.puts("erd,0x84,1")
+			p $sp.gets()
+			$sp.puts("ewr,0x81," + $RSSI_ADJ_100K)
+			p $sp.gets()
+			$sp.puts("ewr,0x82," + $RSSI_MAG_ADJ_100K)
+			p $sp.gets()
+			$sp.puts("ewr,0x83," + $RSSI_ADJ_50K)
+			p $sp.gets()
+			$sp.puts("ewr,0x84," + $RSSI_MAG_ADJ_50K)
+			p $sp.gets()
+			$sp.puts("erd,0x81,1")
+			p $sp.gets()
+			$sp.puts("erd,0x82,1")
+			p $sp.gets()
+			$sp.puts("erd,0x83,1")
+			p $sp.gets()
+			$sp.puts("erd,0x84,1")
+			p $sp.gets()
+			$sp.puts("ewp 0")
+			p $sp.gets()
+			$sp.close
+	end
 
 	def searching(ch,rate)
 			ms2830a_setting(ch,rate)
-			att = att_checker()
-		 	subghz_setting(ch,rate)
+			att = att_checker(ch,rate)
+		 	subghz_setting(ch,rate,"rx")
 			rf_setting(rate)
 			rf_getting()
 
@@ -257,4 +314,90 @@ class Rftp::Test
 			printf("MIN(dBm): pow=%s  ed=%s\n",pw_level.to_s,ed.to_s)
 	end
 
+	def frq_adj(freq_dev)
+		printf("Frequency deviation: %s Hz\n",freq_dev)
+		p freq_dev
+		fadj = (freq_dev.to_f/1000000)
+		p fadj.to_f
+		freq_adj = fadj.to_f/(36/1)*(2**20).to_i
+		p freq_adj.round
+		if freq_adj.round > 0 then
+			adj_h = "0x80"
+		else
+			adj_h = "0x00"
+		end
+		printf("FREQ_ADJ_H:B1 0x42: %s\n",adj_h)
+		adj_l = sprintf("%s","%#x"%freq_adj.round.abs)
+		printf("FREQ_ADJ_L:B1 0x43: %s\n",adj_l)
+		$sp.puts(@@com_get_freq_adj_h)
+		p $sp.gets()
+		$sp.puts(@@com_get_freq_adj_l)
+		p $sp.gets()
+		$sp.puts(@@com_set_freq_adj_h + adj_h)
+		p $sp.gets()
+		$sp.puts(@@com_set_freq_adj_l + adj_l)
+		p $sp.gets()
+		$sp.puts("ewp 0")
+		p $sp.gets()
+		$sp.puts("erd,0x85,1")
+		p $sp.gets()
+		$sp.puts("erd,0x86,1")
+		p $sp.gets()
+		$sp.puts("ewr,0x85," + adj_h)
+		p $sp.gets()
+		$sp.puts("ewr,0x86," + adj_l)
+		p $sp.gets()
+		$sp.puts("erd,0x85,1")
+		p $sp.gets()
+		$sp.puts("erd,0x86,1")
+		p $sp.gets()
+		$sp.puts("ewp 1")
+		p $sp.gets()
+	end
+
+	def pow_adj_4k
+		$sp.puts("rfw,0,0x67," + $PA_20_ADJ_H)
+		p $sp.gets()
+		$sp.puts("rfw,0,0x68," + $PA_20_ADJ_L)
+		p $sp.gets()
+		print("Check 20mW power mode::")
+		gets().to_i
+		$sp.puts("rfw,0,0x67," + $PA_1_ADJ_H)
+		p $sp.gets()
+		$sp.puts("rfw,0,0x68," + $PA_1_ADJ_L)
+		p $sp.gets()
+		print("Check 1mW power mode::")
+		gets().to_i
+
+		$sp.puts("ewp 0")
+		p $sp.gets()
+		$sp.puts("erd,0x29,1")
+		p $sp.gets()
+		$sp.puts("erd,0x2A,1")
+		p $sp.gets()
+		$sp.puts("erd,0x2B,1")
+		p $sp.gets()
+		$sp.puts("erd,0x2C,1")
+		p $sp.gets()
+
+		$sp.puts("ewr,0x29," + $PA_20_ADJ_H)
+		p $sp.gets()
+		$sp.puts("ewr,0x2A," + $PA_20_ADJ_L)
+		p $sp.gets()
+		$sp.puts("ewr,0x2B," + $PA_1_ADJ_H)
+		p $sp.gets()
+		$sp.puts("ewr,0x2C," + $PA_1_ADJ_L)
+		p $sp.gets()
+
+		$sp.puts("erd,0x29,1")
+		p $sp.gets()
+		$sp.puts("erd,0x2A,1")
+		p $sp.gets()
+		$sp.puts("erd,0x2B,1")
+		p $sp.gets()
+		$sp.puts("erd,0x2C,1")
+		p $sp.gets()
+		$sp.puts("ewp 1")
+		p $sp.gets()
+	end
 end

@@ -226,11 +226,13 @@ class Rftest
 			print("[4] Send packet\n")
 			print("[5] Carrier Sense\n")
 			print("[6] Calibration MJ2001\n")
-			print("[7] ED adjustment\n")
-			print("[8] Atteneta checker\n")
-			print("[10] Set my address\n")
-			print("[11] Get my address\n")
-			print("[20] Direct Command(ex: rfr 8 0x6c)\n")
+			print("[7] Atteneta checker\n")
+			print("[8] Power adjustment\n")
+			print("[9] RSSI adjustment\n")
+			print("[10] Frequency deviation adjustment\n")
+			print("[20] Set my address\n")
+			print("[21] Get my address\n")
+			print("[22] Direct Command(ex: rfr 8 0x6c)\n")
 			print("[99] Exit\n")
 			print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n")
 			print("input number => ")
@@ -251,19 +253,45 @@ class Rftest
 					@@rftp.e2p_base_MJ2001()
 					@@rftp.calibration(@@ATT)
 				when 7
-					@@rftp.ed_adj()
-				when 8
-					att = @@rftp.att_checker()
+					print("Input ch: ")
+					ch = gets().to_i
+					print("Input rate: ")
+					rate = gets().to_i
+					@@rftp.ms2830a_setting(ch,rate) 
+					att = @@rftp.att_checker(ch,rate)
 					printf("ATT level: %s dB\n",att)
+				when 8
+					print("Input ch: ")
+					ch = gets().to_i
+					print("Input rate: ")
+					rate = gets().to_i
+					@@rftp.ms2830a_setting(ch,rate) 
+					@@rftp.set_command()
+					@@rftp.subghz_setting(ch,rate,"tx") 
+					@@rftp.pow_adj_4k
+				when 9
+					@@rftp.rssi_adj()
 				when 10
-					@@rftp.set_addr()
-				when 11
-					@@rftp.get_addr()
+					print("Input ch: ")
+					ch = gets().to_i
+					print("Input rate: ")
+					rate = gets().to_i
+					@@rftp.ms2830a_setting(ch,rate) 
+					@@rftp.set_command()
+					@@rftp.subghz_setting(ch,rate,"tx") 
+					freq_dev = @@rftp.freq_dev_checker(ch,rate)
+					printf("Frequency deviation: %s Hz\n",freq_dev)
+					p freq_dev
+					@@rftp.frq_adj(freq_dev)
 				when 20
+					@@rftp.set_addr()
+				when 21
+					@@rftp.get_addr()
+				when 22
 					@@rftp.command()
 				else
 					break
-			end
+				end
 		end
 	end
 end

@@ -24,7 +24,9 @@ class Rftp::Test
 			$sock.puts("cnf " + $frq[rate][ch].to_s)
 			$sock.puts("*OPC?")
 			$sock.gets
+	end
 
+	def att_checker(ch,rate)
 			# setup SG
 			$sock.puts("inst sg")
 			$sock.puts("*OPC?")
@@ -33,10 +35,7 @@ class Rftp::Test
 			$sock.puts("freq " + $frq[rate][ch])
 			$sock.puts("*OPC?")
 			$sock.gets
-	end
 
-	def att_checker
-			ms2830a_setting(42,100)
 			$sock.puts("pow 0")
 			$sock.puts("*OPC?")
 			$sock.gets
@@ -61,5 +60,23 @@ class Rftp::Test
  			$sock.puts("*OPC?")
  			$sock.gets
 			return val 
+	end
+
+	def freq_dev_checker(ch,rate)
+			# setup SPA
+			$sock.puts("INST SPECT")
+			$sock.puts("*OPC?")
+			$sock.gets
+			$sock.puts("mkpk")
+			$sock.puts("*OPC?")
+			$sock.gets
+			$sock.puts("mkf?")
+			val = $sock.gets.delete("\r\n")
+			p val.to_i
+			dev = $frq[rate][ch].to_i - val.to_i
+			printf("Target: %s kHz\n",$frq[rate][ch].to_i)
+			printf("Measurement: %s kHz\n",val.to_i)
+			printf("Deviation: %s Hz\n",dev)
+			return dev.to_i
 	end
 end
