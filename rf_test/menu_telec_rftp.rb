@@ -36,7 +36,7 @@ class Rftest
 		end
 
 		def calib
-				@@rftp.e2p_base()
+				@@rftp.e2p_base("Lazurite920j")
 				val = @@rftp.calibration(@@ATT)
 				return val
 		end
@@ -164,7 +164,7 @@ class Rftest
 
 
 
-	def telec
+	def telec_menu
 				if File.exist?("temp.log") == true then
 						File.delete("temp.log")
 				end
@@ -216,53 +216,62 @@ class Rftest
 	end
 
 	def Rftp_menu
-		if $TOP_MENU != nil then
-				if File.exist?("temp.log") == true then
-						File.delete("temp.log")
-				end
-				$log = Logger.new("| tee temp.log")
-		end
 		while 1
 			system("pwd")
-			print("~~~~~~~~~~~~~~ RF COMMAND ~~~~~~~~~~~\n")
-			print("[1] To Write basic parameter on E2P\n")
-			print("[2] Continuous Wave\n")
-			print("[3] Send packet\n")
-			print("[4] Carrier Sense\n")
-			print("[5] Calibration\n")
-			print("[6] Calibration MJ2001\n")
-			print("~~~~~~~~~~~~~~~~ MK7404 ~~~~~~~~~~~~~\n")
+			print("~~~~~~~~~~~~~~ RF COMMAND ~~~~~~~~~~\n")
+			print("[1] Write basic parameter on E2P\n")
+			print("[2] Read E2P\n")
+			print("[3] Continuous Wave\n")
+			print("[4] Send packet\n")
+			print("[5] Carrier Sense\n")
+			print("[6] Calibration\n")
+			print("~~~~~~~~~ MK7404 calibration ~~~~~~~\n")
 			print("[21] Atteneta checker\n")
-			print("[22] Power adjustment MK74040\n")
+			print("[22] Power adjustment\n")
 			print("[23] RSSI adjustment\n")
 			print("[24] Frequency deviation adjustment\n")
-			print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n")
+			print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n")
 			print("[31] Set my address\n")
 			print("[32] Get my address\n")
 			print("[33] Direct Command(ex: rfr 8 0x6c)\n")
 			print("[99] Exit\n")
-			print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n")
+			print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n")
 			print("input number => ")
 			input = gets().to_i
 
 			case input
 				when 1
-					@@rftp.e2p_base()
+					print("Input number(1:Lazurite920j, 2:MJ2001, 3:MK74040): ")
+					input = gets().to_i
+					if input == 1 then
+						@@rftp.e2p_base("Lazurite920j")
+					elsif input == 2 then
+						@@rftp.e2p_base("MJ2001")
+					elsif input == 3 then
+						@@rftp.e2p_base("MK74040")
+					end
 				when 2
-					@@rftp.cw()
+					@@rftp.e2p_read()
 				when 3
-					@@rftp.snd()
+					@@rftp.cw()
 				when 4
-					@@rftp.cca()
+					@@rftp.snd()
 				when 5
-					@@rftp.calibration(@@ATT)
+					@@rftp.cca()
 				when 6
 					if File.exist?("temp.log") == true then
-						File.delete("temp.log")
+							File.delete("temp.log")
 					end
-					$log = Logger.new("| tee temp.log")
-					@@rftp.e2p_base_MJ2001()
+					$log = Logger.new("temp.log")
+					print("Input number(1:Lazurite920j, 2:MJ2001:Input): ")
+					input = gets().to_i
+					if input == 1 then
+						@@rftp.e2p_base("Lazurite920j")
+					elsif input == 2 then
+						@@rftp.e2p_base("MJ2001")
+					end
 					@@rftp.calibration(@@ATT)
+					File.delete("temp.log")
 				when 21
 					ch=42
 					rate=100
@@ -302,6 +311,7 @@ class Rftest
 end
 
 def top_menu
+	rftest = Rftest.new()
 	while 1
 			system("pwd")
 			print("~~~~~~~~~~~ TOP MENU ~~~~~~~~~~~\n")
@@ -336,7 +346,6 @@ def top_menu
 							end
 					end
 			when 3
-   				rftest = Rftest.new()
 					Dir.chdir "../rf_test"
 					rftest.Rftp_menu()
 			when 4

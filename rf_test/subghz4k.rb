@@ -357,7 +357,7 @@ class Certification
 			when 21
 			     system("../common/load_prog.rb " + "../../bin/mk74040.bin Rev3")
 			when 22
-				e2p_base()
+				e2p_base
 			when 23
                 set_addr()
 			when 24

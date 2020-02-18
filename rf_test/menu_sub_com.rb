@@ -225,7 +225,7 @@ class Certification
 			when 20
 				system("../common/load_prog.rb " + "../bin/test.bin mini")
 			when 22
-				@@rftp.e2p_base()
+				@@rftp.e2p_base("Lazurite920j")
 			when 23
 #               @@rftp.set_addr()
                 set_addr()
