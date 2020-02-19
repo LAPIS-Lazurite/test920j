@@ -19,7 +19,7 @@ class Rftest
 	@@ATT = "6.9"		#2nd lots was 6.1
 #	@@ATT = "10.4"	 #2nd lots was 6.1
 
-	@@rftp.ms2830a_setting(42,100) 
+	@@rftp.ms2830a_setting(42,100,10) 
 	@@ATT = @@rftp.att_checker(42,100)
 
 		def led
@@ -275,13 +275,17 @@ class Rftest
 				when 21
 					ch=42
 					rate=100
-					@@rftp.ms2830a_setting(ch,rate) 
+					span=10
+					@@rftp.ms2830a_setting(ch,rate,span) 
+					@@rftp.set_command(@@dev)
+					@@rftp.subghz_setting(ch,rate,"trxoff") 
 					att = @@rftp.att_checker(ch,rate)
 					printf("ATT level: %s dB\n",att)
 				when 22
 					ch=42
 					rate=100
-					@@rftp.ms2830a_setting(ch,rate) 
+					span=10
+					@@rftp.ms2830a_setting(ch,rate,span) 
 					@@rftp.set_command(@@dev)
 					@@rftp.subghz_setting(ch,rate,"tx") 
 					@@rftp.pow_adj_4k(ch,rate,@@ATT)
@@ -292,11 +296,10 @@ class Rftest
 					ch = gets().to_i
 					print("Input rate: ")
 					rate = gets().to_i
-					@@rftp.ms2830a_setting(ch,rate) 
+					@@rftp.ms2830a_setting(ch,rate,1) 
 					@@rftp.set_command(@@dev)
 					@@rftp.subghz_setting(ch,rate,"tx") 
-					freq_dev = @@rftp.freq_dev_checker(ch,rate)
-					@@rftp.freq_dev_adj(freq_dev)
+					@@rftp.freq_dev_adj(ch,rate)
 				when 31
 					@@rftp.set_addr()
 				when 32

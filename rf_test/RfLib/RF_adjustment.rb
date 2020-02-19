@@ -43,8 +43,10 @@ class Rftp::Test
 			sleep 0.1
 			if trx == "tx" then
 				sp.puts($com_set_tx_status)
-			else
+			elsif trx == "rx" then
 				sp.puts($com_set_rx_status)
+			else
+				sp.puts($com_set_trxoff_status)
 			end
 			p sp.gets()
 			sleep 0.1
@@ -75,11 +77,11 @@ class Rftp::Test
 			print("--------------< 100kbps >---------------\n")
 			ch = 42
 			rate = 100
-			searching(ch,rate,dev)
+			rssi_searching(ch,rate,dev)
 			print("--------------< 50kbps >---------------\n")
 			ch = 43
 			rate = 50
-			searching(ch,rate,dev)
+			rssi_searching(ch,rate,dev)
 
 			sp = SerialPort.new('/dev/ttyUSB0', 115200, 8, 1, 0) 
 			sp.puts("ewp 0")
@@ -113,8 +115,8 @@ class Rftp::Test
 			sp.close
 	end
 
-	def searching(ch,rate,dev)
-			ms2830a_setting(ch,rate)
+	def rssi_searching(ch,rate,dev)
+			ms2830a_setting(ch,rate,100)
 			att = att_checker(ch,rate)
 		 	subghz_setting(ch,rate,"rx")
 			rf_setting(rate,dev)
@@ -165,7 +167,8 @@ class Rftp::Test
 			printf("---------------------------\n")
 	end
 
-	def freq_dev_adj(freq_dev)
+	def freq_dev_adj(ch,rate)
+		freq_dev = freq_dev_checker(ch,rate)
 		sp = SerialPort.new('/dev/ttyUSB0', 115200, 8, 1, 0) 
 		fadj = (freq_dev.to_f/1000000)
 		freq_adj = fadj.to_f/(36/1)*(2**20).to_i

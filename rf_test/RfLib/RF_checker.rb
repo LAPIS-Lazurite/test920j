@@ -4,7 +4,7 @@ require '/home/pi/test920j/rf_test/socket.rb'
 
 class Rftp::Test
 
-	def ms2830a_setting(ch,rate) 
+	def ms2830a_setting(ch,rate,span) 
 			# setup SPA
 			$sock.puts("*RST")
 			$sock.puts("*OPC?")
@@ -14,7 +14,7 @@ class Rftp::Test
 			$sock.puts("*OPC?")
 			$sock.gets
 
-			$sock.puts("spf 10mhz")
+			$sock.puts("spf " + span.to_s + "mhz")
 			$sock.puts("*OPC?")
 			$sock.gets
 
