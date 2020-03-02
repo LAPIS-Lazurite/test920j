@@ -63,7 +63,7 @@ class Rftp::Test
 					p sbg.com("ewr 133 255")
 					p sbg.com("ewr 134 255")
 					p sbg.com("ewr 135 255")
-					p sbg.com("ewr 160 160")
+					p sbg.com("ewr 160 10")
 				else
 					p sbg.com("ewr 160 255")
 				end

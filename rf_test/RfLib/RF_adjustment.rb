@@ -62,9 +62,8 @@ class Rftp::Test
 	$RSSI_MAG_ADJ_100K = "0x0e"
 	$RSSI_ADJ_50K = "0x00"
 	$RSSI_MAG_ADJ_50K = "0x0e"
-	$PA_20_ADJ_H = "0x82"
+	$PA_ADJ_H_EN = "0x80"
 	$PA_20_ADJ_L = "0xE4"
-	$PA_1_ADJ_H = "0x80"
 	$PA_1_ADJ_L = "0x2E"
 	$MAX_PA_20 = 13
 	$MAX_PA_1 = 0
@@ -213,12 +212,10 @@ class Rftp::Test
 		p att
 
 		if mode == 20 then
-			adj_h = $PA_20_ADJ_H.to_i(16)
-			adj_l = $PA_20_ADJ_L.to_i(16)
+			adj = $PA_20_ADJ_L.to_i(16)
 			max_pa = $MAX_PA_20
 		else
-			adj_h = $PA_1_ADJ_H.to_i(16)
-			adj_l = $PA_1_ADJ_L.to_i(16)
+			adj = $PA_1_ADJ_L.to_i(16)
 			max_pa = $MAX_PA_1
 		end
 
@@ -236,24 +233,27 @@ class Rftp::Test
 			$sock.puts("mkl?")
 			value = $sock.gets
 
-			printf("Pow adj:target:%.2f,meas:%.2f,ATT:%.2f,reg_data:%d,num:%d\n",
-						 max_pa, value, att.to_f, adj_l, num)
+			printf("Pow adj:target:%.2f,meas:%.2f,ATT:%.2f,pa_adj:%d,num:%d\n",
+						 max_pa, value, att.to_f, adj, num)
 
 			if value.to_i + att.to_f < max_pa - $PA_GAP then 
-				adj_l = adj_l.to_f + 5
+				adj = adj.to_f + 5
 			elsif value.to_i + att.to_f > max_pa + $PA_GAP then 
-				adj_l = adj_l.to_f - 5
+				adj = adj.to_f - 5
 			else
 				p "OK"
 				break
 			end
 
-			if (adj_l > 255 || adj_l < 0) then
+			if (adj > 511 || adj < 0) then
 				p "NG"
 				break
+			else
+				adj_h = (adj / 255)
+				adj_l = adj % 255
 			end
-	
-			$sp.puts("rfw,0,0x67," + "%#x"%adj_h)
+
+			$sp.puts("rfw,0,0x67," + "%#x"%(adj_h + $PA_ADJ_H_EN.to_i(16)))
 			p $sp.gets()
 			$sp.puts("rfw,0,0x68," + "%#x"%adj_l)
 			p $sp.gets()

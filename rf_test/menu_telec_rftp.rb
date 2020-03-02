@@ -16,11 +16,12 @@ class Rftest
 	end
 
 #	@@ATT = "7.9"		#2nd lots was 6.1
-	@@ATT = "6.9"		#2nd lots was 6.1
+#	@@ATT = "6.9"		#2nd lots was 6.1
 #	@@ATT = "10.4"	 #2nd lots was 6.1
 
-	@@rftp.ms2830a_setting(42,100,10) 
-	@@ATT = @@rftp.att_checker(42,100)
+#	@@rftp.ms2830a_setting(42,100,10) 
+#	@@rftp.subghz_setting(ch,rate,"trxoff") 
+#	@@ATT = @@rftp.att_checker(42,100)
 
 		def led
 				@@rftp.led("blue");
@@ -224,7 +225,7 @@ class Rftest
 			print("[3] Continuous Wave\n")
 			print("[4] Send packet\n")
 			print("[5] Carrier Sense\n")
-			print("[6] Calibration\n")
+			print("[6] Calibration for MJ2001/Lazurite920j\n")
 			print("~~~~~~~~~ MK7404 calibration ~~~~~~~\n")
 			print("[21] Atteneta checker\n")
 			print("[22] Power adjustment\n")
@@ -263,14 +264,19 @@ class Rftest
 							File.delete("temp.log")
 					end
 					$log = Logger.new("temp.log")
-					print("Input number(1:Lazurite920j, 2:MJ2001:Input): ")
+					print("Input number(1:Lazurite920j, 2:MJ2001:): ")
 					input = gets().to_i
 					if input == 1 then
 						@@rftp.e2p_base("Lazurite920j")
 					elsif input == 2 then
 						@@rftp.e2p_base("MJ2001")
 					end
-					@@rftp.calibration(@@ATT)
+					ch=42
+					rate=100
+					span=10
+					@@rftp.ms2830a_setting(ch,rate,span) 
+					att = @@rftp.att_checker(ch,rate)
+					@@rftp.calibration(att)
 					File.delete("temp.log")
 				when 21
 					ch=42
@@ -279,14 +285,17 @@ class Rftest
 					@@rftp.ms2830a_setting(ch,rate,span) 
 					@@rftp.set_command(@@dev)
 					@@rftp.subghz_setting(ch,rate,"trxoff") 
-					att = @@rftp.att_checker(ch,rate)
-					printf("ATT level: %s dB\n",att)
+					@@ATT = @@rftp.att_checker(ch,rate)
+					printf("ATT level: %s dB\n",@@ATT)
 				when 22
 					ch=42
 					rate=100
 					span=10
 					@@rftp.ms2830a_setting(ch,rate,span) 
 					@@rftp.set_command(@@dev)
+					@@rftp.subghz_setting(ch,rate,"trxoff") 
+					@@ATT = @@rftp.att_checker(ch,rate)
+					@@rftp.ms2830a_setting(ch,rate,span) 
 					@@rftp.subghz_setting(ch,rate,"tx") 
 					@@rftp.pow_adj_4k(ch,rate,@@ATT)
 				when 23

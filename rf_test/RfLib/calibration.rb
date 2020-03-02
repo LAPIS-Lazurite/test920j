@@ -53,7 +53,7 @@ class Rftp::Test
                     @sbg.rw(OSC_ADJ_ADDR,"0x" + i.to_s(16))
                 else
                     i = reg_data.hex
-                    com = "ewr 45 " + i.to_s(16)
+                    com = "ewr 45 " + "0x" + i.to_s(16)
                     p @sbg.com(com)
                     print("Frequency fine adjustment completed\n")
                     break
@@ -64,7 +64,7 @@ class Rftp::Test
                 end
             end
         rescue RuntimeError
-            print ("Error: stop freq fine adjustment\n")
+            print("Error: stop freq fine adjustment\n")
             ret_val = 0
             return ret_val
         end
@@ -95,7 +95,7 @@ class Rftp::Test
 
                 diff = ($frq[rate][ch].to_i - value.to_i)/KHZ
                 reg_data = @sbg.rr(OSC_ADJ2_ADDR)[2,2]
-printf("Start freq fine adjustment:diff:%s,tartget:%d,current:%d,reg_data:%d\n",diff,$frq[rate][ch].to_i/KHZ,value.to_i/KHZ,reg_data.hex)
+printf("Start freq adjustment:diff:%s,tartget:%d,current:%d,reg_data:%d\n",diff,$frq[rate][ch].to_i/KHZ,value.to_i/KHZ,reg_data.hex)
 
                 if (diff) < FRQ_RENGE_MIN then
                     i = reg_data.hex + 1
@@ -105,7 +105,7 @@ printf("Start freq fine adjustment:diff:%s,tartget:%d,current:%d,reg_data:%d\n",
                     @sbg.rw(OSC_ADJ2_ADDR,"0x0" + i.to_s(16))
                 else
                     i = reg_data.hex
-                    com = "ewr 128 " + i.to_s(16)
+                    com = "ewr 128 " + "0x" + i.to_s(16)
                     p @sbg.com(com)
                     print("Frequency adjustment completed\n")
                     break
@@ -116,7 +116,7 @@ printf("Start freq fine adjustment:diff:%s,tartget:%d,current:%d,reg_data:%d\n",
                 end
             end
         rescue RuntimeError
-            print ("Error: stop freq adjustment\n")
+            print("Error: stop freq adjustment\n")
             ret_val = 0
             return ret_val
         end
@@ -156,11 +156,11 @@ printf("Start freq fine adjustment:diff:%s,tartget:%d,current:%d,reg_data:%d\n",
                 if measurement > target_level then
                     i = reg_data.hex - @pow[mode].pa_bit
                     @sbg.rw(@pow[mode].pa_addr,"0x" + i.to_s(16))
-                    print("Power over limit: set to %x\n",i.hex)
+										printf("Power over limit: set to %x\n",i)
                 elsif measurement < (target_level - PA_TARGET_LOW) then
                     i = reg_data.hex + @pow[mode].pa_bit
                     @sbg.rw(@pow[mode].pa_addr,"0x" + i.to_s(16))
-                    print("Power under limit: set to %x\n",i.hex)
+                    printf("Power under limit: set to %x\n",i)
                 else
                     i = reg_data.hex
                     com = @pow[mode].ep_addr + i.to_s		# unnecessary (16)
