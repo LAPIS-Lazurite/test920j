@@ -231,6 +231,7 @@ class Rftest
 			print("[22] Power adjustment\n")
 			print("[23] RSSI adjustment\n")
 			print("[24] Frequency deviation adjustment\n")
+			print("[25] Read ED value\n")
 			print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n")
 			print("[31] Set my address\n")
 			print("[32] Get my address\n")
@@ -309,6 +310,15 @@ class Rftest
 					@@rftp.set_command(@@dev)
 					@@rftp.subghz_setting(ch,rate,"tx") 
 					@@rftp.freq_dev_adj(ch,rate)
+				when 25
+					print("Input ch: ")
+					ch = gets().to_i
+					print("Input rate: ")
+					rate = gets().to_i
+					@@rftp.ms2830a_setting(ch,rate,100) 
+					@@rftp.set_command(@@dev)
+					@@rftp.subghz_setting(ch,rate,"rx") 
+					@@rftp.read_ed_value(ch,rate)
 				when 31
 					@@rftp.set_addr()
 				when 32

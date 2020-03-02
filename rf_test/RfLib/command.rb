@@ -1,5 +1,6 @@
 #! /usr/bin/ruby
 
+require '/home/pi/test920j/rf_test/socket.rb'
 require '/home/pi/test920j/rf_test/subghz.rb'
 require 'serialport'
 
@@ -169,5 +170,48 @@ class Rftp::Test
 				p $sp.gets()
 		end
 		$sp.close
+	end
+
+$finish_flag=0
+Signal.trap(:INT){
+	$finish_flag=1
+}
+
+	def read_ed_value(ch,rate)
+			# setup SG
+			$sock.puts("inst sg")
+			$sock.puts("*OPC?")
+			$sock.gets
+
+			$sock.puts("freq " + $frq[rate][ch])
+			$sock.puts("*OPC?")
+			$sock.gets
+
+			$sock.puts("pow -90")
+			$sock.puts("*OPC?")
+			$sock.gets
+
+			$sock.puts("outp 1") 
+			$sock.puts("*OPC?")
+			$sock.gets
+
+			$sock.puts("pow?")
+			pw = $sock.gets.delete("\r\n") 
+
+			i=0
+			sp = SerialPort.new('/dev/ttyUSB0', 115200, 8, 1, 0) 
+			while $finish_flag == 0 do
+				sp.puts($com_ed_val)
+				p sp.gets()
+ 				if i > 10 then
+					sp.puts($com_get_rf_status)
+					p sp.gets()
+					i=0
+				else
+					i=i+1
+				end
+				sleep 0.5
+			end
+			sp.close
 	end
 end
