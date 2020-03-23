@@ -166,11 +166,19 @@ class Rftest
 
 
 	def telec_menu
-				if File.exist?("temp.log") == true then
-						File.delete("temp.log")
-				end
-				$log = Logger.new("| tee temp.log")
+		if File.exist?("temp.log") == true then
+				File.delete("temp.log")
+		end
+		#$log = Logger.new("| tee temp.log")
+		$log = Logger.new("temp.log")
 		Dir.chdir "./TelecLib"
+		ch=42
+		rate=100
+		span=10
+		@@rftp.ms2830a_setting(ch,rate,span) 
+		@@ATT = @@rftp.att_checker(ch,rate)
+		p @@ATT
+
 		while 1
 			print("====================== TELEC MENU =======================\n")
 			p = Dir.glob("*")
@@ -209,7 +217,7 @@ class Rftest
 					print("unsupported\n")
 			when 13
 					print("unsupported\n")
-						else
+			else
 				break
 			end
 		end

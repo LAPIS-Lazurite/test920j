@@ -45,7 +45,7 @@ class Telectp::Test
             @@att = att.to_f.round(2)
             @@MAKER = "DELTA" # NORM(mW) or DELTA(dBm) When using ATT, set DELTA
             normal = {"lower" => 18, "upper" => 20, "unit" => "mW"}
-            delta  = {"lower" => 11, "upper" => 13, "unit" => "dBm"}
+						delta  = {"lower" => 11.5, "upper" => 13, "unit" => "dBm"}
             range  = {"NORM" => normal, "DELTA" => delta}
 
             $sock.puts("INST SPECT")                                #SAモードでは下記のコマンドを使用  INST SIGANA"
